@@ -7,6 +7,7 @@ output: github_document
 
 This is an initial R Markdown file for our Final Project for P8105.  We are working with a Pediatric COVID dataset.  First, some setup.
 Hi I'm Sal! Hi I'm Kyung!!!
+Lusha Test!
 
 ```{r setup, echo = FALSE}
 library(tidyverse)
