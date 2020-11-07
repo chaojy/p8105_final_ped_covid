@@ -9,6 +9,7 @@ This is an initial R Markdown file for our Final Project for P8105.  We are work
 Hi I'm Sal! Hi I'm Kyung!!!
 Lusha Test!
 Hi all!  Love, Jerry
+Thank you all! - Kyung!!!
 
 ```{r setup, echo = FALSE}
 library(tidyverse)
