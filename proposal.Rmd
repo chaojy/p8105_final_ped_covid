@@ -34,7 +34,11 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRU
 * The private repository called **p8105_final_ped_covid** was created with access to all members of the team as collaborators since we are using dataset which comprises of patient's health information. However, we have de-identified the data in order to remove all personally identifiable information.
 
 ## Motivation for this project
-**Need Description**
+
+There has been a lot of research done concerning COVID-19 in the past year, but not much focus, relatively speaking, is given to how COVID-19 affects children and young adults given the low fatality rate of those age groups. Our goal in this project is to look at the severity of COVID-19 in young people and how various common comorbidities can affect the risk of having a more sever case of COVID-19.
+
+* Article 1: [Hospitalization Rates and Characteristics of Children Aged < 18 years Hospitalized with COVID-19] (https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)
+* Article 2: [Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with COVID-19 at a Tertiary Care Medical Center in NYC] (https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)
 
 ## Anticipated data sources
 
