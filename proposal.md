@@ -53,13 +53,13 @@ age groups. Our goal in this project is to look at the severity of
 COVID-19 in young people and how various common comorbidities can affect
 the risk of having a more sever case of COVID-19.
 
-  - Article 1: \[Hospitalization Rates and Characteristics of Children
-    Aged \< 18 years Hospitalized with COVID-19\]
-    (<https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#>)
-  - Article 2: \[Clinical Characteristics and Outcomes of Hospitalized
+  - Article 1: [Hospitalization Rates and Characteristics of Children
+    Aged \< 18 years Hospitalized with
+    COVID-19](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)
+  - Article 2: [Clinical Characteristics and Outcomes of Hospitalized
     and Critically Ill Children and Adolescents with COVID-19 at a
-    Tertiary Care Medical Center in NYC\]
-    (<https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/>)
+    Tertiary Care Medical Center in
+    NYC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)
 
 ## Anticipated data sources
 
@@ -195,6 +195,6 @@ wordcountaddin::text_stats("proposal.Rmd")
 | Method          | koRpus      | stringi       |
 | :-------------- | :---------- | :------------ |
 | Word count      | 669         | 662           |
-| Character count | 4432        | 4432          |
+| Character count | 4430        | 4430          |
 | Sentence count  | 38          | Not available |
 | Reading time    | 3.3 minutes | 3.3 minutes   |
