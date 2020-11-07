@@ -1,0 +1,60 @@
+---
+title: "P8105 Final Project Proposal- Pediatric COVID"
+author: "Jerry Chao (jyc2171), Lusha Liang (LL3344), Kyung Suk Lee (KL3069), Sal El-Sadek (sne2114)"
+date: "November 6, 2020"
+output: github_document
+---
+
+This is an initial R Markdown file for our Final Project for P8105.  We are working with a Pediatric COVID dataset.  First, some setup.
+
+```{r setup, echo = FALSE}
+library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = "90%"
+)
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis"
+)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+# wordcountaddin::word_count("file_name_whatever_it_is_called")
+# wordcountaddin:::text_stats()
+
+```
+
+I have created a private GitHub repository and I will invite all members of the team as collaborators so we all have access to the repo.  The repository is called "p8105_final_ped_covid."
+
+Next, I will read in the .csv file, which I have de-identified.  I had also begun to clean the data, but there is more work to do.
+
+```{r}
+ped_covid =
+  read_csv("./data/p8105_final_ped_covid.csv")
+```
+
+This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID on SARS-CoV-2 RT PCR test and whether or not they were hospitalized.  The age range in the study is 0 to 23 years of age.  I have randomly generated an id number for each patient.  There are `r nrow(ped_covid)` rows (patients) and `r ncol(ped_covid)` columns in this dataset.  The variables are date and time of positive covid test ("eventdatetime"), whether the patient was admitted ("admitted"), whether there was a preceding emergency department visit ("ed_yes_no_0_365_before"), whether the patient needed intensive care admission ("icu_yes_no") and date and time of icu admission ("icu_date_time"), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).  This will set the stage for our discussion and further analyses.  We can also request additional data, with a turnaround time of probably ~1 week.
+
+I am excited!  To get everyone excited, I have generated a density plot of the age distribution in this dataset by admission (yes/no).
+```{r}
+ped_covid %>% 
+ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Age Distribution",
+    x = "Age (Years)",
+    y = "Density"
+  ) +
+  viridis::scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(legend.position = "bottom")
+```
+
+There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years).  There are less patients admitted in the toddler and small child age range (3-10).
