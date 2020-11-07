@@ -57,10 +57,11 @@ pediatric patients do become ill and even require hospitalization. Most
 studies have described clinical characteristics of children already
 admitted to hospital and their course during admission - but more can be
 learned about risk factors associated with the need hospitalization
-prior to admission. –\>
+prior to admission.
 
 We would like to leverage the skills learned in p8105 and the data
-visualization capabilities in R to explore this clinical question. –\>
+visualization capabilities in R to explore clinical question mentioned
+below.
 
   - **Article 1:** [Hospitalization Rates and Characteristics of
     Children Aged \< 18 years Hospitalized with
@@ -100,16 +101,16 @@ ped_covid %>%
     #   ed_yes_no_0_365_before <dbl>, admission_primary_dx <chr>,
     #   admission_apr_drg <chr>
 
-  - **Source 1:** This is a de-identified dataset of pediatric patients
-    from a tertiary care medical center who tested positive for COVID-19
-    on SARS-CoV-2 RT PCR test and infrormation on whether or not they
-    were hospitalized. The age range in the study is **0** to **22**
-    years of age. An id number for each patient has been randomly
-    generated. There are **375** rows (patients) and **30** columns in
-    this dataset. The variables included in this dataset are *id,
-    admitted, age, date\_of\_birth, ethnicity, gender, censusblock,
-    censusblockgroup, censustract, city, race, ses, state,
-    zip\_code\_set, eventdatetime,
+  - **Source 1:** ***(Initial data gathering by Jerry Chao)*** This is a
+    de-identified dataset of pediatric patients from a tertiary care
+    medical center who tested positive for COVID-19 on SARS-CoV-2 RT PCR
+    test and infrormation on whether or not they were hospitalized. The
+    age range in the study is **0** to **22** years of age. An id number
+    for each patient has been randomly generated. There are **375** rows
+    (patients) and **30** columns in this dataset. The variables
+    included in this dataset are *id, admitted, age, date\_of\_birth,
+    ethnicity, gender, censusblock, censusblockgroup, censustract, city,
+    race, ses, state, zip\_code\_set, eventdatetime,
     outcomeadmission\_admission\_1inpatient\_admit\_service,
     bmi\_yes\_or\_no, bmi\_event\_date\_time, bmi\_value,
     asthma\_date\_time, asthma\_dx, diabetes\_date\_time, diabetes\_dx,
@@ -134,11 +135,11 @@ ped_covid %>%
 
 ## Intended final products
 
-1)  An interactive dashboard using plotly to present univariate and
+  - An interactive dashboard using plotly to present univariate and
     multivariate regression models assessing the association of
     demographic factors and past medical history with the need for
     hospital admission among pediatric patients.
-2)  Youtube video describing our final products.
+  - Youtube video describing our final products.
 
 ## Planned analyses / visualizations / coding challenges
 
@@ -212,7 +213,7 @@ wordcountaddin::text_stats("proposal.Rmd")
 
 | Method          | koRpus      | stringi       |
 | :-------------- | :---------- | :------------ |
-| Word count      | 496         | 495           |
-| Character count | 3297        | 3297          |
+| Word count      | 495         | 496           |
+| Character count | 3300        | 3300          |
 | Sentence count  | 33          | Not available |
 | Reading time    | 2.5 minutes | 2.5 minutes   |
