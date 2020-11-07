@@ -34,15 +34,14 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRU
 
 ## Introduction
 
-  - The group members for our final project includes **Jerry Chao
+  - The group members in this final project team are **Jerry Chao
     (JYC2171)**, **Lusha Liang (LL3344)**, **Sal El-Sadek (SNE2114)**,
     and **Kyung Suk Lee (KL3069)**.
   - The tentative title for our project is **Pediatric COVID**.
   - The private repository called **p8105\_final\_ped\_covid** was
-    created with access to all members of the team as collaborators
-    since we are using dataset which comprises of patient’s health
-    information. However, we have de-identified the data in order to
-    remove all personally identifiable information.
+    created with access granted to members of our team, as well as
+    “bst-p8105”. The dataset contains de-identified patient health
+    information.
 
 ## Motivation for this project
 
@@ -53,12 +52,22 @@ age groups. Our goal in this project is to look at the severity of
 COVID-19 in young people and how various common comorbidities can affect
 the risk of having a more sever case of COVID-19.
 
-  - Article 1: [Hospitalization Rates and Characteristics of Children
-    Aged \< 18 years Hospitalized with
+Jerry’s - While COVID seems to affect adults more than children, some
+pediatric patients do become ill and even require hospitalization. Most
+studies have described clinical characteristics of children already
+admitted to hospital and their course during admission - but more can be
+learned about risk factors associated with the need hospitalization
+prior to admission. –\>
+
+We would like to leverage the skills learned in p8105 and the data
+visualization capabilities in R to explore this clinical question. –\>
+
+  - **Article 1:** [Hospitalization Rates and Characteristics of
+    Children Aged \< 18 years Hospitalized with
     COVID-19](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)
-  - Article 2: [Clinical Characteristics and Outcomes of Hospitalized
-    and Critically Ill Children and Adolescents with COVID-19 at a
-    Tertiary Care Medical Center in
+  - **Article 2:** [Clinical Characteristics and Outcomes of
+    Hospitalized and Critically Ill Children and Adolescents with
+    COVID-19 at a Tertiary Care Medical Center in
     NYC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)
 
 ## Anticipated data sources
@@ -91,15 +100,16 @@ ped_covid %>%
     #   ed_yes_no_0_365_before <dbl>, admission_primary_dx <chr>,
     #   admission_apr_drg <chr>
 
-  - Source 1: This is a de-identified dataset of pediatric patients from
-    a tertiary care medical center who tested positive for COVID on
-    SARS-CoV-2 RT PCR test and whether or not they were hospitalized.
-    The age range in the study is **0** to **22** years of age. An id
-    number for each patient has been randomly generated. There are
-    **375** rows (patients) and **30** columns in this dataset. The
-    variables included in this dataset are *id, admitted, age,
-    date\_of\_birth, ethnicity, gender, censusblock, censusblockgroup,
-    censustract, city, race, ses, state, zip\_code\_set, eventdatetime,
+  - **Source 1:** This is a de-identified dataset of pediatric patients
+    from a tertiary care medical center who tested positive for COVID-19
+    on SARS-CoV-2 RT PCR test and infrormation on whether or not they
+    were hospitalized. The age range in the study is **0** to **22**
+    years of age. An id number for each patient has been randomly
+    generated. There are **375** rows (patients) and **30** columns in
+    this dataset. The variables included in this dataset are *id,
+    admitted, age, date\_of\_birth, ethnicity, gender, censusblock,
+    censusblockgroup, censustract, city, race, ses, state,
+    zip\_code\_set, eventdatetime,
     outcomeadmission\_admission\_1inpatient\_admit\_service,
     bmi\_yes\_or\_no, bmi\_event\_date\_time, bmi\_value,
     asthma\_date\_time, asthma\_dx, diabetes\_date\_time, diabetes\_dx,
@@ -114,38 +124,48 @@ ped_covid %>%
     admission (“icu\_date\_time”), demographic data (age, gender,
     ethnicity, race, zip code data - predominantly in the Bronx), some
     past medical history data (bmi data, asthma data, diabetes data) and
-    one vital sign datum (systolic blood pressure). This will set the
-    stage for our discussion and further analyses. We can also request
-    additional data, with a turnaround time of probably upto 1 week.
+    one vital sign datum (systolic blood pressure).
 
-  - Source 2: [NYC Coronavirus Disease 2019 (COVID-19)
+  - **Source 2:** [NYC Coronavirus Disease 2019 (COVID-19)
     Data](https://github.com/nychealth/coronavirus-data)
 
-  - Source 3: [NYC
+  - **Source 3:** [NYC
     OpenData](https://data.cityofnewyork.us/Health/COVID-19-Outcomes-by-Testing-Cohorts-Cases-Hospita/cwmx-mvra)
 
 ## Intended final products
 
-**Need Description**
+1)  An interactive dashboard using plotly to present univariate and
+    multivariate regression models assessing the association of
+    demographic factors and past medical history with the need for
+    hospital admission among pediatric patients.
+2)  Youtube video describing our final products.
 
 ## Planned analyses / visualizations / coding challenges
 
-  - Analyses: **Need Description**
+  - ***Analyses:*** We plan to perform univariate analyses describing
+    demographic and past medical history by admission status (yes/no).
+    We will also perform multivariate logistic regression modeling to
+    assess the association of demographic factors and past medical
+    history with the need for hospital admission in infants, children,
+    and teens. In particular, we will assess increasing age, SES, past
+    medical history (in particular asthma, obesity - defined as body
+    mass index \> 95% by age & gender, and diabetes) as hypothesized
+    risk factors of interest.
 
-  - Visualizations: We are planning to make various plots (e.g.,
+  - ***Visualizations:*** We are planning to make various plots (e.g.,
     scatterplot, boxplot, barplot, lineplots) with interactivity using
     `plot_ly` to provide a platform for online data analytics and
     visualizations where users can observe information by zooming and
     hovering. Also, we plan to integrate different plots into dashboard
-    using `shinydashboard` which will make users to understand various
-    information in an easy-to-read format. Density plot shown below is
-    one of the visualization examples. We have generated a density plot
-    of the age distribution in this dataset by admission (yes/no). There
-    appears to be a bimodal age distribution of pediatric patients who
-    tested positive for COVID-19 with more admissions during the first
-    2.5 years of life and also among older teenagers (15-20 years).
-    There are less patients admitted in the toddler and small child age
-    range (3-10).
+    using `shinydashboard` which will facilitate users’ understanding in
+    an easy-to-read format. The density plot below showing the
+    distribution of age by admission status is one of the visualization
+    examples. We have generated a density plot of the age in this
+    dataset by admission (yes/no). There appears to be a bimodal age
+    distribution of pediatric patients who tested positive for COVID-19
+    with more admissions during the first 2.5 years of life and also
+    among older teenagers (15-20 years). There are less patients
+    admitted in the toddler and small child age range (3-10).
 
 <!-- end list -->
 
@@ -164,27 +184,25 @@ ped_covid %>%
 
 <img src="proposal_files/figure-gfm/unnamed-chunk-2-1.png" width="90%" />
 
-  - Coding challenges: Most of the coding will require extensive data
-    wrangling, such as changing the variables to right format, removing
-    white-spaces, identifying any outliers, dealing with missed values,
-    merging latitude and longitude information for mapping, and tidying
-    the data. Also, since we plan to use `shinydashboard`, integrating
-    all the necessary codes for visualization can be a challenge.
+  - ***Coding challenges:*** Most of the coding will require extensive
+    data wrangling, such as changing the variables to right format,
+    removing white-spaces, identifying any outliers, dealing with missed
+    values, merging latitude and longitude information for mapping, and
+    tidying the data. Also, since we plan to use `shinydashboard`,
+    integrating all the necessary codes for visualization can be a
+    challenge.
 
 ## Planned timeline
 
-We plan to meet once or twice a week (depending on the group member’s
-availability) to discuss project process. The tentative timeline are
-outlined below.
+We plan to meet once or twice a week to discuss project progress. The
+tentative timeline is outlined below:
 
-  - By mid November: Finalize gathering more sources of information if
-    needed
-  - By end of November: Finalize creating all the necessary
-    visualizations
-  - By early December: Integrate all visualizations into
-    `shinydashboard` and create website
-  - By Dec 10th: Make modifications based on peer-assessment for the
-    final presentation
+  - *By mid November:* Finalize additional sources of data, if needed.
+  - *By end of November:* Complete all visualizations.
+  - *By early December:* Integrate all visualizations into
+    `shinydashboard` and create website.
+  - *By Dec 10th:* Make modifications based on peer-assessment for the
+    final presentation.
 
 ## Word count
 
@@ -194,7 +212,7 @@ wordcountaddin::text_stats("proposal.Rmd")
 
 | Method          | koRpus      | stringi       |
 | :-------------- | :---------- | :------------ |
-| Word count      | 669         | 662           |
-| Character count | 4430        | 4430          |
-| Sentence count  | 38          | Not available |
-| Reading time    | 3.3 minutes | 3.3 minutes   |
+| Word count      | 496         | 495           |
+| Character count | 3297        | 3297          |
+| Sentence count  | 33          | Not available |
+| Reading time    | 2.5 minutes | 2.5 minutes   |

@@ -41,8 +41,8 @@ Jerry's - While COVID seems to affect adults more than children, some pediatric 
 
 We would like to leverage the skills learned in p8105 and the data visualization capabilities in R to explore this clinical question. -->
 
-* Article 1: [Hospitalization Rates and Characteristics of Children Aged < 18 years Hospitalized with COVID-19](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)
-* Article 2: [Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with COVID-19 at a Tertiary Care Medical Center in NYC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)
+* **Article 1:** [Hospitalization Rates and Characteristics of Children Aged < 18 years Hospitalized with COVID-19](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)
+* **Article 2:** [Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with COVID-19 at a Tertiary Care Medical Center in NYC](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)
 
 ## Anticipated data sources
 
@@ -54,11 +54,11 @@ ped_covid %>%
   head()
 ```
 
-* Source 1: This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID-19 on SARS-CoV-2 RT PCR test and infrormation on whether or not they were hospitalized. The age range in the study is **`r ped_covid %>% pull(age) %>% min()`** to **`r ped_covid %>% pull(age) %>% max()`** years of age. An id number for each patient has been randomly generated. There are **`r nrow(ped_covid)`** rows (patients) and **`r ncol(ped_covid)`** columns in this dataset.  The variables included in this dataset are _`r ped_covid %>% names()`_. Some of the important variables are date and time of positive covid test ("eventdatetime"), whether the patient was admitted ("admitted"), whether there was a preceding emergency department visit ("ed_yes_no_0_365_before"), whether the patient needed intensive care admission ("icu_yes_no") and date and time of icu admission ("icu_date_time"), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).
+* **Source 1:** This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID-19 on SARS-CoV-2 RT PCR test and infrormation on whether or not they were hospitalized. The age range in the study is **`r ped_covid %>% pull(age) %>% min()`** to **`r ped_covid %>% pull(age) %>% max()`** years of age. An id number for each patient has been randomly generated. There are **`r nrow(ped_covid)`** rows (patients) and **`r ncol(ped_covid)`** columns in this dataset.  The variables included in this dataset are _`r ped_covid %>% names()`_. Some of the important variables are date and time of positive covid test ("eventdatetime"), whether the patient was admitted ("admitted"), whether there was a preceding emergency department visit ("ed_yes_no_0_365_before"), whether the patient needed intensive care admission ("icu_yes_no") and date and time of icu admission ("icu_date_time"), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).
 
-* Source 2: [NYC Coronavirus Disease 2019 (COVID-19) Data](https://github.com/nychealth/coronavirus-data)
+* **Source 2:** [NYC Coronavirus Disease 2019 (COVID-19) Data](https://github.com/nychealth/coronavirus-data)
 
-* Source 3: [NYC OpenData](https://data.cityofnewyork.us/Health/COVID-19-Outcomes-by-Testing-Cohorts-Cases-Hospita/cwmx-mvra)
+* **Source 3:** [NYC OpenData](https://data.cityofnewyork.us/Health/COVID-19-Outcomes-by-Testing-Cohorts-Cases-Hospita/cwmx-mvra)
 
 
 ## Intended final products
@@ -68,9 +68,9 @@ ped_covid %>%
 
 ## Planned analyses / visualizations / coding challenges
 
-* Analyses: We plan to perform univariate analyses describing demographic and past medical history by admission status (yes/no).  We will also perform multivariate logistic regression modeling to assess the association of demographic factors and past medical history with the need for hospital admission in infants, children, and teens.  In particular, we will assess increasing age, SES, past medical history (in particular asthma, obesity - defined as body mass index > 95% by age & gender, and diabetes) as hypothesized risk factors of interest.
+* ***Analyses:*** We plan to perform univariate analyses describing demographic and past medical history by admission status (yes/no).  We will also perform multivariate logistic regression modeling to assess the association of demographic factors and past medical history with the need for hospital admission in infants, children, and teens.  In particular, we will assess increasing age, SES, past medical history (in particular asthma, obesity - defined as body mass index > 95% by age & gender, and diabetes) as hypothesized risk factors of interest.
 
-* Visualizations: We are planning to make various plots (e.g., scatterplot, boxplot, barplot, lineplots) with interactivity using `plot_ly` to provide a platform for online data analytics and visualizations where users can observe information by zooming and hovering. Also, we plan to integrate different plots into dashboard using `shinydashboard` which will facilitate users' understanding in an easy-to-read format. The density plot below showing the distribution of age by admission status is one of the visualization examples. We have generated a density plot of the age in this dataset by admission (yes/no). There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years). There are less patients admitted in the toddler and small child age range (3-10).
+* ***Visualizations:*** We are planning to make various plots (e.g., scatterplot, boxplot, barplot, lineplots) with interactivity using `plot_ly` to provide a platform for online data analytics and visualizations where users can observe information by zooming and hovering. Also, we plan to integrate different plots into dashboard using `shinydashboard` which will facilitate users' understanding in an easy-to-read format. The density plot below showing the distribution of age by admission status is one of the visualization examples. We have generated a density plot of the age in this dataset by admission (yes/no). There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years). There are less patients admitted in the toddler and small child age range (3-10).
 
 ```{r}
 ped_covid %>% 
@@ -85,16 +85,16 @@ ped_covid %>%
   theme(legend.position = "bottom")
 ```
 
-* Coding challenges: Most of the coding will require extensive data wrangling, such as changing the variables to right format, removing white-spaces, identifying any outliers, dealing with missed values, merging latitude and longitude information for mapping, and tidying the data. Also, since we plan to use `shinydashboard`, integrating all the necessary codes for visualization can be a challenge.
+* ***Coding challenges:*** Most of the coding will require extensive data wrangling, such as changing the variables to right format, removing white-spaces, identifying any outliers, dealing with missed values, merging latitude and longitude information for mapping, and tidying the data. Also, since we plan to use `shinydashboard`, integrating all the necessary codes for visualization can be a challenge.
 
 ## Planned timeline
 
 We plan to meet once or twice a week to discuss project progress. The tentative timeline is outlined below:
 
-* By mid November: Finalize additional sources of data, if needed.
-* By end of November: Complete all visualizations.
-* By early December: Integrate all visualizations into `shinydashboard` and create website.
-* By Dec 10th: Make modifications based on peer-assessment for the final presentation.
+* *By mid November:* Finalize additional sources of data, if needed.
+* *By end of November:* Complete all visualizations.
+* *By early December:* Integrate all visualizations into `shinydashboard` and create website.
+* *By Dec 10th:* Make modifications based on peer-assessment for the final presentation.
 
 ## Word count
 
