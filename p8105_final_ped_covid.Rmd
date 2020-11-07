@@ -30,6 +30,10 @@ options(
 
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
+
+# wordcountaddin::word_count("file_name_whatever_it_is_called")
+# wordcountaddin:::text_stats()
+
 ```
 
 I have created a private GitHub repository and I will invite all members of the team as collaborators so we all have access to the repo.  The repository is called "p8105_final_ped_covid."
