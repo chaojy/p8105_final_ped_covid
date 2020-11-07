@@ -33,22 +33,34 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRU
 * The tentative title for our project is **Pediatric COVID**.
 * The private repository called **p8105_final_ped_covid** was created with access to all members of the team as collaborators since we are using dataset which comprises of patient's health information. However, we have de-identified the data in order to remove all personally identifiable information.
 
-## The motivation for this project
+## Motivation for this project
+**Need Description**
 
-
-## The anticipated data sources
+## Anticipated data sources
 
 ```{r}
 ped_covid =
-  read_csv("./data/p8105_final_ped_covid.csv") %>% 
+  read_csv("./data/p8105_final_ped_covid.csv")
+
+ped_covid %>% 
   head()
-ped_covid
 ```
 
-This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID on SARS-CoV-2 RT PCR test and whether or not they were hospitalized.  The age range in the study is 0 to 23 years of age.  I have randomly generated an id number for each patient.  There are `r nrow(ped_covid)` rows (patients) and `r ncol(ped_covid)` columns in this dataset.  The variables are date and time of positive covid test ("eventdatetime"), whether the patient was admitted ("admitted"), whether there was a preceding emergency department visit ("ed_yes_no_0_365_before"), whether the patient needed intensive care admission ("icu_yes_no") and date and time of icu admission ("icu_date_time"), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).  This will set the stage for our discussion and further analyses.  We can also request additional data, with a turnaround time of probably ~1 week.
+* Source 1: This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID on SARS-CoV-2 RT PCR test and whether or not they were hospitalized. The age range in the study is **`r ped_covid %>% pull(age) %>% min()`** to **`r ped_covid %>% pull(age) %>% max()`** years of age. An id number for each patient has been randomly generated. There are **`r nrow(ped_covid)`** rows (patients) and **`r ncol(ped_covid)`** columns in this dataset.  The variables included in this dataset are _`r ped_covid %>% names()`_. Some of the important variables are date and time of positive covid test ("eventdatetime"), whether the patient was admitted ("admitted"), whether there was a preceding emergency department visit ("ed_yes_no_0_365_before"), whether the patient needed intensive care admission ("icu_yes_no") and date and time of icu admission ("icu_date_time"), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure). This will set the stage for our discussion and further analyses. We can also request additional data, with a turnaround time of probably upto 1 week.
+
+* Source 2: [NYC Coronavirus Disease 2019 (COVID-19) Data](https://github.com/nychealth/coronavirus-data)
+
+* Source 3: [NYC OpenData](https://data.cityofnewyork.us/Health/COVID-19-Outcomes-by-Testing-Cohorts-Cases-Hospita/cwmx-mvra)
 
 
-## The intended final products
+## Intended final products
+**Need Description**
+
+## Planned analyses / visualizations / coding challenges
+
+* Analyses: **Need Description**
+
+* Visualizations: We are planning to make various plots (e.g., scatterplot, boxplot, barplot, lineplots) with interactivity using `plot_ly` to provide a platform for online data analytics and visualizations where users can observe information by zooming and hovering. Also, we plan to integrate different plots into dashboard using `shinydashboard` which will make users to understand various information in an easy-to-read format. Density plot shown below is one of the visualization examples. We have generated a density plot of the age distribution in this dataset by admission (yes/no). There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years). There are less patients admitted in the toddler and small child age range (3-10).
 
 ```{r}
 ped_covid %>% 
@@ -63,13 +75,16 @@ ped_covid %>%
   theme(legend.position = "bottom")
 ```
 
-We have generated a density plot of the age distribution in this dataset by admission (yes/no). There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years). There are less patients admitted in the toddler and small child age range (3-10).
+* Coding challenges: Most of the coding will require extensive data wrangling, such as changing the variables to right format, removing white-spaces, identifying any outliers, dealing with missed values, merging latitude and longitude information for mapping, and tidying the data. Also, since we plan to use `shinydashboard`, integrating all the necessary codes for visualization can be a challenge.
 
-## The planned analyses / visualizations / coding challenges
+## Planned timeline
 
+We plan to meet once or twice a week (depending on the group member's availability) to discuss project process. The tentative timeline are outlined below.
 
-## The planned timeline
-
+* By mid November: Finalize gathering more sources of information if needed
+* By end of November: Finalize creating all the necessary visualizations
+* By early December: Integrate all visualizations into `shinydashboard` and create website
+* By Dec 10th: Make modifications based on peer-assessment for the final presentation 
 
 ## Word count
 
