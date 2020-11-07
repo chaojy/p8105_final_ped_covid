@@ -1,7 +1,7 @@
 P8105 Final Project Proposal-Pediatric COVID
 ================
 Jerry Chao, Lusha Liang, Sal El-Sadek, Kyung Suk Lee
-2020-11-06
+2020-11-07
 
   - [Introduction](#introduction)
   - [The motivation for this project](#the-motivation-for-this-project)
