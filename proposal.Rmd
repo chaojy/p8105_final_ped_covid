@@ -58,3 +58,8 @@ ggplot(aes(x = age, fill = admitted)) +
 ```
 
 There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years).  There are less patients admitted in the toddler and small child age range (3-10).
+
+```{r}
+wordcountaddin::word_count("proposal.rmd")
+```
+
