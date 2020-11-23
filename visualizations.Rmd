@@ -67,8 +67,21 @@ ped_covid =
   select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
          systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
          city.y, obesity) %>%
-  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
+  mutate_at(c("admitted", "icu", "ethnicity_race", "asthma", "diabetes",
               "ed", "city.y", "obesity"), as.factor) %>%
+  mutate(gender = factor(gender, levels = c("M", "F"))) %>%
   rename(city = city.y) 
+```
+
+
+```{r}
+# Impute missing data
+impute<- mice(ped_covid, m=3, seed=111)
+datacomplete<-complete(impute,2)
+```
+
+```{r}
+# Export csv
+write_csv(datacomplete, "datacomplete.csv")
 ```
 
