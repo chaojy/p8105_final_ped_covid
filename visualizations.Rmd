@@ -26,6 +26,7 @@ knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRU
 
 Read in and tidy the data. 
 ```{r}
+# Load and tidy data
 ped_covid =
   read_csv("./data/p8105_final_ped_covid.csv") %>%
   mutate(
@@ -49,18 +50,25 @@ ped_covid =
     admission_dx = admission_apr_drg,
     icu = icu_yes_no
   ) %>%
-  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
-         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx) %>%
-  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
-              "ed"), as.factor)
+  mutate(obesity = case_when(
+    bmi_value >= 30 ~ "1",
+    bmi_value < 30 ~"0"
+  ))
 ```
 
-Merge zipcode data with latitude and longitude.
 ```{r}
+# Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
 
 ped_covid = 
-  left_join(ped_covid, zipcode_df, by = "zip")
+  left_join(ped_covid, zipcode_df, by = "zip") %>%
+  
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
+         city.y, obesity) %>%
+  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
+              "ed", "city.y", "obesity"), as.factor) %>%
+  rename(city = city.y) 
 ```
 

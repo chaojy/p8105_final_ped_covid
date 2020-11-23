@@ -30,17 +30,42 @@ ped_covid =
     admission_dx = admission_apr_drg,
     icu = icu_yes_no
   ) %>%
-  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
-         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx) %>%
-  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
-              "ed"), as.factor)
+  mutate(obesity = case_when(
+    bmi_value >= 30 ~ "1",
+    bmi_value < 30 ~"0"
+  ))
 
 # Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
 
 ped_covid = 
-  left_join(ped_covid, zipcode_df, by = "zip")
+  left_join(ped_covid, zipcode_df, by = "zip") %>%
+  
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
+         city.y, obesity) %>%
+  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
+              "ed", "city.y", "obesity"), as.factor) %>%
+  rename(city = city.y) 
+ 
+# Util variables for Shiny app
+demographics = c("age", "gender", "ses", "ethnicity_race")
+
+demographics_util = c(
+  "Age" = "age",
+  "Gender" = "gender",
+  "Socioeconomic status" = "ses",
+  "Ethnicity" = "ethnicity_race"
+)
+
+comorbidities = c("obesity", "asthma", "diabetes")
+
+comorbidities_util = c(
+  "Obesity" = "obesity",
+  "Asthma" = "asthma",
+  "Diabetes" = "diabetes"
+)
 
 # Define UI
 ui = fluidPage(theme = shinytheme("cerulean"),
@@ -52,7 +77,7 @@ ui = fluidPage(theme = shinytheme("cerulean"),
                    pickerInput(
                      inputId = "demographics",
                      label = "Patient demographics",
-                     choices = demographics,
+                     choices = demographics_util,
                      options = list(
                        'actions-box' = TRUE,
                        size = 12,
@@ -62,7 +87,7 @@ ui = fluidPage(theme = shinytheme("cerulean"),
                    pickerInput(
                      inputId = "comorbidities",
                      label = "Patient comorbidities",
-                     choices = comorbidities,
+                     choices = comorbidities_util,
                      options = list(
                        'actions-box' = TRUE,
                        size = 12, 
