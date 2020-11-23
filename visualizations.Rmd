@@ -45,13 +45,14 @@ ped_covid =
     diabetes = str_replace(diabetes, ".*E.*", "1"),
     zip = as.character(zip_code_set),
     service = outcomeadmission_admission_1inpatient_admit_service, 
-    obesity = bmi_yes_or_no,
     ed = ed_yes_no_0_365_before,
     admission_dx = admission_apr_drg,
     icu = icu_yes_no
   ) %>%
-  select(admitted, age, gender, ses, zip, eventdatetime, obesity, bmi_value, icu, icu_date_time, 
-         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx)
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx) %>%
+  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
+              "ed"), as.factor)
 ```
 
 Merge zipcode data with latitude and longitude.
