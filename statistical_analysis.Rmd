@@ -9,6 +9,7 @@ Setup
 library(tidyverse)
 library(aod)
 library(patchwork)
+library(ResourceSelection)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -143,7 +144,9 @@ Possible Models
   knitr::kable(digits = 3)
 initial_fit
 
-##wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
+# hl <- hoslem.test(initial_fit$admitted, fitted(initial_fit), g = 10)
+# hl
+# # wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
 ```
 
 ```{r}

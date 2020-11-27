@@ -21,7 +21,12 @@ library(tidyverse)
 ``` r
 library(aod)
 library(patchwork)
+library(ResourceSelection)
+```
 
+    ## ResourceSelection 0.3-5   2019-07-22
+
+``` r
 knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 1.1,
@@ -196,7 +201,9 @@ initial_fit
 | obesity1                 |   0.982 |  \-0.006 |     0.278 |   \-0.023 |       0.994 |
 
 ``` r
-##wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
+# hl <- hoslem.test(initial_fit$admitted, fitted(initial_fit), g = 10)
+# hl
+# # wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
 ```
 
 ``` r
