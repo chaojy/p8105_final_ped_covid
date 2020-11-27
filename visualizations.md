@@ -4,6 +4,7 @@ visualizations
 ``` r
 library(tidyverse)
 library(usa)
+library(mice)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -62,11 +63,46 @@ zipcode_df =
 
 ped_covid = 
   left_join(ped_covid, zipcode_df, by = "zip") %>%
-  
   select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
          systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
-         city.y, obesity) %>%
-  mutate_at(c("admitted", "gender", "icu", "ethnicity_race", "asthma", "diabetes",
+         city.y, obesity, lat, long) %>%
+  mutate_at(c("admitted", "icu", "ethnicity_race", "asthma", "diabetes",
               "ed", "city.y", "obesity"), as.factor) %>%
+  mutate(gender = factor(gender, levels = c("M", "F"))) %>%
   rename(city = city.y) 
+```
+
+``` r
+# Impute missing data
+impute = mice(ped_covid, m=3, seed=111)
+```
+
+``` 
+
+ iter imp variable
+  1   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  1   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  1   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   3  gender  ses*  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  3   1  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
+  3   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  3   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  4   1  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
+  4   2  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
+  4   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   3  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
+ * Please inspect the loggedEvents 
+```
+
+``` r
+datacomplete = complete(impute,2)
+```
+
+``` r
+# Export csv
+write_csv(datacomplete, "datacomplete.csv")
 ```

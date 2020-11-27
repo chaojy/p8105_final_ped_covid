@@ -1,0 +1,69 @@
+---
+title: "model_building"
+output: github_document
+---
+
+```{r}
+datacomplete = read_csv("./shiny/data/datacomplete.csv") %>%
+  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender"), as.factor) %>%
+  select(admitted, age, gender, ses, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
+
+train_data = 
+  datacomplete %>%
+  slice(1:250)
+
+test_data = 
+  datacomplete %>%
+  slice(251:375)
+```
+
+```{r}
+myFolds = createFolds(train_data$admitted, k = 5)
+rfControl = trainControl(
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE,
+    savePredictions = TRUE,
+    index = myFolds
+)
+  
+rfmodel = caret::train(
+    admitted ~., 
+    data = train_data,
+    metric = "ROC",
+    method = "ranger",
+    trControl = rfControl
+ )
+pred_rf = predict(rfmodel,test_data,type="prob")
+pred_rf = pred_rf$yes
+auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),"auc")@y.values)
+auc_rf
+```
+
+```{r}
+glmnetControl = trainControl(
+    method = "cv", 
+    number = 10,
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE
+)
+
+glmnetmodel1 <- caret::train(
+    genepos~., 
+    data=traindata,
+    tuneGrid = expand.grid(
+      alpha=0:1,
+      lambda=seq(0.0001,1, length=20)
+    ),
+    method = "glmnet",
+    trControl = glmnetControl,
+    preProcess= c("center","scale")
+  )
+  
+pred_glmnet<-predict(glmnetmodel1,testdata,type="prob") 
+pred_glmnet<-pred_glmnet$Yes
+auc_glmnet<-as.numeric(ROCR::performance(prediction(pred_glmnet,testdata$genepos),"auc")@y.values)
+auc_glmnet
+```
+

@@ -6,6 +6,7 @@ output: github_document
 ```{r setup,  message = FALSE, warning = FALSE}
 library(tidyverse)
 library(usa)
+library(mice)
 
 knitr::opts_chunk$set(
   fig.width = 6,
@@ -63,10 +64,9 @@ zipcode_df =
 
 ped_covid = 
   left_join(ped_covid, zipcode_df, by = "zip") %>%
-  
   select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
          systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
-         city.y, obesity) %>%
+         city.y, obesity, lat, long) %>%
   mutate_at(c("admitted", "icu", "ethnicity_race", "asthma", "diabetes",
               "ed", "city.y", "obesity"), as.factor) %>%
   mutate(gender = factor(gender, levels = c("M", "F"))) %>%
@@ -76,8 +76,8 @@ ped_covid =
 
 ```{r}
 # Impute missing data
-impute<- mice(ped_covid, m=3, seed=111)
-datacomplete<-complete(impute,2)
+impute = mice(ped_covid, m=3, seed=111)
+datacomplete = complete(impute,2)
 ```
 
 ```{r}

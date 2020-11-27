@@ -4,6 +4,7 @@ library(shinyWidgets)
 library(shinythemes)
 library(randomForest)
 library(tidyverse)
+library(data.table)
 
 # Read data 
 datacomplete = read_csv("./data/datacomplete.csv") %>%
@@ -101,9 +102,9 @@ server <- function(input, output, session) {
                                                                 "latino", "multiple")),
              asthma = factor(asthma, levels = c("0", "1")),
              diabetes = factor(diabetes, levels = c("0", "1"))
-             )
+      )
     
-    Output = data.frame(Prediction = predict(model, test, type = "prob"))
+    Output = data.frame(Prediction = predict(model, test, type="prob"))
     print(Output)
     
   })
