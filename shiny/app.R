@@ -2,17 +2,37 @@
 library(shiny)
 library(shinyWidgets)
 library(shinythemes)
-library(randomForest)
 library(tidyverse)
+library(caret)
+library(ROCR)
 library(data.table)
 
 # Read data 
 datacomplete = read_csv("./data/datacomplete.csv") %>%
-  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender"), as.factor) %>%
-  select(admitted, age, gender, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
+  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes"), as.factor) %>%
+  select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
 
-# Build model
-model = randomForest(admitted ~ ., data = datacomplete, ntree = 500, mtry = 6, importance = TRUE)
+# Build random forest model in caret
+myFolds = createFolds(train_data$admitted, k = 5)
+rfControl = trainControl(
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE, 
+  verboseIter = TRUE,
+  savePredictions = TRUE,
+  index = myFolds
+)
+
+model = caret::train(
+  admitted ~., 
+  data = datacomplete,
+  metric = "ROC",
+  method = "ranger",
+  trControl = rfControl
+)
+
+####################################
+# UI                               #
+####################################
 
 ui = fluidPage(theme = shinytheme("united"),
                 
@@ -26,10 +46,6 @@ ui = fluidPage(theme = shinytheme("united"),
                   sliderInput("age", "Age:",
                               min = 0, max = 22,
                               value = 15),
-                  
-                  selectInput("gender", label = "Gender:", 
-                              choices = list("Female" = "F", "Male" = "M"), 
-                              selected = "Female"),
                   
                   sliderInput("bmi_value", "Body Mass Index:",
                               min = 10, max = 85,
@@ -57,7 +73,7 @@ ui = fluidPage(theme = shinytheme("united"),
                 ),
                 
                 mainPanel(
-                  tags$label(h3('Prediction')), # Status/Output Text Box
+                  tags$label(h3('Predicted Probability of Hospitalization')), # Status/Output Text Box
                   verbatimTextOutput('contents'),
                   tableOutput('tabledata') # Prediction results table
                   
@@ -68,59 +84,47 @@ ui = fluidPage(theme = shinytheme("united"),
 # Server                           #
 ####################################
 
-server <- function(input, output, session) {
+server = function(input, output, session) {
   
   # Input Data
   datasetInput = reactive({  
   
     df = data.frame(
-      Name = c("age",
-               "gender",
-               "bmi_value",
-               "systolic_bp_value",
-               "ethnicity_race",
-               "asthma",
-               "diabetes"),
-      Value = as.character(c(input$age,
-                             input$gender,
-                             input$bmi_value,
-                             input$systolic_bp_value,
-                             input$ethnicity_race,
-                             input$asthma,
-                             input$diabetes)),
-      stringsAsFactors = FALSE)
-    
+    Name = c("age", "bmi_value", "systolic_bp_value", "ethnicity_race", "asthma", "diabetes"),
+    Value = as.character(c(input$age, input$bmi_value, input$systolic_bp_value, input$ethnicity_race, input$asthma,
+    input$diabetes)),
+    stringsAsFactors = FALSE)
+
     admitted = "admitted"
     df = rbind(admitted, df)
     input = transpose(df)
-    write.table(input, "input.csv", sep=",", quote = FALSE, row.names = FALSE, col.names = FALSE)
-    
+    write.table(input,"input.csv", sep=",", quote = FALSE, row.names = FALSE, col.names = FALSE)
+  
     test = read_csv("input.csv") %>%
       mutate(admitted = factor(admitted, levels = c("yes", "no")),
-             gender = factor(gender, levels = c("F", "M")),
              ethnicity_race = factor(ethnicity_race, levels = c("american indian", "asian", "caucasian", "black",
                                                                 "latino", "multiple")),
              asthma = factor(asthma, levels = c("0", "1")),
              diabetes = factor(diabetes, levels = c("0", "1"))
       )
     
-    Output = data.frame(Prediction = predict(model, test, type="prob"))
+    Output = predict(model, test, type="prob")
     print(Output)
     
   })
   
 # Status/Output Text Box
-  output$contents <- renderPrint({
-    if (input$submitbutton>0) { 
-      isolate("Calculation complete.") 
+  output$contents = renderPrint({
+    if (input$submitbutton > 0) { 
+      isolate("Calculation complete. Interpret results with caution.") 
     } else {
       return("Server is ready for calculation.")
     }
   })
   
 # Prediction results table
-  output$tabledata <- renderTable({
-    if (input$submitbutton>0) { 
+  output$tabledata = renderTable({
+    if (input$submitbutton > 0) { 
       isolate(datasetInput()) 
     } 
   })
@@ -131,3 +135,4 @@ server <- function(input, output, session) {
 # Create the shiny app             #
 ####################################
 shinyApp(ui = ui, server = server)
+

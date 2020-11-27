@@ -33,7 +33,7 @@ library(ROCR)
 
 datacomplete = read_csv("./shiny/data/datacomplete.csv") %>%
   mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender"), as.factor) %>%
-  select(admitted, age, gender, ses, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
+  select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
 ```
 
     ## Parsed with column specification:
@@ -72,7 +72,7 @@ rfControl = trainControl(
     savePredictions = TRUE,
     index = myFolds
 )
-  
+set.seed(123)
 rfmodel = caret::train(
     admitted ~., 
     data = train_data,
@@ -84,67 +84,67 @@ rfmodel = caret::train(
 
     ## + Fold1: mtry= 2, min.node.size=1, splitrule=gini 
     ## - Fold1: mtry= 2, min.node.size=1, splitrule=gini 
-    ## + Fold1: mtry= 7, min.node.size=1, splitrule=gini 
-    ## - Fold1: mtry= 7, min.node.size=1, splitrule=gini 
-    ## + Fold1: mtry=12, min.node.size=1, splitrule=gini 
-    ## - Fold1: mtry=12, min.node.size=1, splitrule=gini 
+    ## + Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+    ## - Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+    ## + Fold1: mtry=10, min.node.size=1, splitrule=gini 
+    ## - Fold1: mtry=10, min.node.size=1, splitrule=gini 
     ## + Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
     ## - Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
-    ## + Fold1: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## - Fold1: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## + Fold1: mtry=12, min.node.size=1, splitrule=extratrees 
-    ## - Fold1: mtry=12, min.node.size=1, splitrule=extratrees 
+    ## + Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## - Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## + Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+    ## - Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
     ## + Fold2: mtry= 2, min.node.size=1, splitrule=gini 
     ## - Fold2: mtry= 2, min.node.size=1, splitrule=gini 
-    ## + Fold2: mtry= 7, min.node.size=1, splitrule=gini 
-    ## - Fold2: mtry= 7, min.node.size=1, splitrule=gini 
-    ## + Fold2: mtry=12, min.node.size=1, splitrule=gini 
-    ## - Fold2: mtry=12, min.node.size=1, splitrule=gini 
+    ## + Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+    ## - Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+    ## + Fold2: mtry=10, min.node.size=1, splitrule=gini 
+    ## - Fold2: mtry=10, min.node.size=1, splitrule=gini 
     ## + Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
     ## - Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
-    ## + Fold2: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## - Fold2: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## + Fold2: mtry=12, min.node.size=1, splitrule=extratrees 
-    ## - Fold2: mtry=12, min.node.size=1, splitrule=extratrees 
+    ## + Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## - Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## + Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+    ## - Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
     ## + Fold3: mtry= 2, min.node.size=1, splitrule=gini 
     ## - Fold3: mtry= 2, min.node.size=1, splitrule=gini 
-    ## + Fold3: mtry= 7, min.node.size=1, splitrule=gini 
-    ## - Fold3: mtry= 7, min.node.size=1, splitrule=gini 
-    ## + Fold3: mtry=12, min.node.size=1, splitrule=gini 
-    ## - Fold3: mtry=12, min.node.size=1, splitrule=gini 
+    ## + Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+    ## - Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+    ## + Fold3: mtry=10, min.node.size=1, splitrule=gini 
+    ## - Fold3: mtry=10, min.node.size=1, splitrule=gini 
     ## + Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
     ## - Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
-    ## + Fold3: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## - Fold3: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## + Fold3: mtry=12, min.node.size=1, splitrule=extratrees 
-    ## - Fold3: mtry=12, min.node.size=1, splitrule=extratrees 
+    ## + Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## - Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## + Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+    ## - Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
     ## + Fold4: mtry= 2, min.node.size=1, splitrule=gini 
     ## - Fold4: mtry= 2, min.node.size=1, splitrule=gini 
-    ## + Fold4: mtry= 7, min.node.size=1, splitrule=gini 
-    ## - Fold4: mtry= 7, min.node.size=1, splitrule=gini 
-    ## + Fold4: mtry=12, min.node.size=1, splitrule=gini 
-    ## - Fold4: mtry=12, min.node.size=1, splitrule=gini 
+    ## + Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+    ## - Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+    ## + Fold4: mtry=10, min.node.size=1, splitrule=gini 
+    ## - Fold4: mtry=10, min.node.size=1, splitrule=gini 
     ## + Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
     ## - Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
-    ## + Fold4: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## - Fold4: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## + Fold4: mtry=12, min.node.size=1, splitrule=extratrees 
-    ## - Fold4: mtry=12, min.node.size=1, splitrule=extratrees 
+    ## + Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## - Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## + Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+    ## - Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
     ## + Fold5: mtry= 2, min.node.size=1, splitrule=gini 
     ## - Fold5: mtry= 2, min.node.size=1, splitrule=gini 
-    ## + Fold5: mtry= 7, min.node.size=1, splitrule=gini 
-    ## - Fold5: mtry= 7, min.node.size=1, splitrule=gini 
-    ## + Fold5: mtry=12, min.node.size=1, splitrule=gini 
-    ## - Fold5: mtry=12, min.node.size=1, splitrule=gini 
+    ## + Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+    ## - Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+    ## + Fold5: mtry=10, min.node.size=1, splitrule=gini 
+    ## - Fold5: mtry=10, min.node.size=1, splitrule=gini 
     ## + Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
     ## - Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
-    ## + Fold5: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## - Fold5: mtry= 7, min.node.size=1, splitrule=extratrees 
-    ## + Fold5: mtry=12, min.node.size=1, splitrule=extratrees 
-    ## - Fold5: mtry=12, min.node.size=1, splitrule=extratrees 
+    ## + Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## - Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+    ## + Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+    ## - Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
     ## Aggregating results
     ## Selecting tuning parameters
-    ## Fitting mtry = 12, splitrule = extratrees, min.node.size = 1 on full training set
+    ## Fitting mtry = 10, splitrule = gini, min.node.size = 1 on full training set
 
 ``` r
 pred_rf = predict(rfmodel,test_data,type="prob")
@@ -153,7 +153,7 @@ auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),"au
 auc_rf
 ```
 
-    ## [1] 0.6574022
+    ## [1] 0.6593874
 
 GLM net model
 
@@ -165,7 +165,7 @@ glmnetControl = trainControl(
     classProbs = TRUE, 
     verboseIter = TRUE
 )
-
+set.seed(123)
 glmnetmodel = caret::train(
     admitted ~. , 
     data=train_data,
@@ -255,7 +255,8 @@ xgb_grid = expand.grid(
     min_child_weight = 1,
     subsample = 1
 )
-  
+
+set.seed(123)
 fit_xgb = caret::train(admitted~., 
                          data = train_data, 
                          metric = "ROC",
@@ -269,7 +270,7 @@ auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admit
 auc_xgb
 ```
 
-    ## [1] 0.6145774
+    ## [1] 0.668321
 
 SPLS model
 
@@ -278,7 +279,8 @@ SPLS model
 train_grid = expand.grid(K =c(3,4,5,6,7,8,9),eta =c(0.35,0.4,0.45,0.5,0.55,0.6,0.7,0.8,0.9),
                           kappa=0.5)
 
-plsFit =caret::train(admitted~.,
+set.seed(123)
+plsFit = caret::train(admitted~.,
                          data = train_data,
                          method = "spls",
                          tuneGrid = train_grid,
