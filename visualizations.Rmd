@@ -55,6 +55,7 @@ ped_covid =
     bmi_value >= 30 ~ "1",
     bmi_value < 30 ~"0"
   ))
+  
 ```
 
 ```{r}
@@ -69,7 +70,10 @@ ped_covid =
          city.y, obesity, lat, long) %>%
   mutate_at(c("admitted", "icu", "ethnicity_race", "asthma", "diabetes",
               "ed", "city.y", "obesity"), as.factor) %>%
-  mutate(gender = factor(gender, levels = c("M", "F"))) %>%
+  mutate(
+    gender = factor(gender, levels = c("F", "M")),
+    ethnicity_race = factor(ethnicity_race, levels = c("caucasian", "black", "latino", "asian", "american indian", "multiple", "NA"))
+  ) %>%
   rename(city = city.y) 
 ```
 
@@ -83,5 +87,116 @@ datacomplete = complete(impute,2)
 ```{r}
 # Export csv
 write_csv(datacomplete, "datacomplete.csv")
+```
+
+Some exploratory data visualizations
+
+```{r}
+#bunch of ggplots
+ped_covid %>% 
+  ggplot(aes(x = admitted, y = age)) +
+  geom_boxplot()
+
+ped_covid %>% 
+  filter(
+    gender != "NA"
+  ) %>% 
+  ggplot(aes(x = gender, y = age)) +
+  geom_boxplot()
+
+ped_covid %>% 
+  ggplot(aes(x = admitted, y = ses)) +
+  geom_boxplot()
+
+ped_covid %>% 
+  ggplot(aes(x = admitted, y = bmi_value)) +
+  geom_boxplot()
+
+ped_covid %>% 
+  count(icu)
+
+ped_covid %>% count(ethnicity_race)
+
+ped_covid %>% 
+  ggplot(aes(x = ethnicity_race)) + 
+  geom_boxplot()
+```
+
+Univariate models
+
+```{r}
+#bunch of univariate logisitic regression models
+glm(
+  admitted ~ age,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 0.00337
+
+glm(
+  admitted ~ gender,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 0.855
+
+glm(
+  admitted ~ bmi_value,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 0.263
+
+glm(
+  admitted ~ obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 0.374
+
+glm(
+  admitted ~ asthma,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 4.96e- 2
+
+glm(
+  admitted ~ diabetes,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#p = 7.48e- 4
+
+glm(
+  admitted ~ ethnicity_race,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy()
+#no significant p values
+```
+
+```{r}
+#fitting multivariate logistic regression model
+glm(
+  admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI"), p.value) %>% 
+  knitr::kable(digits = 3)
 ```
 
