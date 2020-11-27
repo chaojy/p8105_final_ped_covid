@@ -1,0 +1,206 @@
+---
+title: "statistical_analysis"
+output: github_document
+---
+
+Setup
+
+```{r}
+library(tidyverse)
+library(aod)
+library(patchwork)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = 1.1,
+  out.width = "100%")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis")
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
+```
+
+Data import and tidy
+
+```{r}
+data_stats = read_csv("./datacomplete.csv") %>% 
+  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender", "obesity", "icu"), as.factor) %>% 
+  select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
+
+summary(data_stats)
+```
+
+Focusing on which predictors matter most in predicting hospitalization ('admitted') or even admittance to an ICU. Need to decide if we need to focus on predictability or causality/statistical significance.
+
+First, let's get familiar with the data.
+
+```{r, density}
+admitt_p = 
+  data_stats %>% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Admittance/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+icu_p = 
+  data_stats %>% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "ICU/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+admitt_p / icu_p
+```
+
+```{r}
+obesity_p = 
+  data_stats %>% 
+  ggplot(aes(x = age, fill = obesity)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Obesity/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+diabetes_p = 
+  data_stats %>% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Diabetes/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+asthma_p = 
+  data_stats %>% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Asthma/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+obesity_p / diabetes_p / asthma_p
+```
+
+```{r, boxplots}
+bp_p =
+  data_stats %>% 
+  ggplot(aes(x = icu, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = "Systolic Blood Pressure by Admission Status",
+    x = "Hospital Admission Status",
+    y = "Systolic Blood Pressure")
+
+bmi_p =
+  data_stats %>% 
+  ggplot(aes(x = icu, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = "BMI by Admission Status",
+    x = "Hospital Admission Status",
+    y = "BMI Value")
+
+ses_p =
+  data_stats %>% 
+  ggplot(aes(x = icu, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = "Socioeconomic Status by Admission Status",
+    x = "Hospital Admission Status",
+    y = "SES Measure")
+
+bp_p / bmi_p / ses_p
+```
+
+Possible Models
+
+```{r, initial}
+  initial_fit = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+initial_fit
+
+##wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
+```
+
+```{r}
+complex_fit = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+complex_fit
+```
+
+```{r}
+play_fit = 
+  glm(admitted ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+play_fit
+```
+
+Asthma and Diabetes seem to be important predictors
+
+```{r, ICU}
+icu1_fit = 
+  glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+icu1_fit
+
+icu2_fit = 
+  glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+icu2_fit
+
+icu3_fit = 
+  glm(icu ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = "logit"), 
+      data = data_stats) %>% 
+  broom::tidy() %>% 
+  mutate(OR = exp(estimate)) %>% 
+  select(term, p.value, everything()) %>% 
+  knitr::kable(digits = 3)
+icu3_fit
+```
+
