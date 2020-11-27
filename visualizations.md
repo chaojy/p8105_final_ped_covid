@@ -340,3 +340,17 @@ glm(
 | asthma1                        | 0.931 |     0.468 |     1.856 |   0.840 |
 | diabetes1                      | 3.764 |     1.100 |    12.880 |   0.035 |
 | obesity1                       | 2.166 |     1.070 |     4.384 |   0.032 |
+
+# Exploratory interpretation:
+
+Among pediatric patients with COVID-19 infection, for every one year of
+age, the odds of being admitted was decreased by 6% and this association
+was statistically significant (p = 0.005), while adjusting for the other
+variables in the model.  
+Obesity (defined as a BMI \> 30) was associated with an almost 2.2 times
+increased odds of admission (p = 0.03) while adjusting for the other
+variables in the model. A past medical history of diabetes was
+associated with an almost 3.8 times increased odds of admission (p =
+0.03) while adjusting for the other variables in the model. Neither
+gender nor race were found to be associated with admission for COVID-19
+infection among pediatric patients.
