@@ -3,19 +3,27 @@ title: "model_building"
 output: github_document
 ---
 
+Load in the data and divide into training and testing sets
+
 ```{r}
+library(caret)
+library(tidyverse)
+library(ROCR)
+
 datacomplete = read_csv("./shiny/data/datacomplete.csv") %>%
   mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender"), as.factor) %>%
   select(admitted, age, gender, ses, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
 
 train_data = 
   datacomplete %>%
-  slice(1:250)
+  slice(1:250) 
 
 test_data = 
   datacomplete %>%
   slice(251:375)
 ```
+
+Random forest model
 
 ```{r}
 myFolds = createFolds(train_data$admitted, k = 5)
@@ -40,6 +48,8 @@ auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),"au
 auc_rf
 ```
 
+GLM net model 
+
 ```{r}
 glmnetControl = trainControl(
     method = "cv", 
@@ -49,9 +59,9 @@ glmnetControl = trainControl(
     verboseIter = TRUE
 )
 
-glmnetmodel1 <- caret::train(
-    genepos~., 
-    data=traindata,
+glmnetmodel = caret::train(
+    admitted ~. , 
+    data=train_data,
     tuneGrid = expand.grid(
       alpha=0:1,
       lambda=seq(0.0001,1, length=20)
@@ -61,9 +71,63 @@ glmnetmodel1 <- caret::train(
     preProcess= c("center","scale")
   )
   
-pred_glmnet<-predict(glmnetmodel1,testdata,type="prob") 
-pred_glmnet<-pred_glmnet$Yes
-auc_glmnet<-as.numeric(ROCR::performance(prediction(pred_glmnet,testdata$genepos),"auc")@y.values)
+pred_glmnet = predict(glmnetmodel,test_data,type="prob") 
+pred_glmnet = pred_glmnet$yes
+auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),"auc")@y.values)
 auc_glmnet
+```
+
+XGB model
+
+```{r}
+xgbTrainingControl = trainControl(method = "CV", 
+                                     number = 5, 
+                                     savePredictions = TRUE, 
+                                     classProbs = TRUE, 
+                                     summaryFunction = twoClassSummary,
+                                     verboseIter = F)
+nrounds = 1000
+  
+xgb_grid = expand.grid(
+    nrounds = seq(from = 200, to = nrounds, by = 50),
+    eta = c(0.025, 0.05, 0.1, 0.3),
+    max_depth = c(2, 3, 4, 5, 6),
+    gamma = 0,
+    colsample_bytree = 1,
+    min_child_weight = 1,
+    subsample = 1
+)
+  
+fit_xgb = caret::train(admitted~., 
+                         data = train_data, 
+                         metric = "ROC",
+                         method = "xgbTree", 
+                         tuneGrid = xgb_grid,
+                         trControl = xgbTrainingControl)
+  
+pred_xgb = predict(fit_xgb,test_data,type="prob")
+pred_xgb = pred_xgb$yes
+auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admitted),"auc")@y.values)
+auc_xgb
+```
+
+SPLS model 
+
+```{r}
+#SPLS
+train_grid = expand.grid(K =c(3,4,5,6,7,8,9),eta =c(0.35,0.4,0.45,0.5,0.55,0.6,0.7,0.8,0.9),
+                          kappa=0.5)
+
+plsFit =caret::train(admitted~.,
+                         data = train_data,
+                         method = "spls",
+                         tuneGrid = train_grid,
+                         trControl = xgbTrainingControl,
+                         metric = "ROC")
+
+pred_plsda = predict(plsFit,test_data,type="prob")
+pred_plsda = pred_plsda$yes
+auc_plsda = as.numeric(ROCR::performance(prediction(pred_plsda,test_data$admitted),"auc")@y.values)
+auc_plsda
 ```
 
