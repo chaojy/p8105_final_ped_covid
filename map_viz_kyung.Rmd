@@ -1,0 +1,309 @@
+---
+title: "P8105 Final Project"
+author: "Kyung Suk Lee"
+date: "`r Sys.Date()`"
+output: 
+  github_document:
+    toc: yes
+---
+
+```{r, message = FALSE, warning = FALSE, echo = FALSE, results = 'hide'}
+library(tidyverse)
+library(plotly)
+library(leaflet)
+library(tidycensus)
+library(tmap)
+
+knitr::opts_chunk$set(
+  out.width = "90%")
+
+theme_set(theme_minimal() + theme(legend.position = "bottom"))
+
+options(
+  ggplot2.continuous.colour = "viridis",
+  ggplot2.continuous.fill = "viridis",
+  tigris_use_cache = TRUE)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
+
+Sys.getenv("CENSUS_API_KEY")
+readRenviron("~/.Renviron")
+```
+
+```{r}
+covid_df = 
+  read_csv("./data/p8105_final_ped_covid.csv") %>% 
+   janitor::clean_names() %>%
+   mutate(county = NA,
+          county = as.character(county)) %>% 
+   select(city, county, everything()) %>% 
+   mutate(city = tolower(city)) %>% 
+   mutate(city = str_replace(city, "n white plains", "white plains")) %>% 
+   mutate(county = case_when(city == "bronx" ~ "bronx",
+                             city == "brooklyn" ~ "kings",
+                             city == "yonkers" ~ "westchester",
+                             city == "new york" ~ "new york",
+                             city == "mount vernon" ~ "westchester",
+                             city == "new rochelle" ~ "westchester",
+                             city == "white plains" ~ "westchester",
+                             city == "ridgewood" ~ "queens",
+                             city == "nanuet" ~ "rockland",
+                             city == "bergenfield" ~ "bergen",
+                             city == "ossining" ~ "westchester",
+                             city == "monroe" ~ "orange",
+                             city == "newburgh" ~ "orange",
+                             city == "staten island" ~ "richmond",
+                             city == "port chester" ~ "westchester",
+                             city == "spring valley" ~ "rockland",
+                             city == "irvington" ~ "westchester",
+                             city == "flushing" ~ "queens",
+                             city == "chappaqua" ~ "westchester",
+                             city == "new city" ~ "rockland",
+                             city == "ferncliff manor" ~ "westchester",
+                             city == "greenwich" ~ "washington",
+                             city == "haverstraw" ~ "rockland",
+                             city == "suffern" ~ "rockland",
+                             city == "berkeley heights" ~ "union")
+   ) %>% 
+   mutate(eventdatetime = as.Date(eventdatetime, "%m/%d/%Y"),
+          eventdatetime = format(eventdatetime, "%m-%Y"),
+          eventdatetime = zoo::as.yearmon(eventdatetime, "%m-%Y")) %>% 
+  mutate(
+    ethnicity_race = case_when(
+      race == "R3 Black or African-American"        ~ "black",
+      race == "R2 Asian"                            ~ "asian",
+      race == "R5 White"                            ~ "caucasian",
+      race == "R1 American Indian or Alaska Native" ~ "american indian",
+      race == "Multiple Selected"                   ~ "multiple",
+      ethnicity == "E1 Spanish/Hispanic/Latino"     ~ "latino"
+    ))
+```
+
+```{r}
+# Map Viz using tidycensus and tmap (use ses)
+county_ny = c("bronx", "kings", "westchester", "new york", "queens", "rockland", "orange", "richmond")
+county_nj = c("bergen", "union")
+
+shape_ny = 
+  get_acs(geography = "tract",
+          variables = "B19013_001",
+          state = "NY",
+          county = county_ny,
+          geometry = TRUE) %>%
+  janitor::clean_names() %>% 
+  select(name, geometry) %>% 
+  separate(name, into = c("county", "state"), sep = -17) %>% 
+  mutate(state = str_sub(state, 10),
+         county = tolower(county),
+         county = sub(".*\\s", "", trimws(county)),
+         county = str_replace(county, "york", "new york"))
+  
+shape_nj = 
+  get_acs(geography = "tract",
+          variables = "B19013_001",
+          state = "NJ",
+          county = county_nj,
+          geometry = TRUE) %>%
+  janitor::clean_names() %>% 
+  select(name, geometry) %>% 
+  separate(name, into = c("county", "state"), sep = -18) %>% 
+  mutate(state = str_sub(state, 9),
+         county = tolower(county),
+         county = sub(".*\\s", "", trimws(county)))
+
+shape_full =
+rbind(shape_ny, shape_nj)
+
+# admitted = 
+#   covid_df %>% 
+#   group_by(county, admitted) %>% 
+#   summarize(count = n())
+
+# ny_map = 
+#  left_join(shape_ny, bmi_mean, by = "county")
+
+bmi_mean =
+  covid_df %>%
+  group_by(county) %>%
+  summarize(bmi_mean = mean(bmi_value, na.rm = TRUE))
+
+ses_mean = 
+  covid_df %>% 
+  group_by(county) %>% 
+  summarize(ses_mean = mean(ses, na.rm = TRUE))
+
+full_map_bmi = 
+  left_join(shape_full, bmi_mean, by = "county")
+
+full_map_ses = 
+  left_join(shape_full, ses_mean, by = "county")
+
+tmap_mode("view")
+tm_shape(full_map_bmi) +
+  tm_fill(
+    col = "bmi_mean",
+    palette = "viridis",
+    style = "quantile",
+    contrast = c(0.3, 1),
+    title = "Average BMI",
+    textNA = "Not Available",
+    id = "state",
+    popup.vars=c("County: " = "county",
+                 "Average BMI: " = "bmi_mean")) +
+    tm_borders(col = "white") +
+tm_shape(full_map_ses) +
+  tm_fill(
+    col = "ses_mean",
+    palette = "RdYlBu",
+    style = "quantile",
+    contrast = c(0.3, 1),
+    title = "Average SES",
+    textNA = "Not Available",
+    id = "state",
+    popup.vars=c("County: " = "county",
+                 "Average SES: " = "ses_mean")) +
+  tm_borders(col = "white") +
+  tm_view(
+    alpha = 0.85,
+    view.legend.position = c("right", "bottom")) +
+  tm_scale_bar(text.size = 1) +
+  tm_facets(nrow = 1, sync = TRUE)
+```
+
+```{r}
+# Difference between admitted over the year
+plot_1 = 
+covid_df %>% 
+  group_by(eventdatetime, admitted) %>% 
+  summarize(count = n()) %>% 
+  ggplot(aes(x = eventdatetime, 
+             y = count, 
+             color = admitted)) +
+  geom_point(aes(text = paste("Date: ", eventdatetime, 
+                              "\nNumber of Counts: ", count, 
+                              "\nAdmitted: ", admitted))) +
+  geom_line() +
+  labs(title = "",
+         x = "Event Date",
+         y = "Number of Events",
+         color = "Admitted")
+
+ggplotly(plot_1, tooltip = "text")
+```
+
+```{r}
+# Race and admitted
+plot_2 = 
+covid_df %>% 
+  group_by(ethnicity_race, admitted) %>% 
+  summarize(count = n()) %>%
+  filter(ethnicity_race != "american indian") %>% 
+  filter(ethnicity_race != "multiple") %>% 
+  ggplot(aes(x = fct_reorder(ethnicity_race, count), 
+             y = count, 
+             fill = admitted,
+             text = paste("Ethnicity: ", ethnicity_race, 
+                          "\nNumber of Counts: ", count, 
+                          "\nAdmitted: ", admitted))) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  coord_flip() +
+  labs(title = "",
+         x = "Number of Counts",
+         y = "Ethnicity",
+         fill = "Admitted")
+
+ggplotly(plot_2, tooltip = "text")
+```
+
+```{r}
+plot_3 =
+covid_df %>% 
+  filter(ethnicity_race != "multiple") %>% 
+  ggplot(aes(x = age, y = bmi_value, color = ethnicity_race)) +
+  geom_point(aes(text = paste("Age: ", age, 
+                          "\nBMI: ", bmi_value, 
+                          "\nEthnicity: ", ethnicity_race))) +
+  geom_smooth(se = FALSE) +
+  labs(title = "",
+         x = "Age",
+         y = "BMI Value",
+         color = "Ethnicity")
+
+ggplotly(plot_3, tooltip = "text")
+```
+
+```{r}
+plot_4 = 
+covid_df %>% 
+  mutate(age = round(age),
+         age = as.factor(age)) %>% 
+  group_by(age, admitted) %>% 
+  summarize(count = n()) %>%
+  ggplot(aes(x = age, 
+             y = count, 
+             fill = admitted,
+             text = paste("Age: ", age, 
+                          "\nNumber of Counts: ", count, 
+                          "\nAdmitted: ", admitted))) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "",
+         x = "Age",
+         y = "Number of Counts",
+         fill = "Admitted")
+
+ggplotly(plot_4, tooltip = "text")
+```
+
+```{r}
+plot_5 =
+covid_df %>% 
+  ggplot(aes(x = age, y = bmi_value, color = admitted)) +
+  geom_point(aes(text = paste("Age: ", age, 
+                          "\nBMI Value: ", bmi_value, 
+                          "\nAdmitted: ", admitted))) +
+  geom_smooth(se = FALSE) +
+  labs(title = "",
+         x = "Age",
+         y = "BMI Value",
+         color = "Admitted")
+
+ggplotly(plot_5, tooltip = "text")
+```
+
+```{r age_barplot}
+# Barplot using age / count reorder 
+
+plot_6 =
+  covid_df %>% 
+  group_by(city, county) %>% 
+  summarize(mean_age = mean(age, na.rm = TRUE),
+            count = n()) %>%
+  drop_na(city) %>% 
+  ggplot(aes(x = fct_reorder(city, mean_age),
+             y = mean_age,
+             fill = count,
+             text = paste("City: ", city, 
+                          "\nAvg Age: ", mean_age, 
+                          "\nCounts: ", count))) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(title = "",
+         x = "City",
+         y = "Average Age",
+         fill = "Count")
+  
+ggplotly(plot_6, tooltip = "text")
+
+# plot_ly(x = ~fct_reorder(city, mean_age), y = ~mean_age,
+#           type = "bar",
+#           color = ~county,
+#           colors = "viridis",
+#           alpha = .5) %>% 
+#   layout(title = "",
+#          xaxis = list(title = ""),
+#          yaxis = list(title = ""),
+#          barmode = "stack")
+```
