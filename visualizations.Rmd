@@ -1,6 +1,13 @@
 ---
-title: "visualizations"
-output: github_document
+title: "Visualizations"
+output: 
+  html_document:
+    toc: false
+    toc_float: true
+    code_folding: hide
+    source: embed
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup,  message = FALSE, warning = FALSE}

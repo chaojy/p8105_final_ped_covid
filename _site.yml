@@ -1,0 +1,21 @@
+name: "Pediatric COVID-19"
+output_dir: "."
+navbar:
+  title: "Homepage"
+  type: default
+  right:
+    - text: "Visualizations"
+      href: visualizations.html
+    - text: "Exploratory Analysis"
+      href: statistical_analysis.html
+    - text: "Model Building"
+      href: model_building.html
+    - text: "Interactive Maps"
+      href: map_viz_kyung.html
+    - text: "Project Report"
+      href: proposal.html
+    - icon: fa-github fa-lg
+      href: https://github.com/chaojy/p8105_final_ped_covid
+output:
+  html_document:
+    theme: sandstone

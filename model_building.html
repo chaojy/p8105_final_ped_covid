@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>model_building</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Homepage</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="visualizations.html">Visualizations</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="model_building.html">Model Building</a>
+</li>
+<li>
+  <a href="map_viz_kyung.html">Interactive Maps</a>
+</li>
+<li>
+  <a href="proposal.html">Project Report</a>
+</li>
+<li>
+  <a href="https://github.com/chaojy/p8105_final_ped_covid">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">model_building</h1>
+
+</div>
+
+
+<p>Load in the data and divide into training and testing sets</p>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice</code></pre>
+<pre><code>## 
+## Attaching package: &#39;caret&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     lift</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(ROCR)
+
+datacomplete = read_csv(&quot;./shiny/data/datacomplete.csv&quot;) %&gt;%
+  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;, &quot;gender&quot;), as.factor) %&gt;%
+  select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)</code></pre>
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
+## cols(
+##   .default = col_double(),
+##   admitted = col_character(),
+##   gender = col_character(),
+##   eventdatetime = col_character(),
+##   icu_date_time = col_character(),
+##   ethnicity_race = col_character(),
+##   service = col_character(),
+##   admission_dx = col_character(),
+##   city = col_character()
+## )
+## i Use `spec()` for the full column specifications.</code></pre>
+<pre class="r"><code>train_data = 
+  datacomplete %&gt;%
+  slice(1:250) 
+
+test_data = 
+  datacomplete %&gt;%
+  slice(251:375)</code></pre>
+<p>Random forest model</p>
+<pre class="r"><code>myFolds = createFolds(train_data$admitted, k = 5)
+rfControl = trainControl(
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE,
+    savePredictions = TRUE,
+    index = myFolds
+)
+set.seed(123)
+rfmodel = caret::train(
+    admitted ~., 
+    data = train_data,
+    metric = &quot;ROC&quot;,
+    method = &quot;ranger&quot;,
+    trControl = rfControl
+ )</code></pre>
+<pre><code>## + Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold1: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold1: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold2: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold2: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold3: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold3: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold4: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold4: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold5: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold5: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 10, splitrule = extratrees, min.node.size = 1 on full training set</code></pre>
+<pre class="r"><code>pred_rf = predict(rfmodel,test_data,type=&quot;prob&quot;)
+pred_rf = pred_rf$yes
+auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_rf</code></pre>
+<pre><code>## [1] 0.667612</code></pre>
+<p>GLM net model</p>
+<pre class="r"><code>glmnetControl = trainControl(
+    method = &quot;cv&quot;, 
+    number = 10,
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE
+)
+set.seed(123)
+glmnetmodel = caret::train(
+    admitted ~. , 
+    data=train_data,
+    tuneGrid = expand.grid(
+      alpha=0:1,
+      lambda=seq(0.0001,1, length=20)
+    ),
+    method = &quot;glmnet&quot;,
+    trControl = glmnetControl,
+    preProcess= c(&quot;center&quot;,&quot;scale&quot;)
+  )</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;Accuracy&quot; was not
+## in the result set. ROC will be used instead.</code></pre>
+<pre><code>## + Fold01: alpha=0, lambda=1 
+## - Fold01: alpha=0, lambda=1 
+## + Fold01: alpha=1, lambda=1 
+## - Fold01: alpha=1, lambda=1 
+## + Fold02: alpha=0, lambda=1 
+## - Fold02: alpha=0, lambda=1 
+## + Fold02: alpha=1, lambda=1 
+## - Fold02: alpha=1, lambda=1 
+## + Fold03: alpha=0, lambda=1 
+## - Fold03: alpha=0, lambda=1 
+## + Fold03: alpha=1, lambda=1 
+## - Fold03: alpha=1, lambda=1 
+## + Fold04: alpha=0, lambda=1 
+## - Fold04: alpha=0, lambda=1 
+## + Fold04: alpha=1, lambda=1 
+## - Fold04: alpha=1, lambda=1 
+## + Fold05: alpha=0, lambda=1 
+## - Fold05: alpha=0, lambda=1 
+## + Fold05: alpha=1, lambda=1 
+## - Fold05: alpha=1, lambda=1 
+## + Fold06: alpha=0, lambda=1 
+## - Fold06: alpha=0, lambda=1 
+## + Fold06: alpha=1, lambda=1 
+## - Fold06: alpha=1, lambda=1 
+## + Fold07: alpha=0, lambda=1 
+## - Fold07: alpha=0, lambda=1 
+## + Fold07: alpha=1, lambda=1 
+## - Fold07: alpha=1, lambda=1 
+## + Fold08: alpha=0, lambda=1 
+## - Fold08: alpha=0, lambda=1 
+## + Fold08: alpha=1, lambda=1 
+## - Fold08: alpha=1, lambda=1 
+## + Fold09: alpha=0, lambda=1 
+## - Fold09: alpha=0, lambda=1 
+## + Fold09: alpha=1, lambda=1 
+## - Fold09: alpha=1, lambda=1 
+## + Fold10: alpha=0, lambda=1 
+## - Fold10: alpha=0, lambda=1 
+## + Fold10: alpha=1, lambda=1 
+## - Fold10: alpha=1, lambda=1 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 1, lambda = 0.0527 on full training set</code></pre>
+<pre class="r"><code>pred_glmnet = predict(glmnetmodel,test_data,type=&quot;prob&quot;) 
+pred_glmnet = pred_glmnet$yes
+auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_glmnet</code></pre>
+<pre><code>## [1] 0.6202496</code></pre>
+<p>XGB model</p>
+<pre class="r"><code>xgbTrainingControl = trainControl(method = &quot;CV&quot;, 
+                                     number = 5, 
+                                     savePredictions = TRUE, 
+                                     classProbs = TRUE, 
+                                     summaryFunction = twoClassSummary,
+                                     verboseIter = F)
+nrounds = 1000
+  
+xgb_grid = expand.grid(
+    nrounds = seq(from = 200, to = nrounds, by = 50),
+    eta = c(0.025, 0.05, 0.1, 0.3),
+    max_depth = c(2, 3, 4, 5, 6),
+    gamma = 0,
+    colsample_bytree = 1,
+    min_child_weight = 1,
+    subsample = 1
+)
+
+set.seed(123)
+fit_xgb = caret::train(admitted~., 
+                         data = train_data, 
+                         metric = &quot;ROC&quot;,
+                         method = &quot;xgbTree&quot;, 
+                         tuneGrid = xgb_grid,
+                         trControl = xgbTrainingControl)
+  
+pred_xgb = predict(fit_xgb,test_data,type=&quot;prob&quot;)
+pred_xgb = pred_xgb$yes
+auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_xgb</code></pre>
+<pre><code>## [1] 0.668321</code></pre>
+<p>SPLS model</p>
+<pre class="r"><code>#SPLS
+train_grid = expand.grid(K =c(3,4,5,6,7,8,9),eta =c(0.35,0.4,0.45,0.5,0.55,0.6,0.7,0.8,0.9),
+                          kappa=0.5)
+
+set.seed(123)
+plsFit = caret::train(admitted~.,
+                         data = train_data,
+                         method = &quot;spls&quot;,
+                         tuneGrid = train_grid,
+                         trControl = xgbTrainingControl,
+                         metric = &quot;ROC&quot;)</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;spls&#39;:
+##   method         from 
+##   predict.splsda caret
+##   print.splsda   caret</code></pre>
+<pre class="r"><code>pred_plsda = predict(plsFit,test_data,type=&quot;prob&quot;)
+pred_plsda = pred_plsda$yes
+auc_plsda = as.numeric(ROCR::performance(prediction(pred_plsda,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_plsda</code></pre>
+<pre><code>## [1] 0.6435054</code></pre>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

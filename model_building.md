@@ -1,8 +1,7 @@
 model\_building
 ================
 
-Load in the data and divide into training and testing
-    sets
+Load in the data and divide into training and testing sets
 
 ``` r
 library(caret)
@@ -16,14 +15,14 @@ library(caret)
 library(tidyverse)
 ```
 
-    ## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──
+    ## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
 
-    ## ✓ tibble  3.0.1     ✓ dplyr   1.0.2
-    ## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
-    ## ✓ readr   1.3.1     ✓ forcats 0.5.0
-    ## ✓ purrr   0.3.4
+    ## v tibble  3.0.4     v dplyr   1.0.2
+    ## v tidyr   1.1.2     v stringr 1.4.0
+    ## v readr   1.4.0     v forcats 0.5.0
+    ## v purrr   0.3.4
 
-    ## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+    ## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
     ## x dplyr::filter() masks stats::filter()
     ## x dplyr::lag()    masks stats::lag()
     ## x purrr::lift()   masks caret::lift()
@@ -36,7 +35,8 @@ datacomplete = read_csv("./shiny/data/datacomplete.csv") %>%
   select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
 ```
 
-    ## Parsed with column specification:
+    ## 
+    ## -- Column specification --------------------------------------------------------
     ## cols(
     ##   .default = col_double(),
     ##   admitted = col_character(),
@@ -48,8 +48,7 @@ datacomplete = read_csv("./shiny/data/datacomplete.csv") %>%
     ##   admission_dx = col_character(),
     ##   city = col_character()
     ## )
-
-    ## See spec(...) for full column specifications.
+    ## i Use `spec()` for the full column specifications.
 
 ``` r
 train_data = 
@@ -153,7 +152,7 @@ auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),"au
 auc_rf
 ```
 
-    ## [1] 0.6593874
+    ## [1] 0.6636415
 
 GLM net model
 

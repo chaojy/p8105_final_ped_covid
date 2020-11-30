@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jerry Chao, Lusha Liang, Sal El-Sadek, Kyung Suk Lee" />
+
+<meta name="date" content="2020-11-30" />
+
+<title>Final Project Report</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Homepage</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="visualizations.html">Visualizations</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="model_building.html">Model Building</a>
+</li>
+<li>
+  <a href="map_viz_kyung.html">Interactive Maps</a>
+</li>
+<li>
+  <a href="proposal.html">Project Report</a>
+</li>
+<li>
+  <a href="https://github.com/chaojy/p8105_final_ped_covid">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Final Project Report</h1>
+<h4 class="author">Jerry Chao, Lusha Liang, Sal El-Sadek, Kyung Suk Lee</h4>
+<h4 class="date">2020-11-30</h4>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<ul>
+<li>The group members in this final project team are <strong>Jerry Chao (JYC2171)</strong>, <strong>Lusha Liang (LL3344)</strong>, <strong>Sal El-Sadek (SNE2114)</strong>, and <strong>Kyung Suk Lee (KL3069)</strong>.</li>
+<li>The tentative title for our project is <strong>Pediatric COVID</strong>.</li>
+<li>The private repository called <strong>p8105_final_ped_covid</strong> was created with access granted to members of our team, as well as “bst-p8105”. The dataset contains de-identified patient health information.</li>
+</ul>
+</div>
+<div id="motivation-for-this-project" class="section level2">
+<h2>Motivation for this project</h2>
+<p>There has been a lot of research done concerning COVID-19 in the past year, but not much focus, relatively speaking, is given to how COVID-19 affects children and young adults given the low fatality rate of those age groups. Our goal in this project is to look at the severity of COVID-19 in young people and how various common comorbidities can affect the risk of having a more sever case of COVID-19.</p>
+<p>Jerry’s - While COVID seems to affect adults more than children, some pediatric patients do become ill and even require hospitalization. Most studies have described clinical characteristics of children already admitted to hospital and their course during admission - but more can be learned about risk factors associated with the need hospitalization prior to admission.</p>
+<p>We would like to leverage the skills learned in p8105 and the data visualization capabilities in R to explore clinical question mentioned below.</p>
+<ul>
+<li><strong>Article 1:</strong> <a href="https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#">Hospitalization Rates and Characteristics of Children Aged &lt; 18 years Hospitalized with COVID-19</a></li>
+<li><strong>Article 2:</strong> <a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/">Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with COVID-19 at a Tertiary Care Medical Center in NYC</a></li>
+</ul>
+</div>
+<div id="anticipated-data-sources" class="section level2">
+<h2>Anticipated data sources</h2>
+<pre class="r"><code>ped_covid =
+  read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;)
+
+ped_covid %&gt;% 
+  head()</code></pre>
+<pre><code># A tibble: 6 x 30
+     id admitted   age date_of_birth ethnicity gender censusblock
+  &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
+1     1 no          17 8/10/2003 0:~ E2 Not S~ M          3.60e14
+2     2 no          22 5/26/1998 0:~ E2 Not S~ M          3.60e14
+3     3 yes         22 8/12/1997 0:~ E1 Spani~ M          3.61e14
+4     4 no          19 5/17/2000 0:~ E1 Spani~ M          3.60e14
+5     5 no          20 1/17/2000 0:~ E1 Spani~ F          3.60e14
+6     6 yes         21 12/18/1998 0~ E1 Spani~ M         NA      
+# ... with 23 more variables: censusblockgroup &lt;dbl&gt;, censustract &lt;dbl&gt;,
+#   city &lt;chr&gt;, race &lt;chr&gt;, ses &lt;dbl&gt;, state &lt;chr&gt;, zip_code_set &lt;dbl&gt;,
+#   eventdatetime &lt;chr&gt;,
+#   outcomeadmission_admission_1inpatient_admit_service &lt;chr&gt;,
+#   bmi_yes_or_no &lt;dbl&gt;, bmi_event_date_time &lt;chr&gt;, bmi_value &lt;dbl&gt;,
+#   asthma_date_time &lt;chr&gt;, asthma_dx &lt;chr&gt;, diabetes_date_time &lt;chr&gt;,
+#   diabetes_dx &lt;chr&gt;, icu_yes_no &lt;dbl&gt;, icu_date_time &lt;chr&gt;,
+#   systolic_bp_event_date_time &lt;chr&gt;, systolic_bp_value &lt;dbl&gt;,
+#   ed_yes_no_0_365_before &lt;dbl&gt;, admission_primary_dx &lt;chr&gt;,
+#   admission_apr_drg &lt;chr&gt;</code></pre>
+<ul>
+<li><p><strong>Source 1:</strong> <strong><em>(Initial data gathering by Jerry Chao)</em></strong> This is a de-identified dataset of pediatric patients from a tertiary care medical center who tested positive for COVID-19 on SARS-CoV-2 RT PCR test and infrormation on whether or not they were hospitalized. The age range in the study is <strong>0</strong> to <strong>22</strong> years of age. An id number for each patient has been randomly generated. There are <strong>375</strong> rows (patients) and <strong>30</strong> columns in this dataset. The variables included in this dataset are <em>id, admitted, age, date_of_birth, ethnicity, gender, censusblock, censusblockgroup, censustract, city, race, ses, state, zip_code_set, eventdatetime, outcomeadmission_admission_1inpatient_admit_service, bmi_yes_or_no, bmi_event_date_time, bmi_value, asthma_date_time, asthma_dx, diabetes_date_time, diabetes_dx, icu_yes_no, icu_date_time, systolic_bp_event_date_time, systolic_bp_value, ed_yes_no_0_365_before, admission_primary_dx, admission_apr_drg</em>. Some of the important variables are date and time of positive covid test (“eventdatetime”), whether the patient was admitted (“admitted”), whether there was a preceding emergency department visit (“ed_yes_no_0_365_before”), whether the patient needed intensive care admission (“icu_yes_no”) and date and time of icu admission (“icu_date_time”), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).</p></li>
+<li><p><strong>Source 2:</strong> <a href="https://github.com/nychealth/coronavirus-data">NYC Coronavirus Disease 2019 (COVID-19) Data</a></p></li>
+<li><p><strong>Source 3:</strong> <a href="https://data.cityofnewyork.us/Health/COVID-19-Outcomes-by-Testing-Cohorts-Cases-Hospita/cwmx-mvra">NYC OpenData</a></p></li>
+</ul>
+</div>
+<div id="intended-final-products" class="section level2">
+<h2>Intended final products</h2>
+<ul>
+<li>An interactive dashboard using plotly to present univariate and multivariate regression models assessing the association of demographic factors and past medical history with the need for hospital admission among pediatric patients.</li>
+<li>Youtube video describing our final products.</li>
+</ul>
+</div>
+<div id="planned-analyses-visualizations-coding-challenges" class="section level2">
+<h2>Planned analyses / visualizations / coding challenges</h2>
+<ul>
+<li><p><strong><em>Analyses:</em></strong> We plan to perform univariate analyses describing demographic and past medical history by admission status (yes/no). We will also perform multivariate logistic regression modeling to assess the association of demographic factors and past medical history with the need for hospital admission in infants, children, and teens. In particular, we will assess increasing age, SES, past medical history (in particular asthma, obesity - defined as body mass index &gt; 95% by age &amp; gender, and diabetes) as hypothesized risk factors of interest.</p></li>
+<li><p><strong><em>Visualizations:</em></strong> We are planning to make various plots (e.g., scatterplot, boxplot, barplot, lineplots) with interactivity using <code>plot_ly</code> to provide a platform for online data analytics and visualizations where users can observe information by zooming and hovering. Also, we plan to integrate different plots into dashboard using <code>shinydashboard</code> which will facilitate users’ understanding in an easy-to-read format. The density plot below showing the distribution of age by admission status is one of the visualization examples. We have generated a density plot of the age in this dataset by admission (yes/no). There appears to be a bimodal age distribution of pediatric patients who tested positive for COVID-19 with more admissions during the first 2.5 years of life and also among older teenagers (15-20 years). There are less patients admitted in the toddler and small child age range (3-10).</p></li>
+</ul>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  viridis::scale_color_viridis(discrete = TRUE) +
+  theme_minimal() +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="proposal_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
+<ul>
+<li><strong><em>Coding challenges:</em></strong> Most of the coding will require extensive data wrangling, such as changing the variables to right format, removing white-spaces, identifying any outliers, dealing with missed values, merging latitude and longitude information for mapping, and tidying the data. Also, since we plan to use <code>shinydashboard</code>, integrating all the necessary codes for visualization can be a challenge.</li>
+</ul>
+</div>
+<div id="planned-timeline" class="section level2">
+<h2>Planned timeline</h2>
+<p>We plan to meet once or twice a week to discuss project progress. The tentative timeline is outlined below:</p>
+<ul>
+<li><em>By mid November:</em> Finalize additional sources of data, if needed.</li>
+<li><em>By end of November:</em> Complete all visualizations.</li>
+<li><em>By early December:</em> Integrate all visualizations into <code>shinydashboard</code> and create website.</li>
+<li><em>By Dec 10th:</em> Make modifications based on peer-assessment for the final presentation.</li>
+</ul>
+</div>
+<div id="word-count" class="section level2">
+<h2>Word count</h2>
+<pre class="r"><code>wordcountaddin::text_stats(&quot;proposal.Rmd&quot;)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">Method</th>
+<th align="left">koRpus</th>
+<th align="left">stringi</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Word count</td>
+<td align="left">495</td>
+<td align="left">496</td>
+</tr>
+<tr class="even">
+<td align="left">Character count</td>
+<td align="left">3300</td>
+<td align="left">3300</td>
+</tr>
+<tr class="odd">
+<td align="left">Sentence count</td>
+<td align="left">33</td>
+<td align="left">Not available</td>
+</tr>
+<tr class="even">
+<td align="left">Reading time</td>
+<td align="left">2.5 minutes</td>
+<td align="left">2.5 minutes</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

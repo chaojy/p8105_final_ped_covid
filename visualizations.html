@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Visualizations</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Homepage</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="visualizations.html">Visualizations</a>
+</li>
+<li>
+  <a href="statistical_analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="model_building.html">Model Building</a>
+</li>
+<li>
+  <a href="map_viz_kyung.html">Interactive Maps</a>
+</li>
+<li>
+  <a href="proposal.html">Project Report</a>
+</li>
+<li>
+  <a href="https://github.com/chaojy/p8105_final_ped_covid">
+    <span class="fa fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Visualizations</h1>
+
+</div>
+
+
+<pre class="r"><code>library(tidyverse)
+library(usa)
+library(mice)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
+<p>Read in and tidy the data.</p>
+<pre class="r"><code># Load and tidy data
+ped_covid =
+  read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;) %&gt;%
+  mutate(
+    ethnicity_race = case_when(
+      race == &quot;R3 Black or African-American&quot;        ~ &quot;black&quot;,
+      race == &quot;R2 Asian&quot;                            ~ &quot;asian&quot;,
+      race == &quot;R5 White&quot;                            ~ &quot;caucasian&quot;,
+      race == &quot;R1 American Indian or Alaska Native&quot; ~ &quot;american indian&quot;,
+      race == &quot;Multiple Selected&quot;                   ~ &quot;multiple&quot;,
+      ethnicity == &quot;E1 Spanish/Hispanic/Latino&quot;     ~ &quot;latino&quot;
+    )
+  ) %&gt;%
+  mutate(
+    asthma = replace_na(asthma_dx, 0),
+    asthma = str_replace(asthma, &quot;.*J.*&quot;, &quot;1&quot;),
+    diabetes = replace_na(diabetes_dx, 0),
+    diabetes = str_replace(diabetes, &quot;.*E.*&quot;, &quot;1&quot;),
+    zip = as.character(zip_code_set),
+    service = outcomeadmission_admission_1inpatient_admit_service, 
+    ed = ed_yes_no_0_365_before,
+    admission_dx = admission_apr_drg,
+    icu = icu_yes_no
+  ) %&gt;%
+  mutate(obesity = case_when(
+    bmi_value &gt;= 30 ~ &quot;1&quot;,
+    bmi_value &lt; 30 ~&quot;0&quot;
+  ))</code></pre>
+<pre class="r"><code># Merge zipcode data with latitude and longitude.
+zipcode_df = 
+  usa::zipcodes
+
+ped_covid = 
+  left_join(ped_covid, zipcode_df, by = &quot;zip&quot;) %&gt;%
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
+         city.y, obesity, lat, long) %&gt;%
+  mutate_at(c(&quot;admitted&quot;, &quot;icu&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;,
+              &quot;ed&quot;, &quot;city.y&quot;, &quot;obesity&quot;), as.factor) %&gt;%
+  mutate(
+    gender = factor(gender, levels = c(&quot;F&quot;, &quot;M&quot;)),
+    ethnicity_race = factor(ethnicity_race, levels = c(&quot;caucasian&quot;, &quot;black&quot;, &quot;latino&quot;, &quot;asian&quot;, &quot;american indian&quot;, &quot;multiple&quot;, &quot;NA&quot;))
+  ) %&gt;%
+  rename(city = city.y) </code></pre>
+<pre class="r"><code># Impute missing data
+impute = mice(ped_covid, m=3, seed=111)</code></pre>
+<pre><code>
+ iter imp variable
+  1   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  1   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  1   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  2   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  3   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  3   2  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
+  3   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  4   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  4   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  4   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+  5   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long</code></pre>
+<pre class="r"><code>datacomplete = complete(impute,2)</code></pre>
+<pre class="r"><code># Export csv
+write_csv(datacomplete, &quot;datacomplete.csv&quot;)</code></pre>
+<p>Some exploratory data visualizations</p>
+<pre class="r"><code>#bunch of ggplots
+ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = age)) +
+  geom_boxplot()</code></pre>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  filter(
+    gender != &quot;NA&quot;
+  ) %&gt;% 
+  ggplot(aes(x = gender, y = age)) +
+  geom_boxplot()</code></pre>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-5-2.png" width="90%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = ses)) +
+  geom_boxplot()</code></pre>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-5-3.png" width="90%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = bmi_value)) +
+  geom_boxplot()</code></pre>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-5-4.png" width="90%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  count(icu)</code></pre>
+<pre><code># A tibble: 2 x 2
+  icu       n
+  &lt;fct&gt; &lt;int&gt;
+1 0       355
+2 1        20</code></pre>
+<pre class="r"><code>ped_covid %&gt;% count(ethnicity_race)</code></pre>
+<pre><code># A tibble: 7 x 2
+  ethnicity_race      n
+  &lt;fct&gt;           &lt;int&gt;
+1 caucasian          18
+2 black              75
+3 latino            189
+4 asian               8
+5 american indian     1
+6 multiple            8
+7 &lt;NA&gt;               76</code></pre>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = ethnicity_race)) + 
+  geom_boxplot()</code></pre>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-5-5.png" width="90%" /></p>
+<p>Univariate models</p>
+<pre class="r"><code>#bunch of univariate logisitic regression models
+glm(
+  admitted ~ age,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)  -0.0793    0.233     -0.341 0.733  
+2 age          -0.0430    0.0147    -2.93  0.00337</code></pre>
+<pre class="r"><code>#p = 0.00337
+
+glm(
+  admitted ~ gender,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic    p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;      &lt;dbl&gt;
+1 (Intercept)  -0.717      0.155    -4.63  0.00000369
+2 genderM       0.0402     0.220     0.183 0.855     </code></pre>
+<pre class="r"><code>#p = 0.855
+
+glm(
+  admitted ~ bmi_value,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)  -0.528     0.337      -1.57   0.117
+2 bmi_value     0.0137    0.0122      1.12   0.263</code></pre>
+<pre class="r"><code>#p = 0.263
+
+glm(
+  admitted ~ obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)   -0.247     0.147    -1.68   0.0934
+2 obesity1       0.247     0.278     0.889  0.374 </code></pre>
+<pre class="r"><code>#p = 0.374
+
+glm(
+  admitted ~ asthma,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)   -0.790     0.122     -6.49 8.64e-11
+2 asthma1        0.560     0.285      1.96 4.96e- 2</code></pre>
+<pre class="r"><code>#p = 4.96e- 2
+
+glm(
+  admitted ~ diabetes,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 2 x 5
+  term        estimate std.error statistic  p.value
+  &lt;chr&gt;          &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt;
+1 (Intercept)   -0.787     0.114     -6.90 5.10e-12
+2 diabetes1      1.97      0.583      3.37 7.48e- 4</code></pre>
+<pre class="r"><code>#p = 7.48e- 4
+
+glm(
+  admitted ~ ethnicity_race,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy()</code></pre>
+<pre><code># A tibble: 6 x 5
+  term                          estimate std.error statistic p.value
+  &lt;chr&gt;                            &lt;dbl&gt;     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;
+1 (Intercept)                     -0.223     0.474  -0.470     0.638
+2 ethnicity_raceblack             -0.411     0.533  -0.771     0.441
+3 ethnicity_racelatino            -0.423     0.498  -0.848     0.396
+4 ethnicity_raceasian             -0.288     0.871  -0.330     0.741
+5 ethnicity_raceamerican indian  -16.3    2400.     -0.00681   0.995
+6 ethnicity_racemultiple         -16.3     848.     -0.0193    0.985</code></pre>
+<pre class="r"><code>#no significant p values</code></pre>
+<pre class="r"><code>#fitting multivariate logistic regression model
+glm(
+  admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">5.101</td>
+<td align="right">1.134</td>
+<td align="right">22.939</td>
+<td align="right">0.034</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.938</td>
+<td align="right">0.897</td>
+<td align="right">0.981</td>
+<td align="right">0.005</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.728</td>
+<td align="right">0.409</td>
+<td align="right">1.295</td>
+<td align="right">0.280</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.336</td>
+<td align="right">0.086</td>
+<td align="right">1.318</td>
+<td align="right">0.118</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.344</td>
+<td align="right">0.092</td>
+<td align="right">1.286</td>
+<td align="right">0.113</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.323</td>
+<td align="right">0.044</td>
+<td align="right">2.371</td>
+<td align="right">0.266</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">Inf</td>
+<td align="right">0.986</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.931</td>
+<td align="right">0.468</td>
+<td align="right">1.856</td>
+<td align="right">0.840</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">3.764</td>
+<td align="right">1.100</td>
+<td align="right">12.880</td>
+<td align="right">0.035</td>
+</tr>
+<tr class="even">
+<td align="left">obesity1</td>
+<td align="right">2.166</td>
+<td align="right">1.070</td>
+<td align="right">4.384</td>
+<td align="right">0.032</td>
+</tr>
+</tbody>
+</table>
+<div id="exploratory-interpretation" class="section level1">
+<h1>Exploratory interpretation:</h1>
+<p>Among pediatric patients with COVID-19 infection, for every one year of age, the odds of being admitted was decreased by 6% and this association was statistically significant (p = 0.005), while adjusting for the other variables in the model.<br />
+Obesity (defined as a BMI &gt; 30) was associated with an almost 2.2 times increased odds of admission (p = 0.03) while adjusting for the other variables in the model. A past medical history of diabetes was associated with an almost 3.8 times increased odds of admission (p = 0.03) while adjusting for the other variables in the model. Neither gender nor race were found to be associated with admission for COVID-19 infection among pediatric patients.</p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,6 +1,13 @@
 ---
 title: "model_building"
-output: github_document
+output: 
+  html_document:
+    toc: false
+    toc_float: true
+    code_folding: hide
+    source: embed
+editor_options: 
+  chunk_output_type: console
 ---
 
 Load in the data and divide into training and testing sets

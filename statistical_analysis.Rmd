@@ -1,6 +1,13 @@
 ---
-title: "statistical_analysis"
-output: github_document
+title: "Exploratory Analysis"
+output: 
+  html_document:
+    toc: false
+    toc_float: true
+    code_folding: hide
+    source: embed
+editor_options: 
+  chunk_output_type: console
 ---
 
 Setup
@@ -146,7 +153,7 @@ initial_fit
 
 # hl <- hoslem.test(initial_fit$admitted, fitted(initial_fit), g = 10)
 # hl
-# # wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
+# wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
 ```
 
 ```{r}
