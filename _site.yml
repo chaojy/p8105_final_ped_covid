@@ -8,12 +8,10 @@ navbar:
       href: visualizations.html
     - text: "Exploratory Analysis"
       href: statistical_analysis.html
-    - text: "Model Building"
-      href: model_building.html
     - text: "Interactive Maps"
       href: map_viz_kyung.html
-    - text: "Project Report"
-      href: proposal.html
+    - text: "Model Building"
+      href: model_building.html
     - text: "Interactive Prediction Tool"
       href: https://ll3344.shinyapps.io/shiny/
     - icon: fa-video fa-2x
