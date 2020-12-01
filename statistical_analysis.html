@@ -23,19 +23,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -343,9 +332,18 @@ $(document).ready(function () {
 </div>
 
 
-<p>Setup</p>
-<pre class="r"><code>library(tidyverse)
-library(aod)
+<div id="setup" class="section level2">
+<h2>Setup</h2>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(aod)
 library(patchwork)
 library(ResourceSelection)</code></pre>
 <pre><code>## ResourceSelection 0.3-5   2019-07-22</code></pre>
@@ -364,7 +362,9 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
-<p>Data import and tidy</p>
+</div>
+<div id="data-import-and-tidy" class="section level2">
+<h2>Data import and tidy</h2>
 <pre class="r"><code>data_stats = read_csv(&quot;./datacomplete.csv&quot;) %&gt;% 
   mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;, &quot;gender&quot;, &quot;obesity&quot;, &quot;icu&quot;), as.factor) %&gt;% 
   select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
@@ -384,8 +384,14 @@ summary(data_stats)</code></pre>
  Mean   : -3.892           Mean   :26.54   Mean   :115.3                     
  3rd Qu.: -1.419           3rd Qu.:32.12   3rd Qu.:128.0                     
  Max.   :  2.931           Max.   :80.84   Max.   :182.0                     </code></pre>
-<p>Focusing on which predictors matter most in predicting hospitalization (‘admitted’) or even admittance to an ICU. Need to decide if we need to focus on predictability or causality/statistical significance.</p>
-<p>First, let’s get familiar with the data.</p>
+</div>
+<div id="dataset-exploration" class="section level2">
+<h2>Dataset exploration</h2>
+<p>This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection. First, we explore the data by generating various ggplots.</p>
+<div id="age" class="section level3">
+<h3>Age</h3>
+<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
+<p>Some pediatric patients require admission to the Intensive Care Unit (ICU). Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age. Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.</p>
 <pre class="r"><code>admitt_p = 
   data_stats %&gt;% 
   ggplot(aes(x = age, fill = admitted)) +
@@ -407,7 +413,11 @@ icu_p =
   theme(legend.position = &quot;bottom&quot;)
 
 admitt_p / icu_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/density-1.png" width="100%" /></p>
+<p><img src="statistical_analysis_files/figure-html/density%20admit-1.png" width="100%" /></p>
+</div>
+<div id="obesity-diabetes-and-asthma" class="section level3">
+<h3>Obesity, diabetes, and asthma</h3>
+<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is general not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes as asthma as well.</p>
 <pre class="r"><code>obesity_p = 
   data_stats %&gt;% 
   ggplot(aes(x = age, fill = obesity)) +
@@ -420,7 +430,7 @@ admitt_p / icu_p</code></pre>
 
 diabetes_p = 
   data_stats %&gt;% 
-  ggplot(aes(x = age, fill = icu)) +
+  ggplot(aes(x = age, fill = diabetes)) +
   geom_density(alpha = .6) +
   labs(
     title = &quot;Diabetes/Age Distribution&quot;,
@@ -430,7 +440,7 @@ diabetes_p =
 
 asthma_p = 
   data_stats %&gt;% 
-  ggplot(aes(x = age, fill = icu)) +
+  ggplot(aes(x = age, fill = asthma)) +
   geom_density(alpha = .6) +
   labs(
     title = &quot;Asthma/Age Distribution&quot;,
@@ -440,6 +450,10 @@ asthma_p =
 
 obesity_p / diabetes_p / asthma_p</code></pre>
 <p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
+</div>
+<div id="box-plots" class="section level3">
+<h3>Box plots</h3>
+<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI appears to be similar, but wiht some high BMI outliers in the non-hospitalized group. Median SES is lower among admitted patients.</p>
 <pre class="r"><code>bp_p =
   data_stats %&gt;% 
   ggplot(aes(x = icu, y = systolic_bp_value)) +
@@ -521,7 +535,7 @@ initial_fit</code></pre>
 <td align="right">14.317</td>
 <td align="right">589.291</td>
 <td align="right">0.024</td>
-<td align="right">1651035.503</td>
+<td align="right">1651035.500</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_raceblack</td>
@@ -529,7 +543,7 @@ initial_fit</code></pre>
 <td align="right">13.905</td>
 <td align="right">589.290</td>
 <td align="right">0.024</td>
-<td align="right">1093265.499</td>
+<td align="right">1093265.497</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racecaucasian</td>
@@ -537,7 +551,7 @@ initial_fit</code></pre>
 <td align="right">14.182</td>
 <td align="right">589.290</td>
 <td align="right">0.024</td>
-<td align="right">1442205.021</td>
+<td align="right">1442205.018</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
@@ -545,7 +559,7 @@ initial_fit</code></pre>
 <td align="right">13.892</td>
 <td align="right">589.290</td>
 <td align="right">0.024</td>
-<td align="right">1079344.538</td>
+<td align="right">1079344.536</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racemultiple</td>
@@ -553,7 +567,7 @@ initial_fit</code></pre>
 <td align="right">13.242</td>
 <td align="right">589.291</td>
 <td align="right">0.022</td>
-<td align="right">563779.890</td>
+<td align="right">563779.889</td>
 </tr>
 <tr class="odd">
 <td align="left">asthma1</td>
@@ -635,7 +649,7 @@ complex_fit</code></pre>
 <td align="right">14.152</td>
 <td align="right">594.623</td>
 <td align="right">0.024</td>
-<td align="right">1399857.335</td>
+<td align="right">1399857.334</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_raceblack</td>
@@ -643,7 +657,7 @@ complex_fit</code></pre>
 <td align="right">13.666</td>
 <td align="right">594.623</td>
 <td align="right">0.023</td>
-<td align="right">861156.134</td>
+<td align="right">861156.133</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racecaucasian</td>
@@ -651,7 +665,7 @@ complex_fit</code></pre>
 <td align="right">13.993</td>
 <td align="right">594.623</td>
 <td align="right">0.024</td>
-<td align="right">1193750.505</td>
+<td align="right">1193750.504</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
@@ -659,7 +673,7 @@ complex_fit</code></pre>
 <td align="right">13.621</td>
 <td align="right">594.623</td>
 <td align="right">0.023</td>
-<td align="right">823267.320</td>
+<td align="right">823267.319</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racemultiple</td>
@@ -858,7 +872,7 @@ icu1_fit</code></pre>
 <td align="right">16.148</td>
 <td align="right">4609.321</td>
 <td align="right">0.004</td>
-<td align="right">10300405.460</td>
+<td align="right">10300405.637</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racecaucasian</td>
@@ -866,7 +880,7 @@ icu1_fit</code></pre>
 <td align="right">15.068</td>
 <td align="right">4609.321</td>
 <td align="right">0.003</td>
-<td align="right">3498863.389</td>
+<td align="right">3498863.449</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
@@ -874,7 +888,7 @@ icu1_fit</code></pre>
 <td align="right">15.566</td>
 <td align="right">4609.321</td>
 <td align="right">0.003</td>
-<td align="right">5756650.875</td>
+<td align="right">5756650.974</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racemultiple</td>
@@ -969,7 +983,7 @@ icu2_fit</code></pre>
 <td align="right">16.185</td>
 <td align="right">4591.657</td>
 <td align="right">0.004</td>
-<td align="right">10696327.991</td>
+<td align="right">10696327.902</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racecaucasian</td>
@@ -977,7 +991,7 @@ icu2_fit</code></pre>
 <td align="right">15.169</td>
 <td align="right">4591.657</td>
 <td align="right">0.003</td>
-<td align="right">3869025.933</td>
+<td align="right">3869025.901</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
@@ -985,7 +999,7 @@ icu2_fit</code></pre>
 <td align="right">15.642</td>
 <td align="right">4591.657</td>
 <td align="right">0.003</td>
-<td align="right">6215034.026</td>
+<td align="right">6215033.974</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racemultiple</td>
@@ -1124,6 +1138,8 @@ icu3_fit</code></pre>
 </tr>
 </tbody>
 </table>
+</div>
+</div>
 
 
 
@@ -1134,7 +1150,7 @@ icu3_fit</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();
