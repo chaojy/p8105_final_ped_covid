@@ -1,19 +1,14 @@
 ---
-title: "Pediatric COVID-19"
+title: "Project Screencast"
 output: 
   html_document:
     toc: false
     toc_float: true
+    code_folding: hide
     source: embed
 editor_options: 
   chunk_output_type: console
 ---
 
 
-
-
-Introduction here
-
-
-
-
+We can put the screencast here.

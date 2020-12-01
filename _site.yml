@@ -14,7 +14,11 @@ navbar:
       href: map_viz_kyung.html
     - text: "Project Report"
       href: proposal.html
-    - icon: fa-github fa-lg
+    - text: "Interactive Prediction Tool"
+      href: https://ll3344.shinyapps.io/shiny/
+    - icon: fa-video fa-2x
+      href: screencast.html
+    - icon: fa-github fa-2x
       href: https://github.com/chaojy/p8105_final_ped_covid
 output:
   html_document:
