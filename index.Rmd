@@ -1,5 +1,6 @@
 ---
-title: "Pediatric COVID-19"
+title: "Predictors of Hospitalization for Pediatric Patients with COVID-19"
+authors: Jerry Chao (JYC2171), Sal El-Sadek (SNE2114), Kyung Suk Lee (KL3069), and Lusha Liang (LL3344)
 output: 
   html_document:
     toc: false
@@ -9,14 +10,20 @@ editor_options:
   chunk_output_type: console
 ---
 
+<img src="images/intro.jpeg" style="width:75%">
+
 ## Introduction
 
-Welcome to this Final Project for P8105, leveraging the skills we have developed over the semester to analyze a dataset of pediatric patients with COVID-19 infection and the predictors associated with hospitalization.  In this project, we present statistical analyses using logistic regression and exploratory visualizations of the dataset, incorporating Plotly, a Dashboard, and Shiny.
+Welcome to our Final Project for P8105, leveraging the skills we have developed over the semester to analyze a dataset of pediatric patients with COVID-19 infection and the predictors associated with hospitalization.  In this project, we present statistical analyses using logistic regression and exploratory visualizations of the dataset, incorporating Plotly, Dashboard, and Shiny.
 
-While the clinical characteristics and hospital course of patients with COVID-19 have been described, particularly in adults, the risk factors associated with the hospitalization in pediatric patients has been understudied.  Fortunately, COVID-19 seems to affect children generally less severely than adults.  However, some children so become ill and require hospitalization.  Here, we present analyses of a dataset of 375 pediatric patients who returned a positive SARS-CoV-2 RT PCR test at a single tertiary care medical center from the beginning of the COVID-19 pandemic until October 1, 2020.
+While the clinical characteristics and hospital courses of patients with COVID-19 have been previously described, particularly in adults, the risk factors associated with hospitalization in pediatric patients has been understudied.  Fortunately, COVID-19 seems to affect children generally less severely than adults. However, some children do become ill enough to require hospitalization. Moreover, as the number of cases continues to rise across the country, COVID-19 cases in pediatric patients also continues to increase. 
+
+<img src="images/intro_2.png" style="width:75%">
+
+Here, we present our analyses of a dataset of 375 pediatric patients who returned a positive SARS-CoV-2 RT PCR test at a single tertiary care medical center in New York City from the beginning of the COVID-19 pandemic until October 1, 2020.
 
 ## The dataset
 
-The dataset contains de-identified patient health information consisting of age (from 0 to up to 23 years), demographic data (including biological sex, zip code of residence, and a socioeconomic status variable), whether there was a preceding visit to the Emergency Department, any past medical of asthma, obesity, and/or diabetes, and whether there was an admission to the intensive care unit.
+The dataset contains de-identified patient health information consisting of age (from 0 to up to 23 years), demographic data (including biological sex, zip code of residence, and a socioeconomic status variable), whether there was a preceding visit to the Emergency Department, any past medical history of asthma, obesity, and/or diabetes, and whether there was an admission to the intensive care unit.
 
-The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection.  We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.
+The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of hospitalization, our focus was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.
