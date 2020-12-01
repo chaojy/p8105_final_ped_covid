@@ -80,7 +80,7 @@ admitt_p / icu_p
 
 ### Obesity, diabetes, and asthma
 
-The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes as asthma as well.
+The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
 
 ```{r}
 obesity_p = 
@@ -118,7 +118,7 @@ obesity_p / diabetes_p / asthma_p
 
 ### Box plots
 
-Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, but wiht some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
+Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
 
 ```{r, boxplots}
 bp_p =
@@ -152,6 +152,72 @@ bp_p / bmi_p / ses_p
 ```
 
 Possible Models
+
+```{r}
+##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
+
+##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
+
+ped_covid =
+  read_csv("./data/p8105_final_ped_covid.csv") %>%
+  mutate(
+    ethnicity_race = case_when(
+      race == "R3 Black or African-American"        ~ "black",
+      race == "R2 Asian"                            ~ "asian",
+      race == "R5 White"                            ~ "caucasian",
+      race == "R1 American Indian or Alaska Native" ~ "american indian",
+      race == "Multiple Selected"                   ~ "multiple",
+      ethnicity == "E1 Spanish/Hispanic/Latino"     ~ "latino"
+    )
+  ) %>%
+  mutate(
+    asthma = replace_na(asthma_dx, 0),
+    asthma = str_replace(asthma, ".*J.*", "1"),
+    diabetes = replace_na(diabetes_dx, 0),
+    diabetes = str_replace(diabetes, ".*E.*", "1"),
+    zip = as.character(zip_code_set),
+    service = outcomeadmission_admission_1inpatient_admit_service, 
+    ed = ed_yes_no_0_365_before,
+    admission_dx = admission_apr_drg,
+    icu = icu_yes_no
+  ) %>%
+  mutate(obesity = case_when(
+    bmi_value >= 30 ~ "1",
+    bmi_value < 30 ~"0"
+  ))
+
+zipcode_df = 
+  usa::zipcodes
+
+ped_covid = 
+  left_join(ped_covid, zipcode_df, by = "zip") %>%
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
+         city.y, obesity, lat, long) %>%
+  mutate_at(c("admitted", "icu", "ethnicity_race", "asthma", "diabetes",
+              "ed", "city.y", "obesity"), as.factor) %>%
+  mutate(
+    gender = factor(gender, levels = c("F", "M")),
+    ethnicity_race = factor(ethnicity_race, levels = c("caucasian", "black", "latino", "asian", "american indian", "multiple", "NA"))
+  ) %>%
+  rename(city = city.y)
+
+jerry_model =
+glm(
+  admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %>% 
+  broom::tidy() %>% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %>% 
+  select(term, OR, starts_with("CI"), p.value) %>% 
+  knitr::kable(digits = 3)
+```
+
 
 ```{r, initial}
   initial_fit = 
