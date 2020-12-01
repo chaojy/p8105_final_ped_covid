@@ -1,5 +1,6 @@
 ---
-title: "Pediatric COVID-19"
+title: "Predictors of Hospitalization for Pediatric Patients with COVID-19"
+authors: Jerry Chao (JYC2171), Sal El-Sadek (SNE2114), Kyung Suk Lee (KL3069), and Lusha Liang (LL3344)
 output: 
   html_document:
     toc: false
