@@ -11,7 +11,7 @@
 
 
 
-<title>Building a predictive model for hospitalization</title>
+<title>model_building.utf8</title>
 
 <script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -20,11 +20,8 @@
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
-<script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
-<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -248,9 +245,6 @@ $(document).ready(function () {
 </style>
 
 <!-- code folding -->
-<style type="text/css">
-.code-folding-btn { margin-bottom: 4px; }
-</style>
 
 
 
@@ -314,51 +308,38 @@ $(document).ready(function () {
 
 <div class="fluid-row" id="header">
 
-<div class="btn-group pull-right">
-<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
-<ul class="dropdown-menu" style="min-width: 50px;">
-<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
-<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
-</ul>
-</div>
 
 
-
-<h1 class="title toc-ignore">Building a predictive model for hospitalization</h1>
 
 </div>
 
 
-<p>Based on our exploratory analysis as well as a priori knowledge, we will incorporate the following variables into our predictive model for hospitalization:</p>
-<ul>
-<li>Age</li>
-<li>BMI value</li>
-<li>Systolic blood pressure value</li>
-<li>Race</li>
-<li>History of asthma diagnosis</li>
-<li>History of diabetes diagnosis</li>
-</ul>
-<p>Our goal in the following analyses will be to identify the predictive model that will generate the highest area under the receiver operating characteristic curve (AUC). We will be using the caret package in R, which allows easy implentation and tuning of various different machine learning algorithms.</p>
-<pre class="r"><code># Load in the data and divide into training and testing sets
-library(caret)</code></pre>
-<pre><code>## Loading required package: lattice</code></pre>
-<pre><code>## Loading required package: ggplot2</code></pre>
+<div id="model_building" class="section level1">
+<h1>model_building</h1>
+<p>Load in the data and divide into training and testing sets</p>
+<pre class="r"><code>library(caret)</code></pre>
+<pre><code>## Loading required package: lattice
+
+## Loading required package: ggplot2</code></pre>
 <pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ────────────────────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ tibble  3.0.1     ✓ dplyr   1.0.2
-## ✓ tidyr   1.1.0     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0
-## ✓ purrr   0.3.4</code></pre>
-<pre><code>## ── Conflicts ───────────────────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## -- Attaching packages --------------------------------------- tidyverse 1.3.0 --
+
+## v tibble  3.0.4     v dplyr   1.0.2
+## v tidyr   1.1.2     v stringr 1.4.0
+## v readr   1.4.0     v forcats 0.5.0
+## v purrr   0.3.4
+
+## -- Conflicts ------------------------------------------ tidyverse_conflicts() --
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()
 ## x purrr::lift()   masks caret::lift()</code></pre>
 <pre class="r"><code>library(ROCR)
 
-datacomplete = read_csv(&quot;./data/datacomplete.csv&quot;) %&gt;%
-  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;), as.factor) %&gt;%
+datacomplete = read_csv(&quot;./shiny/data/datacomplete.csv&quot;) %&gt;%
+  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;, &quot;gender&quot;), as.factor) %&gt;%
   select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)</code></pre>
-<pre><code>## Parsed with column specification:
+<pre><code>## 
+## -- Column specification --------------------------------------------------------
 ## cols(
 ##   .default = col_double(),
 ##   admitted = col_character(),
@@ -369,8 +350,8 @@ datacomplete = read_csv(&quot;./data/datacomplete.csv&quot;) %&gt;%
 ##   service = col_character(),
 ##   admission_dx = col_character(),
 ##   city = col_character()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
+## )
+## i Use `spec()` for the full column specifications.</code></pre>
 <pre class="r"><code>train_data = 
   datacomplete %&gt;%
   slice(1:250) 
@@ -378,9 +359,7 @@ datacomplete = read_csv(&quot;./data/datacomplete.csv&quot;) %&gt;%
 test_data = 
   datacomplete %&gt;%
   slice(251:375)</code></pre>
-<div id="random-forest-model" class="section level2">
-<h2>Random Forest Model</h2>
-<p>First we will use a random forest model, which is an ensemble learning method for classification or regression which constructs a multitude of decision trees using a training set and outputs the class that is the mode of the classes of the individual trees.</p>
+<p>Random forest model</p>
 <pre class="r"><code>myFolds = createFolds(train_data$admitted, k = 5)
 rfControl = trainControl(
     summaryFunction = twoClassSummary,
@@ -396,16 +375,147 @@ rfmodel = caret::train(
     metric = &quot;ROC&quot;,
     method = &quot;ranger&quot;,
     trControl = rfControl
- )
-pred_rf = predict(rfmodel,test_data,type=&quot;prob&quot;)
+ )</code></pre>
+<pre><code>## + Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold1: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold1: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold2: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold2: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold3: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold3: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold4: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold4: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+## + Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+## - Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+## + Fold5: mtry=10, min.node.size=1, splitrule=gini 
+## - Fold5: mtry=10, min.node.size=1, splitrule=gini 
+## + Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+## + Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+## - Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting mtry = 10, splitrule = gini, min.node.size = 1 on full training set</code></pre>
+<pre class="r"><code>pred_rf = predict(rfmodel,test_data,type=&quot;prob&quot;)
 pred_rf = pred_rf$yes
 auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_rf</code></pre>
-<p>Our AUC with the random forest model is 0.5867839.</p>
-</div>
-<div id="xgboost-model" class="section level2">
-<h2>XGBoost Model</h2>
-<p>The XGBoost model is a powerful ensemble machine learning algorithm that implements gradient boosted decision trees.</p>
+<pre><code>## [1] 0.6636415</code></pre>
+<p>GLM net model</p>
+<pre class="r"><code>glmnetControl = trainControl(
+    method = &quot;cv&quot;, 
+    number = 10,
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE
+)
+set.seed(123)
+glmnetmodel = caret::train(
+    admitted ~. , 
+    data=train_data,
+    tuneGrid = expand.grid(
+      alpha=0:1,
+      lambda=seq(0.0001,1, length=20)
+    ),
+    method = &quot;glmnet&quot;,
+    trControl = glmnetControl,
+    preProcess= c(&quot;center&quot;,&quot;scale&quot;)
+  )</code></pre>
+<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;Accuracy&quot; was not
+## in the result set. ROC will be used instead.
+
+## + Fold01: alpha=0, lambda=1 
+## - Fold01: alpha=0, lambda=1 
+## + Fold01: alpha=1, lambda=1 
+## - Fold01: alpha=1, lambda=1 
+## + Fold02: alpha=0, lambda=1 
+## - Fold02: alpha=0, lambda=1 
+## + Fold02: alpha=1, lambda=1 
+## - Fold02: alpha=1, lambda=1 
+## + Fold03: alpha=0, lambda=1 
+## - Fold03: alpha=0, lambda=1 
+## + Fold03: alpha=1, lambda=1 
+## - Fold03: alpha=1, lambda=1 
+## + Fold04: alpha=0, lambda=1 
+## - Fold04: alpha=0, lambda=1 
+## + Fold04: alpha=1, lambda=1 
+## - Fold04: alpha=1, lambda=1 
+## + Fold05: alpha=0, lambda=1 
+## - Fold05: alpha=0, lambda=1 
+## + Fold05: alpha=1, lambda=1 
+## - Fold05: alpha=1, lambda=1 
+## + Fold06: alpha=0, lambda=1 
+## - Fold06: alpha=0, lambda=1 
+## + Fold06: alpha=1, lambda=1 
+## - Fold06: alpha=1, lambda=1 
+## + Fold07: alpha=0, lambda=1 
+## - Fold07: alpha=0, lambda=1 
+## + Fold07: alpha=1, lambda=1 
+## - Fold07: alpha=1, lambda=1 
+## + Fold08: alpha=0, lambda=1 
+## - Fold08: alpha=0, lambda=1 
+## + Fold08: alpha=1, lambda=1 
+## - Fold08: alpha=1, lambda=1 
+## + Fold09: alpha=0, lambda=1 
+## - Fold09: alpha=0, lambda=1 
+## + Fold09: alpha=1, lambda=1 
+## - Fold09: alpha=1, lambda=1 
+## + Fold10: alpha=0, lambda=1 
+## - Fold10: alpha=0, lambda=1 
+## + Fold10: alpha=1, lambda=1 
+## - Fold10: alpha=1, lambda=1 
+## Aggregating results
+## Selecting tuning parameters
+## Fitting alpha = 1, lambda = 0.0527 on full training set</code></pre>
+<pre class="r"><code>pred_glmnet = predict(glmnetmodel,test_data,type=&quot;prob&quot;) 
+pred_glmnet = pred_glmnet$yes
+auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_glmnet</code></pre>
+<pre><code>## [1] 0.6202496</code></pre>
+<p>XGB model</p>
 <pre class="r"><code>xgbTrainingControl = trainControl(method = &quot;CV&quot;, 
                                      number = 5, 
                                      savePredictions = TRUE, 
@@ -436,41 +546,8 @@ pred_xgb = predict(fit_xgb,test_data,type=&quot;prob&quot;)
 pred_xgb = pred_xgb$yes
 auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_xgb</code></pre>
-<p>The AUC generated by the XGB model is 0.6304594.</p>
-</div>
-<div id="glmnet-model" class="section level2">
-<h2>Glmnet Model</h2>
-<p>Next we will explore the use of a generalized linear model through Glmnet, which fits a generalized linear model via penalized maximum likelihood.</p>
-<pre class="r"><code>glmnetControl = trainControl(
-    method = &quot;cv&quot;, 
-    number = 10,
-    summaryFunction = twoClassSummary,
-    classProbs = TRUE, 
-    verboseIter = TRUE
-)
-set.seed(123)
-glmnetmodel = caret::train(
-    admitted ~. , 
-    data=train_data,
-    tuneGrid = expand.grid(
-      alpha=0:1,
-      lambda=seq(0.0001,1, length=20)
-    ),
-    method = &quot;glmnet&quot;,
-    trControl = glmnetControl,
-    preProcess= c(&quot;center&quot;,&quot;scale&quot;)
-  )</code></pre>
-<pre><code>## Warning in train.default(x, y, weights = w, ...): The metric &quot;Accuracy&quot; was not
-## in the result set. ROC will be used instead.</code></pre>
-<pre class="r"><code>pred_glmnet = predict(glmnetmodel,test_data,type=&quot;prob&quot;) 
-pred_glmnet = pred_glmnet$yes
-auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),&quot;auc&quot;)@y.values)
-auc_glmnet</code></pre>
-<p>The AUC of the glmnet model is 0.6202496.</p>
-</div>
-<div id="spls-model" class="section level2">
-<h2>SPLS Model</h2>
-<p>Finally, we will try a partial least squares model, which is a linear regression method that can deal with large numbers of predictors, small sample size, and high collinearity among predictors. That is less the case in our trimmed down set of predictors, but nonetheless we will examine how it performs in our dataset.</p>
+<pre><code>## [1] 0.668321</code></pre>
+<p>SPLS model</p>
 <pre class="r"><code>#SPLS
 train_grid = expand.grid(K =c(3,4,5,6,7,8,9),eta =c(0.35,0.4,0.45,0.5,0.55,0.6,0.7,0.8,0.9),
                           kappa=0.5)
@@ -490,8 +567,7 @@ plsFit = caret::train(admitted~.,
 pred_plsda = pred_plsda$yes
 auc_plsda = as.numeric(ROCR::performance(prediction(pred_plsda,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_plsda</code></pre>
-<p>The AUC for the SPLS model is 0.6101815.</p>
-<p>Overall, all the AUCs are much lower than what would be considered useful in clinical practice. However, given that the goal of our analyses is mainly exploratory at this point, we then built an interactive predictive tool allowing users to see the effects of changing certain predictors on risk of hospitalization. Results should clearly be interpreted with caution and the models will benefit from the addition of other predictors which can be added on as this dataset grows. We ultimately chose to use the random forest model, given similar AUCs between each of the models and the relatively quick speed at which the random forest model generates its predictions.</p>
+<pre><code>## [1] 0.6435054</code></pre>
 </div>
 
 
@@ -527,11 +603,6 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
-<script>
-$(document).ready(function () {
-  window.initializeCodeFolding("hide" === "show");
-});
-</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->
