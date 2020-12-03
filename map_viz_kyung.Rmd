@@ -34,7 +34,6 @@ scale_fill_discrete = scale_fill_viridis_d
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
 
 census_api_key("535bbe702423f7405e593fbd1bb6ae314d416cf2")
-
 ```
 
 ```{r}
@@ -84,8 +83,6 @@ covid_df =
       race == "Multiple Selected"                   ~ "multiple",
       ethnicity == "E1 Spanish/Hispanic/Latino"     ~ "latino"
     ))
-
-covid_df %>% view()
 ```
 
 ## Average Socioeconomic status (SES) and Average Body Mass Index (BMI)
@@ -152,8 +149,11 @@ full_map_ses =
   left_join(shape_full, ses_mean, by = "county")
 
 tmap_mode("view")
+tm_full = 
 tm_shape(full_map_bmi) +
   tm_fill(
+    group = "Average BMI",
+    midpoint = NA,
     col = "bmi_mean",
     palette = "viridis",
     style = "quantile",
@@ -166,6 +166,8 @@ tm_shape(full_map_bmi) +
     tm_borders(col = "white") +
 tm_shape(full_map_ses) +
   tm_fill(
+    group = "Average SES",
+    midpoint = NA,
     col = "ses_mean",
     palette = "RdYlBu",
     style = "quantile",
@@ -178,9 +180,14 @@ tm_shape(full_map_ses) +
   tm_borders(col = "white") +
   tm_view(
     alpha = 0.85,
-    view.legend.position = c("right", "bottom")) +
+    view.legend.position = c("right", "bottom"),
+    colorNA = NULL) +
   tm_scale_bar(text.size = 1) +
   tm_facets(as.layers = TRUE, sync = TRUE)
+
+tm_full %>% 
+  tmap_leaflet() %>%
+  leaflet::hideGroup("Average SES")
 ```
 
 ## Positivity levels over time
