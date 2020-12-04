@@ -31,7 +31,7 @@ Welcome to our Final Project for P8105, leveraging the skills we have developed 
 
 ## Project Motivation
 
-While the clinical characteristics and hospital courses of patients with COVID-19 have been previously described, particularly in adults, the risk factors associated with hospitalization in pediatric patients has been understudied.  Fortunately, COVID-19 seems to affect children generally less severely than adults. However, some children do become ill enough to require hospitalization. Moreover, as the number of cases continues to rise across the country, COVID-19 cases in pediatric patients also continues to increase. 
+While the clinical characteristics and hospital courses of patients with COVID-19 have been previously described, particularly in adults, the risk factors associated with hospitalization in pediatric patients has been understudied ^[1](https://academic.oup.com/ofid/article/7/4/ofaa105/5811022)^. Fortunately, COVID-19 seems to affect children generally less severely than adults ^[2](https://pediatrics.aappublications.org/content/145/6/e20200702)^. However, some children do become ill enough to require hospitalization ^2^. Moreover, as the number of cases continues to rise across the country, COVID-19 cases in pediatric patients also continues to increase ^[3](https://services.aap.org/en/pages/2019-novel-coronavirus-covid-19-infections/children-and-covid-19-state-level-data-report/)^. 
 
 Here, we present our analyses of a dataset of 375 pediatric patients who returned a positive SARS-CoV-2 RT PCR test at a single tertiary care medical center in New York City from the beginning of the COVID-19 pandemic until October 1, 2020.
 
@@ -43,9 +43,8 @@ The goal of this project was to perform an exploratory analysis of this dataset 
 
 <h1 id="lit">Prior Studies</h1>
 
-Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course *[1](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#),
-*[2](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/).
-  In particular, some children have required admission to the intensive care unit and some have developed a multi-system inflammatory syndrome *[3](https://pubmed.ncbi.nlm.nih.gov/32598831/).  Fortunately, most children in the community seem to fare well with few developing critical illness.
+Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course ^[4](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#^, ^[5](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)^.
+In particular, some children have required admission to the intensive care unit and some have developed a multi-system inflammatory syndrome ^[6](https://pubmed.ncbi.nlm.nih.gov/32598831/)^.  Fortunately, most children in the community seem to fare well with few developing critical illness.
 
 <h1 id="tidying">Tidying The Data</h1>
 
@@ -140,7 +139,7 @@ ped_covid =
   rename(city = city.y) 
 ```
 
-An additional issue in the data is that it contains significant amounts of missing data. We thus used the mice package in R to impute missing data. This package uses sequential regression multiple imputation, which is advantageous over single imputations in that it accounts for the statistical uncertainty in the imputation process.
+An additional issue in the data is that it contains significant amounts of missing data. This is less of an issue for visualizations and logistic regression but will become an issue for model building with machine learning within the caret package. We thus used the mice package in R to impute missing data for later use in model building. This package uses sequential regression multiple imputation, which is advantageous over single imputations in that it accounts for the statistical uncertainty in the imputation process.
 
 ```{r impute, results = FALSE}
 # Impute missing data for use in model_building
@@ -170,8 +169,7 @@ There appears to be a bimodal distribution of hospital admission as a function o
 Some pediatric patients require admission to the Intensive Care Unit (ICU).  Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age.  Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.
 
 ```{r, density admit}
-admit_p = 
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = age, fill = admitted)) +
   geom_density(alpha = .6) +
   labs(
@@ -180,8 +178,7 @@ admit_p =
     y = "Density") +
   theme(legend.position = "bottom")
 
-icu_p = 
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = age, fill = icu)) +
   geom_density(alpha = .6) +
   labs(
@@ -189,8 +186,6 @@ icu_p =
     x = "Age (Years)",
     y = "Density") +
   theme(legend.position = "bottom")
-
-admit_p / icu_p
 ```
 
 ### Obesity, diabetes, and asthma
@@ -198,8 +193,7 @@ admit_p / icu_p
 The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
 
 ```{r obesity}
-obesity_p = 
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = age, fill = obesity)) +
   geom_density(alpha = .6) +
   labs(
@@ -208,8 +202,7 @@ obesity_p =
     y = "Density") +
   theme(legend.position = "bottom")
 
-diabetes_p = 
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = age, fill = diabetes)) +
   geom_density(alpha = .6) +
   labs(
@@ -218,8 +211,7 @@ diabetes_p =
     y = "Density") +
   theme(legend.position = "bottom")
 
-asthma_p = 
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = age, fill = asthma)) +
   geom_density(alpha = .6) +
   labs(
@@ -227,8 +219,6 @@ asthma_p =
     x = "Age (Years)",
     y = "Density") +
   theme(legend.position = "bottom")
-
-obesity_p / diabetes_p / asthma_p
 ```
 
 ### Box plots
@@ -236,8 +226,7 @@ obesity_p / diabetes_p / asthma_p
 Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
 
 ```{r, boxplots}
-bp_p =
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = icu, y = systolic_bp_value)) +
   geom_boxplot() +
   labs(
@@ -245,8 +234,7 @@ bp_p =
     x = "Hospital Admission Status",
     y = "Systolic Blood Pressure")
 
-bmi_p =
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = icu, y = bmi_value)) +
   geom_boxplot() +
   labs(
@@ -254,16 +242,13 @@ bmi_p =
     x = "Hospital Admission Status",
     y = "BMI Value")
 
-ses_p =
-  ped_covid %>% 
+ped_covid %>% 
   ggplot(aes(x = icu, y = ses)) +
   geom_boxplot() +
   labs(
     title = "Socioeconomic Status by Admission Status",
     x = "Hospital Admission Status",
     y = "SES Measure")
-
-bp_p / bmi_p / ses_p
 ```
 
 Possible Models
@@ -286,9 +271,8 @@ glm(
 model
 ```
 
-
 ```{r, initial}
-  initial_fit = 
+initial_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = "logit"), 
       data = ped_covid) %>% 
@@ -297,10 +281,6 @@ model
   select(term, p.value, everything()) %>% 
   knitr::kable(digits = 3)
 initial_fit
-
-# hl <- hoslem.test(initial_fit$admitted, fitted(initial_fit), g = 10)
-# hl
-# wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)
 ```
 
 ```{r}
@@ -327,7 +307,7 @@ play_fit =
 play_fit
 ```
 
-Asthma and Diabetes seem to be important predictors
+Asthma and Diabetes seem to be important predictors.
 
 ```{r, ICU}
 icu1_fit = 
@@ -362,6 +342,314 @@ icu3_fit
 ```
 
 <h1 id="dash">Dashboard</h1>
+
+Next, we created an interactive dashboard to further explore and visualize the data. 
+
+First we loaded additional necessary packages. 
+
+```{r packages, message = FALSE, warning = FALSE, echo = FALSE, results = 'hide'}
+library(plotly)
+library(leaflet)
+library(tidycensus)
+library(tmap)
+census_api_key("535bbe702423f7405e593fbd1bb6ae314d416cf2")
+```
+
+To create a map 
+
+```{r}
+covid_df = 
+  read_csv("./data/p8105_final_ped_covid.csv") %>% 
+   janitor::clean_names() %>%
+   mutate(county = NA,
+          county = as.character(county)) %>% 
+   select(city, county, everything()) %>% 
+   mutate(city = tolower(city)) %>% 
+   mutate(city = str_replace(city, "n white plains", "white plains")) %>% 
+   mutate(county = case_when(city == "bronx" ~ "bronx",
+                             city == "brooklyn" ~ "kings",
+                             city == "yonkers" ~ "westchester",
+                             city == "new york" ~ "new york",
+                             city == "mount vernon" ~ "westchester",
+                             city == "new rochelle" ~ "westchester",
+                             city == "white plains" ~ "westchester",
+                             city == "ridgewood" ~ "queens",
+                             city == "nanuet" ~ "rockland",
+                             city == "bergenfield" ~ "bergen",
+                             city == "ossining" ~ "westchester",
+                             city == "monroe" ~ "orange",
+                             city == "newburgh" ~ "orange",
+                             city == "staten island" ~ "richmond",
+                             city == "port chester" ~ "westchester",
+                             city == "spring valley" ~ "rockland",
+                             city == "irvington" ~ "westchester",
+                             city == "flushing" ~ "queens",
+                             city == "chappaqua" ~ "westchester",
+                             city == "new city" ~ "rockland",
+                             city == "ferncliff manor" ~ "westchester",
+                             city == "greenwich" ~ "washington",
+                             city == "haverstraw" ~ "rockland",
+                             city == "suffern" ~ "rockland",
+                             city == "berkeley heights" ~ "union")
+   ) %>% 
+   mutate(eventdatetime = as.Date(eventdatetime, "%m/%d/%Y"),
+          eventdatetime = format(eventdatetime, "%m-%Y"),
+          eventdatetime = zoo::as.yearmon(eventdatetime, "%m-%Y")) %>% 
+  mutate(
+    ethnicity_race = case_when(
+      race == "R3 Black or African-American"        ~ "black",
+      race == "R2 Asian"                            ~ "asian",
+      race == "R5 White"                            ~ "caucasian",
+      race == "R1 American Indian or Alaska Native" ~ "american indian",
+      race == "Multiple Selected"                   ~ "multiple",
+      ethnicity == "E1 Spanish/Hispanic/Latino"     ~ "latino"
+    ))
+```
+
+## A Map of SES and BMI
+
+```{r}
+# Map Viz using tidycensus and tmap (use ses)
+county_ny = c("bronx", "kings", "westchester", "new york", "queens", "rockland", "orange", "richmond")
+county_nj = c("bergen", "union")
+
+shape_ny = 
+  get_acs(geography = "tract",
+          variables = "B19013_001",
+          state = "NY",
+          county = county_ny,
+          geometry = TRUE) %>%
+  janitor::clean_names() %>% 
+  select(name, geometry) %>% 
+  separate(name, into = c("county", "state"), sep = -17) %>% 
+  mutate(state = str_sub(state, 10),
+         county = tolower(county),
+         county = sub(".*\\s", "", trimws(county)),
+         county = str_replace(county, "york", "new york"))
+  
+shape_nj = 
+  get_acs(geography = "tract",
+          variables = "B19013_001",
+          state = "NJ",
+          county = county_nj,
+          geometry = TRUE) %>%
+  janitor::clean_names() %>% 
+  select(name, geometry) %>% 
+  separate(name, into = c("county", "state"), sep = -18) %>% 
+  mutate(state = str_sub(state, 9),
+         county = tolower(county),
+         county = sub(".*\\s", "", trimws(county)))
+
+shape_full =
+rbind(shape_ny, shape_nj)
+
+bmi_mean =
+  covid_df %>%
+  group_by(county) %>%
+  summarize(bmi_mean = mean(bmi_value, na.rm = TRUE))
+
+ses_mean = 
+  covid_df %>% 
+  group_by(county) %>% 
+  summarize(ses_mean = mean(ses, na.rm = TRUE))
+
+full_map_bmi = 
+  left_join(shape_full, bmi_mean, by = "county")
+
+full_map_ses = 
+  left_join(shape_full, ses_mean, by = "county")
+
+tmap_mode("view")
+tm_full = 
+tm_shape(full_map_bmi) +
+  tm_fill(
+    group = "Average BMI",
+    midpoint = NA,
+    col = "bmi_mean",
+    palette = "viridis",
+    style = "quantile",
+    contrast = c(0.3, 1),
+    title = "Average BMI",
+    textNA = "Not Available",
+    id = "state",
+    popup.vars=c("County: " = "county",
+                 "Average BMI: " = "bmi_mean")) +
+    tm_borders(col = "white") +
+tm_shape(full_map_ses) +
+  tm_fill(
+    group = "Average SES",
+    midpoint = NA,
+    col = "ses_mean",
+    palette = "RdYlBu",
+    style = "quantile",
+    contrast = c(0.3, 1),
+    title = "Average SES",
+    textNA = "Not Available",
+    id = "state",
+    popup.vars=c("County: " = "county",
+                 "Average SES: " = "ses_mean")) +
+  tm_borders(col = "white") +
+  tm_view(
+    alpha = 0.85,
+    view.legend.position = c("right", "bottom"),
+    colorNA = NULL) +
+  tm_scale_bar(text.size = 1) +
+  tm_facets(as.layers = TRUE, sync = TRUE)
+
+tm_full %>% 
+  tmap_leaflet() %>%
+  leaflet::hideGroup("Average SES")
+```
+
+## Positivity levels over time
+
+The number of pediatric patients testing positive for COVID-19 is shown as a function of time, by admission status (yes/no).  The number of patients who returned positive SARS-CoV-2 RT-PCR tests peaked in late February and decreased until April.  From April to June, levels of positive tests generally plateaued for both admitted and non-admitted patients until June, at which point levels dropped off to close to zero for both groups.
+
+```{r}
+# Difference between admitted over the year
+plot_1 = 
+covid_df %>% 
+  group_by(eventdatetime, admitted) %>% 
+  summarize(count = n()) %>% 
+  ggplot(aes(x = eventdatetime, 
+             y = count, 
+             color = admitted)) +
+  geom_point(aes(text = paste("Date: ", eventdatetime, 
+                              "\nNumber of Counts: ", count, 
+                              "\nAdmitted: ", admitted))) +
+  geom_line() +
+  labs(title = "",
+         x = "Event Date",
+         y = "Number of Events",
+         color = "Admitted")
+
+ggplotly(plot_1, tooltip = "text")
+```
+
+## Ethnicity and race information of admitted and non-admitted pediatric patients
+
+The ethnic and racial background of pediatric patients with COVID-19 infection reflect the diverse population served in the Bronx.  Latinos represent the majority of patients in whom positive SARS-CoV-2 RT-PCR test results were returned, followed by blacks, caucasians, and asians.  Overall, latino and black children with COVID-19 infection seem to have a lower hospitalization rates compared to caucasian and asian children.
+
+```{r}
+# Race and admitted
+plot_2 = 
+covid_df %>% 
+  group_by(ethnicity_race, admitted) %>% 
+  summarize(count = n()) %>%
+  filter(ethnicity_race != "american indian") %>% 
+  filter(ethnicity_race != "multiple") %>% 
+  ggplot(aes(x = fct_reorder(ethnicity_race, count), 
+             y = count, 
+             fill = admitted,
+             text = paste("Ethnicity: ", ethnicity_race, 
+                          "\nNumber of Counts: ", count, 
+                          "\nAdmitted: ", admitted))) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  coord_flip() +
+  labs(title = "",
+         x = "Number of Counts",
+         y = "Ethnicity",
+         fill = "Admitted")
+
+ggplotly(plot_2, tooltip = "text")
+```
+
+## Body mass index (BMI), age, and ethnicity/race
+
+The below interactive plot shows plots of BMI as a function of age, stratified by race.  In general, BMI values seem to increase as age increases.  There are outliers with some extreme BMI values, including some with a BMI of greater than 60.
+
+```{r}
+plot_3 =
+covid_df %>% 
+  filter(ethnicity_race != "multiple") %>% 
+  ggplot(aes(x = age, y = bmi_value, color = ethnicity_race)) +
+  geom_point(aes(text = paste("Age: ", age, 
+                          "\nBMI: ", bmi_value, 
+                          "\nEthnicity: ", ethnicity_race))) +
+  geom_smooth(se = FALSE) +
+  labs(title = "",
+         x = "Age",
+         y = "BMI Value",
+         color = "Ethnicity")
+
+ggplotly(plot_3, tooltip = "text")
+```
+
+## Admissions for COVID-19 and age
+
+The below interactive bar graph is another representation of our earlier exploratory ggplot showing the density or count of COVID-19 positivity as function of age.  This information is further stratified by admission status (yes/no).
+
+```{r}
+plot_4 = 
+covid_df %>% 
+  mutate(age = round(age),
+         age = as.factor(age)) %>% 
+  group_by(age, admitted) %>% 
+  summarize(count = n()) %>%
+  ggplot(aes(x = age, 
+             y = count, 
+             fill = admitted,
+             text = paste("Age: ", age, 
+                          "\nNumber of Counts: ", count, 
+                          "\nAdmitted: ", admitted))) +
+  geom_bar(stat="identity", position=position_dodge()) +
+  labs(title = "",
+         x = "Age",
+         y = "Number of Counts",
+         fill = "Admitted")
+
+ggplotly(plot_4, tooltip = "text")
+```
+
+## Body mass index (BMI), age, and admission status
+
+The scatterplot shows BMI values versus age by admission status with a smooth curve.  In general, BMI values increase as age increase for both admitted and non-admitted patients.  The smooth curves generally overlap but diverge beginning at around age 14, with a trend for more admissions for extremely obese patients with high outlier BMI values.
+
+```{r}
+plot_5 =
+covid_df %>% 
+  ggplot(aes(x = age, y = bmi_value, color = admitted)) +
+  geom_point(aes(text = paste("Age: ", age, 
+                          "\nBMI Value: ", bmi_value, 
+                          "\nAdmitted: ", admitted))) +
+  geom_smooth(se = FALSE) +
+  labs(title = "",
+         x = "Age",
+         y = "BMI Value",
+         color = "Admitted")
+
+ggplotly(plot_5, tooltip = "text")
+```
+
+## Average age by geographic location
+
+The below interactive bar graph explores the relationship between average age of COVID-19 infected children and geographic location.  The average age of pediatric patients was 14.5 years in the Bronx, which returned the greatest positivity count.  Staten Island had the oldest average age (22 years) and Berkeley Heights had the youngest average age (5 years), but there was only one patient each from these respective locations.
+
+```{r age_barplot}
+# Barplot using age / count reorder 
+
+plot_6 =
+  covid_df %>% 
+  group_by(city, county) %>% 
+  summarize(mean_age = mean(age, na.rm = TRUE),
+            count = n()) %>%
+  drop_na(city) %>% 
+  ggplot(aes(
+             x = fct_reorder(city, mean_age),
+             y = mean_age,
+             fill = count,
+             text = paste("City: ", city, 
+                          "\nAvg Age: ", mean_age, 
+                          "\nCounts: ", count))) +
+  geom_bar(stat="identity") +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+  labs(title = "",
+         x = "City",
+         y = "Average Age",
+         fill = "Count")
+  
+ggplotly(plot_6, tooltip = "text")
+```
 
 <h1 id="model">Model Building</h1>
 
@@ -531,11 +819,14 @@ Code for the shiny app can be found at [Lusha's github](https://github.com/lusha
 
 <h1 id="discussion">Discussion</h1>
 
-We performed an exploratory analysis of a dataset of 375 pediatric patients who tested positive for COVID-19 and assessed predictors for hospitalization.  We found age, obesity, and diabetes were associated with the need for hospitalization in multivariate logistic regression modeling.  Gender, ethnicity, and asthma were not found to be significantly associated with the need for hospitalization.  There are a number of important limitations in this dataset that may affect the validity of the study results.  First, the availability of testing was limited in the early phases of the COVID-19 pandemic.  This decreased its diagnostic utility, with SARS-CoV-2 RT PCR testing done in a confirmatory manner sometimes after the decision to admit was already made.  This differential testing may affect the validity of study results.  The sample size of 375 from a single tertiary care medical center is also limited, reflecting the relative overall decreased severity of illness of COVID-19 in pediatric patients compared to adults.  Asthma was coded in a simplistic manner that does not reflect the complexity of this comorbidity.  For example, asthma can vary in severity from, for example, mild intermittent to status asthmaticus.  Our coding of asthma does not capture the gradient of disease severity.  Obesity was also coded as a simple binary variable with a BMI cut-point of 30.  In reality, obesity in children is defined by the 95th percentile of BMI, which varies by age.
+We performed an exploratory analysis of a dataset of 375 pediatric patients who tested positive for COVID-19 and assessed predictors for hospitalization.  We found age, obesity, and diabetes were associated with the need for hospitalization in multivariable logistic regression modeling.  Gender, ethnicity, and asthma were not found to be significantly associated with the need for hospitalization.  There are a number of important limitations in this dataset that may affect the validity of the study results.  First, the availability of testing was limited in the early phases of the COVID-19 pandemic.  This decreased its diagnostic utility, with SARS-CoV-2 RT PCR testing done in a confirmatory manner sometimes after the decision to admit was already made.  This differential testing may affect the validity of study results.  The sample size of 375 from a single tertiary care medical center is also limited, reflecting the relative overall decreased severity of illness of COVID-19 in pediatric patients compared to adults.  Asthma was coded in a simplistic manner that does not reflect the complexity of this comorbidity.  For example, asthma can vary in severity from, for example, mild intermittent to status asthmaticus.  Our coding of asthma does not capture the gradient of disease severity.  Obesity was also coded as a simple binary variable with a BMI cut-point of 30.  In reality, obesity in children is defined by the 95th percentile of BMI, which varies by age.
 
 Finally, the clinical decision to admit a pediatric patient with confirmed or suspected COVID-19 infection is a complex one.  This dataset contained limited information about vital signs such as respiratory rate or oxygen saturation, which reflect acute respiratory distress.  While past medical history is important, acute changes in a child's pulmonary status are more clinically important in the decision to admit or not admit.  These data were not available in this dataset.  Notwithstanding these limitations, the exploratory data analyses in this project set the foundation for future research, which should take into account additional clinical data.
 
 <h1 id="refs">References</h1>
-1. Kim L, Whitaker M, O’Halloran A, et al. Hospitalization Rates and Characteristics of Children Aged <18 Years Hospitalized with Laboratory-Confirmed COVID-19 — COVID-NET, 14 States, March 1–July 25, 2020. MMWR Morb Mortal Wkly Rep 2020;69:1081–1088. DOI: http://dx.doi.org/10.15585/mmwr.mm6932e3
-2. Chao JY, Derespina K, Herold BC, et al. Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with Coronavirus Disease 2019 at a Tertiary Care Medical Center in New York City. J Pediatr 2020 Aug;223:14-19.e2.  doi: 10.1016/j.jpeds.2020.05.006.  Epub 2020 May 11.
-3. Feldstein L, Rose RB, Horwitz SM, et al. Multisystem Inflammatory Syndrome in U.S. Children and Adolescents N Eng J Med 2020 Jul 23;383(4):334-346. doi: 10.1056/NEJMoa2021680.  Epub 2020 Jun 29.
+1. McCreary EK, Pogue JM. Coronavirus disease 2019 treatment: a review of early and emerging options. Open Forum Infect Dis. 2020;7(4):ofaa105
+2. Dong Y, Mo X, Hu Y, et al. Epidemiology of COVID-19 among children in China. Pediatrics. 2020;145(6):20200702e
+3. American Academy of Pediatrics. Children and COVID-19: State Data Report. https://services.aap.org/en/pages/2019-novel-coronavirus-covid-19-infections/children-and-covid-19-state-level-data-report/. Epub 26 November 2020.
+4. Kim L, Whitaker M, O’Halloran A, et al. Hospitalization Rates and Characteristics of Children Aged <18 Years Hospitalized with Laboratory-Confirmed COVID-19 — COVID-NET, 14 States, March 1–July 25, 2020. MMWR Morb Mortal Wkly Rep 2020;69:1081–1088. DOI: http://dx.doi.org/10.15585/mmwr.mm6932e3
+5. Chao JY, Derespina K, Herold BC, et al. Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with Coronavirus Disease 2019 at a Tertiary Care Medical Center in New York City. J Pediatr 2020 Aug;223:14-19.e2.  doi: 10.1016/j.jpeds.2020.05.006.  Epub 2020 May 11.
+6. Feldstein L, Rose RB, Horwitz SM, et al. Multisystem Inflammatory Syndrome in U.S. Children and Adolescents N Eng J Med 2020 Jul 23;383(4):334-346. doi: 10.1056/NEJMoa2021680.  Epub 2020 Jun 29.

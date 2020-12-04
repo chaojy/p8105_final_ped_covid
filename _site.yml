@@ -10,6 +10,8 @@ navbar:
       href: map_viz_kyung.html
     - text: "Interactive Prediction Tool"
       href: https://ll3344.shinyapps.io/shiny/
+    - text: "Final Report"
+      href: final_report.html
     - icon: fa-video fa-2x
       href: screencast.html
     - icon: fa-github fa-2x
