@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Predictors of Hospitalization in Pediatric Patients with COVID-19</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/sandstone.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 61px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h2 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h3 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h4 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h5 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.section h6 {
+  padding-top: 66px;
+  margin-top: -66px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">Homepage</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="statistical_analysis.html">Exploratory Analysis</a>
+</li>
+<li>
+  <a href="map_viz_kyung.html">Dashboard</a>
+</li>
+<li>
+  <a href="model_building.html">Model Building</a>
+</li>
+<li>
+  <a href="https://ll3344.shinyapps.io/shiny/">Interactive Prediction Tool</a>
+</li>
+<li>
+  <a href="screencast.html">
+    <span class="fa fa-video fa-2x"></span>
+     
+  </a>
+</li>
+<li>
+  <a href="https://github.com/chaojy/p8105_final_ped_covid">
+    <span class="fa fa-github fa-2x"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Predictors of Hospitalization in Pediatric Patients with COVID-19</h1>
+
+</div>
+
+
+<p><img src="images/fever.jpg" style="width:75%"></p>
+<div id="table-of-contents" class="section level1">
+<h1>Table of Contents</h1>
+<ul>
+<li><a href="#intro">Introduction</a></li>
+<li><a href="#lit">Prior Studies</a></li>
+<li><a href="#tidying">Tidying The Data</a></li>
+<li><a href="#exp">Exploratory Analyses</a></li>
+<li><a href="#dash">Dashboard</a></li>
+<li><a href="#model">Model Building</a></li>
+<li><a href="#discussion">Discussion</a></li>
+<li><a href="#refs">References</a></li>
+</ul>
+<hr />
+<div id="authors" class="section level3">
+<h3>Authors</h3>
+<ul>
+<li>Jerry Chao (JYC2171)</li>
+<li>Sal El-Sadek (SNE2114)</li>
+<li>Kyung Suk Lee (KL3069)</li>
+<li>Lusha Liang (LL3344)</li>
+</ul>
+<h1 id="intro">
+Introduction
+</h1>
+<p>Welcome to our Final Project for P8105, leveraging the skills we have developed over the semester to analyze a dataset of pediatric patients with COVID-19 infection and the predictors associated with hospitalization. In this project, we present statistical analyses using logistic regression and exploratory visualizations of the dataset, incorporating Plotly, Dashboard, and Shiny.</p>
+</div>
+<div id="project-motivation" class="section level2">
+<h2>Project Motivation</h2>
+<p>While the clinical characteristics and hospital courses of patients with COVID-19 have been previously described, particularly in adults, the risk factors associated with hospitalization in pediatric patients has been understudied. Fortunately, COVID-19 seems to affect children generally less severely than adults. However, some children do become ill enough to require hospitalization. Moreover, as the number of cases continues to rise across the country, COVID-19 cases in pediatric patients also continues to increase.</p>
+<p>Here, we present our analyses of a dataset of 375 pediatric patients who returned a positive SARS-CoV-2 RT PCR test at a single tertiary care medical center in New York City from the beginning of the COVID-19 pandemic until October 1, 2020.</p>
+</div>
+<div id="the-dataset" class="section level2">
+<h2>The Dataset</h2>
+<p>The dataset contains de-identified patient health information consisting of age (from 0 to up to 23 years), demographic data (including biological sex, zip code of residence, and a socioeconomic status variable), whether there was a preceding visit to the Emergency Department, any past medical history of asthma, obesity, and/or diabetes, and whether there was an admission to the intensive care unit.</p>
+<p>The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of hospitalization, our focus was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.</p>
+<h1 id="lit">
+Prior Studies
+</h1>
+<h1 id="tidying">
+Tidying The Data
+</h1>
+<p>First we load our necessary packages and set ggplot preferences.</p>
+<pre class="r"><code>library(tidyverse)
+library(usa)
+library(mice)
+
+knitr::opts_chunk$set(
+  fig.width = 6,
+  fig.asp = .6,
+  out.width = &quot;90%&quot;)
+
+theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
+
+options(
+  ggplot2.continuous.colour = &quot;viridis&quot;,
+  ggplot2.continuous.fill = &quot;viridis&quot;)
+
+scale_colour_discrete = scale_color_viridis_d
+scale_fill_discrete = scale_fill_viridis_d
+
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
+<p>Now, we will load the data and take a look.</p>
+<pre class="r"><code># Load the data
+ped_covid =
+  read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;)</code></pre>
+<p>This is a de-identified dataset of pediatric patients from a tertiary care medical center in New York City who tested positive for COVID-19 via the SARS-CoV-2 RT PCR test. The age range in the study is <strong>0</strong> to <strong>22</strong> years of age. An id number for each patient has been randomly generated. There are <strong>375</strong> rows (patients) and <strong>30</strong> columns in this dataset. The variables included in this dataset are <em>id, admitted, age, date_of_birth, ethnicity, gender, censusblock, censusblockgroup, censustract, city, race, ses, state, zip_code_set, eventdatetime, outcomeadmission_admission_1inpatient_admit_service, bmi_yes_or_no, bmi_event_date_time, bmi_value, asthma_date_time, asthma_dx, diabetes_date_time, diabetes_dx, icu_yes_no, icu_date_time, systolic_bp_event_date_time, systolic_bp_value, ed_yes_no_0_365_before, admission_primary_dx, admission_apr_drg</em>. Some of the important variables are date and time of positive covid test (“eventdatetime”), whether the patient was admitted (“admitted”), whether there was a preceding emergency department visit (“ed_yes_no_0_365_before”), whether the patient needed intensive care admission (“icu_yes_no”) and date and time of icu admission (“icu_date_time”), demographic data (age, gender, ethnicity, race, zip code data - predominantly in the Bronx), some past medical history data (bmi data, asthma data, diabetes data) and one vital sign datum (systolic blood pressure).</p>
+<p>The dataset is not tidy for a number of reasons including but not limited to:</p>
+<ul>
+<li>Race seems to encompass Black, Asian, and White patients but whether patients are Hispanic or not is only coded under ethnicity. Although this is a complicated issue, for simplicity’s sake we combined ethnicity and race into a single variable.</li>
+<li>Presence of a medical history of asthma and diabetes were indicated by presence of an International Classification of Disease Code (ICD). However, the same ICD code was not used for all patients. While there are certainly many subtleties in the severity of asthma and type/severity of diabetes, for ease of analysis we chose to simply code asthma and diabetes as binary variables.</li>
+<li>We chose to add a variable called “obesity” which was a binary variable that was present when body mass index (BMI) was greater than or equal to 30 and absent when it was less than 30. Of note, in pediatric patients, true classification of obesity is dependent on the patient’s age and place on a growth chart.</li>
+</ul>
+<pre class="r"><code>ped_covid =
+  read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;) %&gt;%
+  mutate(
+    ethnicity_race = case_when(
+      race == &quot;R3 Black or African-American&quot;        ~ &quot;black&quot;,
+      race == &quot;R2 Asian&quot;                            ~ &quot;asian&quot;,
+      race == &quot;R5 White&quot;                            ~ &quot;caucasian&quot;,
+      race == &quot;R1 American Indian or Alaska Native&quot; ~ &quot;american indian&quot;,
+      race == &quot;Multiple Selected&quot;                   ~ &quot;multiple&quot;,
+      ethnicity == &quot;E1 Spanish/Hispanic/Latino&quot;     ~ &quot;latino&quot;
+    )
+  ) %&gt;%
+  mutate(
+    asthma = replace_na(asthma_dx, 0),
+    asthma = str_replace(asthma, &quot;.*J.*&quot;, &quot;1&quot;),
+    diabetes = replace_na(diabetes_dx, 0),
+    diabetes = str_replace(diabetes, &quot;.*E.*&quot;, &quot;1&quot;),
+    zip = as.character(zip_code_set),
+    service = outcomeadmission_admission_1inpatient_admit_service, 
+    ed = ed_yes_no_0_365_before,
+    admission_dx = admission_apr_drg,
+    icu = icu_yes_no
+  ) %&gt;%
+  mutate(obesity = case_when(
+    bmi_value &gt;= 30 ~ &quot;1&quot;,
+    bmi_value &lt; 30 ~&quot;0&quot;
+  ))</code></pre>
+<p>We noted that the dataset contained information about zipcode but not latitude and longitude. To add this information we merged zipcodes with a file in the usa package containing information about latitude and longitude for each zipcode.</p>
+<pre class="r"><code># Merge zipcode data with latitude and longitude.
+zipcode_df = 
+  usa::zipcodes
+
+ped_covid = 
+  left_join(ped_covid, zipcode_df, by = &quot;zip&quot;) %&gt;%
+  select(admitted, age, gender, ses, zip, eventdatetime, bmi_value, icu, icu_date_time, 
+         systolic_bp_value, ethnicity_race, asthma, diabetes, zip, service, ed, admission_dx,
+         city.y, obesity, lat, long) %&gt;%
+  mutate_at(c(&quot;admitted&quot;, &quot;icu&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;,
+              &quot;ed&quot;, &quot;city.y&quot;, &quot;obesity&quot;), as.factor) %&gt;%
+  mutate(
+    gender = factor(gender, levels = c(&quot;F&quot;, &quot;M&quot;)),
+    ethnicity_race = factor(ethnicity_race, levels = c(&quot;caucasian&quot;, &quot;black&quot;, &quot;latino&quot;, &quot;asian&quot;, &quot;american indian&quot;, &quot;multiple&quot;, &quot;NA&quot;))
+  ) %&gt;%
+  rename(city = city.y) </code></pre>
+<p>An additional issue in the data is that it contains significant amounts of missing data. We thus used the mice package in R to impute missing data. This package uses sequential regression multiple imputation, which is advantageous over single imputations in that it accounts for the statistical uncertainty in the imputation process.</p>
+<pre class="r"><code># Impute missing data for use in model_building
+impute = mice(ped_covid, m=3, seed=111)
+datacomplete = complete(impute,2)
+
+# Export csv
+write_csv(datacomplete, &quot;./data/datacomplete.csv&quot;)</code></pre>
+<h1 id="exp">
+Exploratory Analyses
+</h1>
+<p>To perform exploratory analyses, we loaded some additional libraries.</p>
+<pre class="r"><code>library(aod)
+library(patchwork)
+library(ResourceSelection)</code></pre>
+<p>We started exploring the data by generating various ggplots.</p>
+<div id="age" class="section level3">
+<h3>Age</h3>
+<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
+<p>Some pediatric patients require admission to the Intensive Care Unit (ICU). Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age. Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.</p>
+<pre class="r"><code>admit_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Admittance/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+icu_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;ICU/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+admit_p / icu_p</code></pre>
+<p><img src="final_report_files/figure-html/density%20admit-1.png" width="90%" /></p>
+</div>
+<div id="obesity-diabetes-and-asthma" class="section level3">
+<h3>Obesity, diabetes, and asthma</h3>
+<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is general not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes and asthma as well.</p>
+<pre class="r"><code>obesity_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = obesity)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Obesity/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+diabetes_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = diabetes)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Diabetes/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+asthma_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = asthma)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Asthma/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+obesity_p / diabetes_p / asthma_p</code></pre>
+<p><img src="final_report_files/figure-html/obesity-1.png" width="90%" /></p>
+</div>
+<div id="box-plots" class="section level3">
+<h3>Box plots</h3>
+<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI appears to be similar, with some high BMI outliers in the non-hospitalized group. Median SES is lower among admitted patients.</p>
+<pre class="r"><code>bp_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Systolic Blood Pressure by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;Systolic Blood Pressure&quot;)
+
+bmi_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;BMI by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;BMI Value&quot;)
+
+ses_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Socioeconomic Status by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;SES Measure&quot;)
+
+bp_p / bmi_p / ses_p</code></pre>
+<p><img src="final_report_files/figure-html/boxplots-1.png" width="90%" /></p>
+<p>Possible Models</p>
+<pre class="r"><code>model =
+glm(
+  admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity,
+  data = ped_covid,
+  family = binomial()
+  ) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;% 
+  select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
+  knitr::kable(digits = 3)</code></pre>
+<pre class="r"><code>  initial_fit = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+initial_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.034</td>
+<td align="right">1.629</td>
+<td align="right">0.767</td>
+<td align="right">2.124</td>
+<td align="right">5.101</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.005</td>
+<td align="right">-0.064</td>
+<td align="right">0.023</td>
+<td align="right">-2.793</td>
+<td align="right">0.938</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.280</td>
+<td align="right">-0.318</td>
+<td align="right">0.294</td>
+<td align="right">-1.081</td>
+<td align="right">0.728</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.118</td>
+<td align="right">-1.089</td>
+<td align="right">0.697</td>
+<td align="right">-1.564</td>
+<td align="right">0.336</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.113</td>
+<td align="right">-1.068</td>
+<td align="right">0.673</td>
+<td align="right">-1.586</td>
+<td align="right">0.344</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.266</td>
+<td align="right">-1.131</td>
+<td align="right">1.018</td>
+<td align="right">-1.112</td>
+<td align="right">0.323</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
+<td align="right">0.986</td>
+<td align="right">-15.872</td>
+<td align="right">882.744</td>
+<td align="right">-0.018</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.840</td>
+<td align="right">-0.071</td>
+<td align="right">0.352</td>
+<td align="right">-0.202</td>
+<td align="right">0.931</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">0.035</td>
+<td align="right">1.325</td>
+<td align="right">0.628</td>
+<td align="right">2.111</td>
+<td align="right">3.764</td>
+</tr>
+<tr class="even">
+<td align="left">obesity1</td>
+<td align="right">0.032</td>
+<td align="right">0.773</td>
+<td align="right">0.360</td>
+<td align="right">2.148</td>
+<td align="right">2.166</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># hl &lt;- hoslem.test(initial_fit$admitted, fitted(initial_fit), g = 10)
+# hl
+# wald.test(b = coef(initial_fit), Sigma = vcov(initial_fit), Terms = 4:8)</code></pre>
+<pre class="r"><code>complex_fit = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+complex_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.996</td>
+<td align="right">18.449</td>
+<td align="right">4081.440</td>
+<td align="right">0.005</td>
+<td align="right">1.029231e+08</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.202</td>
+<td align="right">-0.138</td>
+<td align="right">0.108</td>
+<td align="right">-1.276</td>
+<td align="right">8.710000e-01</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.178</td>
+<td align="right">-1.088</td>
+<td align="right">0.808</td>
+<td align="right">-1.347</td>
+<td align="right">3.370000e-01</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.997</td>
+<td align="right">-17.730</td>
+<td align="right">4081.438</td>
+<td align="right">-0.004</td>
+<td align="right">0.000000e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.997</td>
+<td align="right">-17.559</td>
+<td align="right">4081.438</td>
+<td align="right">-0.004</td>
+<td align="right">0.000000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">1.000</td>
+<td align="right">-0.576</td>
+<td align="right">11502.475</td>
+<td align="right">0.000</td>
+<td align="right">5.620000e-01</td>
+</tr>
+<tr class="odd">
+<td align="left">asthma1</td>
+<td align="right">0.495</td>
+<td align="right">0.649</td>
+<td align="right">0.950</td>
+<td align="right">0.682</td>
+<td align="right">1.913000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">diabetes1</td>
+<td align="right">0.995</td>
+<td align="right">17.668</td>
+<td align="right">3036.851</td>
+<td align="right">0.006</td>
+<td align="right">4.711645e+07</td>
+</tr>
+<tr class="odd">
+<td align="left">bmi_value</td>
+<td align="right">0.246</td>
+<td align="right">0.064</td>
+<td align="right">0.055</td>
+<td align="right">1.160</td>
+<td align="right">1.066000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">systolic_bp_value</td>
+<td align="right">0.688</td>
+<td align="right">0.013</td>
+<td align="right">0.033</td>
+<td align="right">0.402</td>
+<td align="right">1.014000e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">ses</td>
+<td align="right">0.915</td>
+<td align="right">-0.015</td>
+<td align="right">0.142</td>
+<td align="right">-0.107</td>
+<td align="right">9.850000e-01</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>play_fit = 
+  glm(admitted ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+play_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.665</td>
+<td align="right">1.460</td>
+<td align="right">3.369</td>
+<td align="right">0.433</td>
+<td align="right">4.307</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.132</td>
+<td align="right">-0.150</td>
+<td align="right">0.100</td>
+<td align="right">-1.508</td>
+<td align="right">0.860</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.250</td>
+<td align="right">-0.922</td>
+<td align="right">0.802</td>
+<td align="right">-1.150</td>
+<td align="right">0.398</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.460</td>
+<td align="right">0.670</td>
+<td align="right">0.908</td>
+<td align="right">0.738</td>
+<td align="right">1.954</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">0.992</td>
+<td align="right">16.932</td>
+<td align="right">1740.922</td>
+<td align="right">0.010</td>
+<td align="right">22563376.550</td>
+</tr>
+<tr class="even">
+<td align="left">bmi_value</td>
+<td align="right">0.183</td>
+<td align="right">0.068</td>
+<td align="right">0.051</td>
+<td align="right">1.331</td>
+<td align="right">1.070</td>
+</tr>
+<tr class="odd">
+<td align="left">systolic_bp_value</td>
+<td align="right">0.777</td>
+<td align="right">0.009</td>
+<td align="right">0.032</td>
+<td align="right">0.283</td>
+<td align="right">1.009</td>
+</tr>
+<tr class="even">
+<td align="left">ses</td>
+<td align="right">0.811</td>
+<td align="right">-0.032</td>
+<td align="right">0.136</td>
+<td align="right">-0.239</td>
+<td align="right">0.968</td>
+</tr>
+</tbody>
+</table>
+<p>Asthma and Diabetes seem to be important predictors</p>
+<pre class="r"><code>icu1_fit = 
+  glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+icu1_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.026</td>
+<td align="right">-3.103</td>
+<td align="right">1.396</td>
+<td align="right">-2.222</td>
+<td align="right">0.045</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.802</td>
+<td align="right">-0.011</td>
+<td align="right">0.044</td>
+<td align="right">-0.250</td>
+<td align="right">0.989</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.567</td>
+<td align="right">0.319</td>
+<td align="right">0.557</td>
+<td align="right">0.572</td>
+<td align="right">1.376</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.594</td>
+<td align="right">0.669</td>
+<td align="right">1.254</td>
+<td align="right">0.533</td>
+<td align="right">1.952</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.766</td>
+<td align="right">0.362</td>
+<td align="right">1.213</td>
+<td align="right">0.298</td>
+<td align="right">1.436</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.992</td>
+<td align="right">-14.378</td>
+<td align="right">1489.071</td>
+<td align="right">-0.010</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
+<td align="right">0.997</td>
+<td align="right">-14.781</td>
+<td align="right">3956.181</td>
+<td align="right">-0.004</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.503</td>
+<td align="right">-0.463</td>
+<td align="right">0.691</td>
+<td align="right">-0.670</td>
+<td align="right">0.630</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">0.000</td>
+<td align="right">2.650</td>
+<td align="right">0.677</td>
+<td align="right">3.912</td>
+<td align="right">14.147</td>
+</tr>
+<tr class="even">
+<td align="left">obesity1</td>
+<td align="right">0.709</td>
+<td align="right">-0.271</td>
+<td align="right">0.727</td>
+<td align="right">-0.373</td>
+<td align="right">0.763</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>icu2_fit = 
+  glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+icu2_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.994</td>
+<td align="right">-16.299</td>
+<td align="right">2351.533</td>
+<td align="right">-0.007</td>
+<td align="right">0.000000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.432</td>
+<td align="right">-0.113</td>
+<td align="right">0.143</td>
+<td align="right">-0.785</td>
+<td align="right">8.940000e-01</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.985</td>
+<td align="right">0.022</td>
+<td align="right">1.184</td>
+<td align="right">0.019</td>
+<td align="right">1.023000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.994</td>
+<td align="right">16.711</td>
+<td align="right">2351.529</td>
+<td align="right">0.007</td>
+<td align="right">1.809267e+07</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.994</td>
+<td align="right">18.863</td>
+<td align="right">2351.529</td>
+<td align="right">0.008</td>
+<td align="right">1.557080e+08</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">1.000</td>
+<td align="right">1.000</td>
+<td align="right">6933.578</td>
+<td align="right">0.000</td>
+<td align="right">2.718000e+00</td>
+</tr>
+<tr class="odd">
+<td align="left">asthma1</td>
+<td align="right">0.928</td>
+<td align="right">0.140</td>
+<td align="right">1.544</td>
+<td align="right">0.091</td>
+<td align="right">1.150000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">diabetes1</td>
+<td align="right">0.002</td>
+<td align="right">5.024</td>
+<td align="right">1.645</td>
+<td align="right">3.053</td>
+<td align="right">1.520480e+02</td>
+</tr>
+<tr class="odd">
+<td align="left">bmi_value</td>
+<td align="right">0.260</td>
+<td align="right">-0.064</td>
+<td align="right">0.057</td>
+<td align="right">-1.125</td>
+<td align="right">9.380000e-01</td>
+</tr>
+<tr class="even">
+<td align="left">systolic_bp_value</td>
+<td align="right">0.728</td>
+<td align="right">-0.016</td>
+<td align="right">0.046</td>
+<td align="right">-0.348</td>
+<td align="right">9.840000e-01</td>
+</tr>
+<tr class="odd">
+<td align="left">ses</td>
+<td align="right">0.942</td>
+<td align="right">0.015</td>
+<td align="right">0.204</td>
+<td align="right">0.073</td>
+<td align="right">1.015000e+00</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>icu3_fit = 
+  glm(icu ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
+      family = binomial(link = &quot;logit&quot;), 
+      data = ped_covid) %&gt;% 
+  broom::tidy() %&gt;% 
+  mutate(OR = exp(estimate)) %&gt;% 
+  select(term, p.value, everything()) %&gt;% 
+  knitr::kable(digits = 3)
+icu3_fit</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">p.value</th>
+<th align="right">estimate</th>
+<th align="right">std.error</th>
+<th align="right">statistic</th>
+<th align="right">OR</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">0.391</td>
+<td align="right">3.508</td>
+<td align="right">4.088</td>
+<td align="right">0.858</td>
+<td align="right">33.388</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.577</td>
+<td align="right">-0.067</td>
+<td align="right">0.120</td>
+<td align="right">-0.557</td>
+<td align="right">0.935</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.738</td>
+<td align="right">-0.344</td>
+<td align="right">1.029</td>
+<td align="right">-0.334</td>
+<td align="right">0.709</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.259</td>
+<td align="right">-1.538</td>
+<td align="right">1.361</td>
+<td align="right">-1.130</td>
+<td align="right">0.215</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">0.001</td>
+<td align="right">4.728</td>
+<td align="right">1.376</td>
+<td align="right">3.436</td>
+<td align="right">113.066</td>
+</tr>
+<tr class="even">
+<td align="left">bmi_value</td>
+<td align="right">0.512</td>
+<td align="right">-0.029</td>
+<td align="right">0.044</td>
+<td align="right">-0.656</td>
+<td align="right">0.971</td>
+</tr>
+<tr class="odd">
+<td align="left">systolic_bp_value</td>
+<td align="right">0.294</td>
+<td align="right">-0.044</td>
+<td align="right">0.042</td>
+<td align="right">-1.049</td>
+<td align="right">0.957</td>
+</tr>
+<tr class="even">
+<td align="left">ses</td>
+<td align="right">0.576</td>
+<td align="right">-0.093</td>
+<td align="right">0.167</td>
+<td align="right">-0.559</td>
+<td align="right">0.911</td>
+</tr>
+</tbody>
+</table>
+<h1 id="dash">
+Dashboard
+</h1>
+<h1 id="model">
+Model Building
+</h1>
+<p>Our next goal was to build an interactive predictive tool allowing users to see the effects of changing certain predictors on risk of hospitalization. To do this we examined several predictive models.</p>
+<p>Based on our exploratory analysis as well as a priori knowledge, we incorporated the following variables into our predictive model for hospitalization:</p>
+<ul>
+<li>Age</li>
+<li>BMI value</li>
+<li>Systolic blood pressure value</li>
+<li>Race</li>
+<li>History of asthma diagnosis</li>
+<li>History of diabetes diagnosis</li>
+</ul>
+<p>Our goal in the following analyses was to examine the area under the operating characteristic curve (AUC) for various models. We used the caret package in R, which allows easy implentation and tuning of various different machine learning algorithms.</p>
+<p>First we loaded in the data and divided the data into training and testing sets using a 2:1 ratio.</p>
+<pre class="r"><code># Load in the data and divide into training and testing sets
+library(caret)
+library(tidyverse)
+library(ROCR)
+
+datacomplete = read_csv(&quot;./data/datacomplete.csv&quot;) %&gt;%
+  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;), as.factor) %&gt;%
+  select(admitted, age, bmi_value, systolic_bp_value, ethnicity_race, asthma, diabetes)
+
+train_data = 
+  datacomplete %&gt;%
+  slice(1:250) 
+
+test_data = 
+  datacomplete %&gt;%
+  slice(251:375)</code></pre>
+</div>
+</div>
+<div id="random-forest-model" class="section level2">
+<h2>Random Forest Model</h2>
+<p>First we used a random forest model, which is an ensemble learning method for classification or regression which constructs a multitude of decision trees using a training set and outputs the class that is the mode of the classes of the individual trees.</p>
+<pre class="r"><code>myFolds = createFolds(train_data$admitted, k = 5)
+rfControl = trainControl(
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE,
+    savePredictions = TRUE,
+    index = myFolds
+)
+set.seed(123)
+rfmodel = caret::train(
+    admitted ~., 
+    data = train_data,
+    metric = &quot;ROC&quot;,
+    method = &quot;ranger&quot;,
+    trControl = rfControl
+ )</code></pre>
+<pre><code>+ Fold1: mtry= 2, min.node.size=1, splitrule=gini 
+- Fold1: mtry= 2, min.node.size=1, splitrule=gini 
++ Fold1: mtry= 6, min.node.size=1, splitrule=gini 
+- Fold1: mtry= 6, min.node.size=1, splitrule=gini 
++ Fold1: mtry=10, min.node.size=1, splitrule=gini 
+- Fold1: mtry=10, min.node.size=1, splitrule=gini 
++ Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
+- Fold1: mtry= 2, min.node.size=1, splitrule=extratrees 
++ Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
+- Fold1: mtry= 6, min.node.size=1, splitrule=extratrees 
++ Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
+- Fold1: mtry=10, min.node.size=1, splitrule=extratrees 
++ Fold2: mtry= 2, min.node.size=1, splitrule=gini 
+- Fold2: mtry= 2, min.node.size=1, splitrule=gini 
++ Fold2: mtry= 6, min.node.size=1, splitrule=gini 
+- Fold2: mtry= 6, min.node.size=1, splitrule=gini 
++ Fold2: mtry=10, min.node.size=1, splitrule=gini 
+- Fold2: mtry=10, min.node.size=1, splitrule=gini 
++ Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
+- Fold2: mtry= 2, min.node.size=1, splitrule=extratrees 
++ Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
+- Fold2: mtry= 6, min.node.size=1, splitrule=extratrees 
++ Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
+- Fold2: mtry=10, min.node.size=1, splitrule=extratrees 
++ Fold3: mtry= 2, min.node.size=1, splitrule=gini 
+- Fold3: mtry= 2, min.node.size=1, splitrule=gini 
++ Fold3: mtry= 6, min.node.size=1, splitrule=gini 
+- Fold3: mtry= 6, min.node.size=1, splitrule=gini 
++ Fold3: mtry=10, min.node.size=1, splitrule=gini 
+- Fold3: mtry=10, min.node.size=1, splitrule=gini 
++ Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
+- Fold3: mtry= 2, min.node.size=1, splitrule=extratrees 
++ Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
+- Fold3: mtry= 6, min.node.size=1, splitrule=extratrees 
++ Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
+- Fold3: mtry=10, min.node.size=1, splitrule=extratrees 
++ Fold4: mtry= 2, min.node.size=1, splitrule=gini 
+- Fold4: mtry= 2, min.node.size=1, splitrule=gini 
++ Fold4: mtry= 6, min.node.size=1, splitrule=gini 
+- Fold4: mtry= 6, min.node.size=1, splitrule=gini 
++ Fold4: mtry=10, min.node.size=1, splitrule=gini 
+- Fold4: mtry=10, min.node.size=1, splitrule=gini 
++ Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
+- Fold4: mtry= 2, min.node.size=1, splitrule=extratrees 
++ Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
+- Fold4: mtry= 6, min.node.size=1, splitrule=extratrees 
++ Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
+- Fold4: mtry=10, min.node.size=1, splitrule=extratrees 
++ Fold5: mtry= 2, min.node.size=1, splitrule=gini 
+- Fold5: mtry= 2, min.node.size=1, splitrule=gini 
++ Fold5: mtry= 6, min.node.size=1, splitrule=gini 
+- Fold5: mtry= 6, min.node.size=1, splitrule=gini 
++ Fold5: mtry=10, min.node.size=1, splitrule=gini 
+- Fold5: mtry=10, min.node.size=1, splitrule=gini 
++ Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
+- Fold5: mtry= 2, min.node.size=1, splitrule=extratrees 
++ Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
+- Fold5: mtry= 6, min.node.size=1, splitrule=extratrees 
++ Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+- Fold5: mtry=10, min.node.size=1, splitrule=extratrees 
+Aggregating results
+Selecting tuning parameters
+Fitting mtry = 2, splitrule = gini, min.node.size = 1 on full training set</code></pre>
+<pre class="r"><code>pred_rf = predict(rfmodel,test_data,type=&quot;prob&quot;)
+pred_rf = pred_rf$yes
+auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_rf</code></pre>
+<pre><code>[1] 0.612025</code></pre>
+<p>Our AUC with the random forest model is 0.612025.</p>
+</div>
+<div id="xgboost-model" class="section level2">
+<h2>XGBoost Model</h2>
+<p>The XGBoost model is a powerful ensemble machine learning algorithm that implements gradient boosted decision trees.</p>
+<pre class="r"><code>xgbTrainingControl = trainControl(method = &quot;CV&quot;, 
+                                     number = 5, 
+                                     savePredictions = TRUE, 
+                                     classProbs = TRUE, 
+                                     summaryFunction = twoClassSummary,
+                                     verboseIter = F)
+nrounds = 1000
+  
+xgb_grid = expand.grid(
+    nrounds = seq(from = 200, to = nrounds, by = 50),
+    eta = c(0.025, 0.05, 0.1, 0.3),
+    max_depth = c(2, 3, 4, 5, 6),
+    gamma = 0,
+    colsample_bytree = 1,
+    min_child_weight = 1,
+    subsample = 1
+)
+
+set.seed(123)
+fit_xgb = caret::train(admitted~., 
+                         data = train_data, 
+                         metric = &quot;ROC&quot;,
+                         method = &quot;xgbTree&quot;, 
+                         tuneGrid = xgb_grid,
+                         trControl = xgbTrainingControl)
+  
+pred_xgb = predict(fit_xgb,test_data,type=&quot;prob&quot;)
+pred_xgb = pred_xgb$yes
+auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_xgb</code></pre>
+<pre><code>[1] 0.5960011</code></pre>
+<p>The AUC generated by the XGB model is 0.5960011.</p>
+</div>
+<div id="glmnet-model" class="section level2">
+<h2>Glmnet Model</h2>
+<p>Next we explored the use of a generalized linear model through Glmnet, which fits a generalized linear model via penalized maximum likelihood.</p>
+<pre class="r"><code>glmnetControl = trainControl(
+    method = &quot;cv&quot;, 
+    number = 10,
+    summaryFunction = twoClassSummary,
+    classProbs = TRUE, 
+    verboseIter = TRUE
+)
+set.seed(123)
+glmnetmodel = caret::train(
+    admitted ~. , 
+    data=train_data,
+    tuneGrid = expand.grid(
+      alpha=0:1,
+      lambda=seq(0.0001,1, length=20)
+    ),
+    method = &quot;glmnet&quot;,
+    trControl = glmnetControl,
+    preProcess= c(&quot;center&quot;,&quot;scale&quot;)
+  )</code></pre>
+<pre><code>+ Fold01: alpha=0, lambda=1 
+- Fold01: alpha=0, lambda=1 
++ Fold01: alpha=1, lambda=1 
+- Fold01: alpha=1, lambda=1 
++ Fold02: alpha=0, lambda=1 
+- Fold02: alpha=0, lambda=1 
++ Fold02: alpha=1, lambda=1 
+- Fold02: alpha=1, lambda=1 
++ Fold03: alpha=0, lambda=1 
+- Fold03: alpha=0, lambda=1 
++ Fold03: alpha=1, lambda=1 
+- Fold03: alpha=1, lambda=1 
++ Fold04: alpha=0, lambda=1 
+- Fold04: alpha=0, lambda=1 
++ Fold04: alpha=1, lambda=1 
+- Fold04: alpha=1, lambda=1 
++ Fold05: alpha=0, lambda=1 
+- Fold05: alpha=0, lambda=1 
++ Fold05: alpha=1, lambda=1 
+- Fold05: alpha=1, lambda=1 
++ Fold06: alpha=0, lambda=1 
+- Fold06: alpha=0, lambda=1 
++ Fold06: alpha=1, lambda=1 
+- Fold06: alpha=1, lambda=1 
++ Fold07: alpha=0, lambda=1 
+- Fold07: alpha=0, lambda=1 
++ Fold07: alpha=1, lambda=1 
+- Fold07: alpha=1, lambda=1 
++ Fold08: alpha=0, lambda=1 
+- Fold08: alpha=0, lambda=1 
++ Fold08: alpha=1, lambda=1 
+- Fold08: alpha=1, lambda=1 
++ Fold09: alpha=0, lambda=1 
+- Fold09: alpha=0, lambda=1 
++ Fold09: alpha=1, lambda=1 
+- Fold09: alpha=1, lambda=1 
++ Fold10: alpha=0, lambda=1 
+- Fold10: alpha=0, lambda=1 
++ Fold10: alpha=1, lambda=1 
+- Fold10: alpha=1, lambda=1 
+Aggregating results
+Selecting tuning parameters
+Fitting alpha = 1, lambda = 1e-04 on full training set</code></pre>
+<pre class="r"><code>pred_glmnet = predict(glmnetmodel,test_data,type=&quot;prob&quot;) 
+pred_glmnet = pred_glmnet$yes
+auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_glmnet</code></pre>
+<pre><code>[1] 0.5711855</code></pre>
+<p>The AUC of the glmnet model is 0.5711855.</p>
+</div>
+<div id="spls-model" class="section level2">
+<h2>SPLS Model</h2>
+<p>Finally, we tried a partial least squares model, which is a linear regression method that can deal with large numbers of predictors, small sample size, and high collinearity among predictors. That is less the case in our trimmed down set of predictors, but nonetheless we decided to examine how it would perform in our dataset.</p>
+<pre class="r"><code>#SPLS
+train_grid = expand.grid(K =c(3,4,5,6,7,8,9),eta =c(0.35,0.4,0.45,0.5,0.55,0.6,0.7,0.8,0.9),
+                          kappa=0.5)
+
+set.seed(123)
+plsFit = caret::train(admitted~.,
+                         data = train_data,
+                         method = &quot;spls&quot;,
+                         tuneGrid = train_grid,
+                         trControl = xgbTrainingControl,
+                         metric = &quot;ROC&quot;)
+
+pred_plsda = predict(plsFit,test_data,type=&quot;prob&quot;)
+pred_plsda = pred_plsda$yes
+auc_plsda = as.numeric(ROCR::performance(prediction(pred_plsda,test_data$admitted),&quot;auc&quot;)@y.values)
+auc_plsda</code></pre>
+<p>The AUC for the SPLS model is 0.6240783.</p>
+<p>Overall, all the AUCs are much lower than what would be considered useful in clinical practice. However, given that the goal of our analyses is mainly exploratory at this point, we then built an interactive predictive tool allowing users to see the effects of changing certain predictors on risk of hospitalization. Results should clearly be interpreted with caution and the models will benefit from the addition of other predictors which can be added on as this dataset grows. We ultimately chose to use the random forest model, given similar AUCs between each of the models and the relatively quick speed at which the random forest model generates its predictions.</p>
+<p>Code for the shiny app can be found at <a href="https://github.com/lushaliang/shiny">Lusha’s github</a>.</p>
+<h1 id="discussion">
+Discussion
+</h1>
+<h1 id="refs">
+References
+</h1>
+</div>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

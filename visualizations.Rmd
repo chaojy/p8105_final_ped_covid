@@ -10,7 +10,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup,  message = FALSE, warning = FALSE}
+The initial dataset required some tidying before use. The code below loads in the data csv file and tidies the data. There were also a number of missing values in the dataset. We used the dataset ("ped_covid") with missing values in our visualizations of the data. However, for use in model building, we created a separate dataset (datacomplete) using the mice package. This package uses sequential regression multiple imputation, which is advantageous over single imputations in that it accounts for the statistical uncertainty in the imputation process.
+
+```{r,  message = FALSE, warning = FALSE}
 library(tidyverse)
 library(usa)
 library(mice)
@@ -30,10 +32,7 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
-```
 
-Read in and tidy the data. 
-```{r}
 # Load and tidy data
 ped_covid =
   read_csv("./data/p8105_final_ped_covid.csv") %>%
@@ -62,10 +61,7 @@ ped_covid =
     bmi_value >= 30 ~ "1",
     bmi_value < 30 ~"0"
   ))
-  
-```
 
-```{r}
 # Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
@@ -82,21 +78,14 @@ ped_covid =
     ethnicity_race = factor(ethnicity_race, levels = c("caucasian", "black", "latino", "asian", "american indian", "multiple", "NA"))
   ) %>%
   rename(city = city.y) 
-```
 
-
-```{r}
-# Impute missing data
+# Impute missing data for use in model_building
 impute = mice(ped_covid, m=3, seed=111)
 datacomplete = complete(impute,2)
-```
 
-```{r}
 # Export csv
 write_csv(datacomplete, "datacomplete.csv")
 ```
-
-Some exploratory data visualizations
 
 ```{r}
 #bunch of ggplots
@@ -212,3 +201,4 @@ Among pediatric patients with COVID-19 infection, for every one year of age, the
 Obesity (defined as a BMI > 30) was associated with an almost 2.2 times increased odds of admission (p = 0.03) while adjusting for the other variables in the model.
 A past medical history of diabetes was associated with an almost 3.8 times increased odds of admission (p = 0.03) while adjusting for the other variables in the model.
 Neither gender nor race were found to be associated with admission for COVID-19 infection among pediatric patients.
+

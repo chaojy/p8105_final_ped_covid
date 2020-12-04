@@ -14,7 +14,7 @@ editor_options:
 
 ## Introduction
 
-Welcome to our Final Project for P8105, leveraging the skills we have developed over the semester to analyze a dataset of pediatric patients with COVID-19 infection and the predictors associated with hospitalization.  In this project, we present statistical analyses using logistic regression and exploratory visualizations of the dataset, incorporating Plotly, Dashboard, and Shiny.
+Coronavirus disease 2019 (COVID-19) is a global pandemic caused by the severe acute respiratory syndrome coronavirus 2 (SARS-CoV-2), which has now affected over 65 million people around the world, with over 1 million fatalities. In the United States, more than 1 million children have been diagnosed with COVID-19, though this may be an undercount as children's symptoms are often mild and they may not be tested for every illness. 
 
 While the clinical characteristics and hospital courses of patients with COVID-19 have been previously described, particularly in adults, the risk factors associated with hospitalization in pediatric patients has been understudied.  Fortunately, COVID-19 seems to affect children generally less severely than adults. However, some children do become ill enough to require hospitalization. Moreover, as the number of cases continues to rise across the country, COVID-19 cases in pediatric patients also continues to increase. 
 

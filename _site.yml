@@ -4,11 +4,9 @@ navbar:
   title: "Homepage"
   type: default
   right:
-    - text: "Visualizations"
-      href: visualizations.html
     - text: "Exploratory Analysis"
       href: statistical_analysis.html
-    - text: "Interactive Maps"
+    - text: "Dashboard"
       href: map_viz_kyung.html
     - text: "Model Building"
       href: model_building.html
