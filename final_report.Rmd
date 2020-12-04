@@ -1,9 +1,9 @@
 ---
-title: "Predictors of Hospitalization in Pediatric Patients with COVID-19"
+title: "Predictors of Hospitalization in Pediatric Patients with COVID-19 "
 output: github_document
 ---
 
-![fever](./images/fever.jpg)
+<img src="images/fever.jpg" style="width:75%">
 
 # Table of Contents
 
@@ -39,11 +39,13 @@ Here, we present our analyses of a dataset of 375 pediatric patients who returne
 
 The dataset contains de-identified patient health information consisting of age (from 0 to up to 23 years), demographic data (including biological sex, zip code of residence, and a socioeconomic status variable), whether there was a preceding visit to the Emergency Department, any past medical history of asthma, obesity, and/or diabetes, and whether there was an admission to the intensive care unit.
 
-The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of hospitalization, our focus was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.
+The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of the need for hospitalization.  Our focus in this present study was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.
 
 <h1 id="lit">Prior Studies</h1>
 
-
+Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course *[1](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#),
+*[2](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/).
+  In particular, some children have required admission to the intensive care unit and some have developed a multi-system inflammatory syndrome *[3](https://pubmed.ncbi.nlm.nih.gov/32598831/).  Fortunately, most children in the community seem to fare well with few developing critical illness.
 
 <h1 id="tidying">Tidying The Data</h1>
 
@@ -281,6 +283,7 @@ glm(
   ) %>% 
   select(term, OR, starts_with("CI"), p.value) %>% 
   knitr::kable(digits = 3)
+model
 ```
 
 
@@ -528,6 +531,11 @@ Code for the shiny app can be found at [Lusha's github](https://github.com/lusha
 
 <h1 id="discussion">Discussion</h1>
 
+We performed an exploratory analysis of a dataset of 375 pediatric patients who tested positive for COVID-19 and assessed predictors for hospitalization.  We found age, obesity, and diabetes were associated with the need for hospitalization in multivariate logistic regression modeling.  Gender, ethnicity, and asthma were not found to be significantly associated with the need for hospitalization.  There are a number of important limitations in this dataset that may affect the validity of the study results.  First, the availability of testing was limited in the early phases of the COVID-19 pandemic.  This decreased its diagnostic utility, with SARS-CoV-2 RT PCR testing done in a confirmatory manner sometimes after the decision to admit was already made.  This differential testing may affect the validity of study results.  The sample size of 375 from a single tertiary care medical center is also limited, reflecting the relative overall decreased severity of illness of COVID-19 in pediatric patients compared to adults.  Asthma was coded in a simplistic manner that does not reflect the complexity of this comorbidity.  For example, asthma can vary in severity from, for example, mild intermittent to status asthmaticus.  Our coding of asthma does not capture the gradient of disease severity.  Obesity was also coded as a simple binary variable with a BMI cut-point of 30.  In reality, obesity in children is defined by the 95th percentile of BMI, which varies by age.
 
+Finally, the clinical decision to admit a pediatric patient with confirmed or suspected COVID-19 infection is a complex one.  This dataset contained limited information about vital signs such as respiratory rate or oxygen saturation, which reflect acute respiratory distress.  While past medical history is important, acute changes in a child's pulmonary status are more clinically important in the decision to admit or not admit.  These data were not available in this dataset.  Notwithstanding these limitations, the exploratory data analyses in this project set the foundation for future research, which should take into account additional clinical data.
 
 <h1 id="refs">References</h1>
+1. Kim L, Whitaker M, O’Halloran A, et al. Hospitalization Rates and Characteristics of Children Aged <18 Years Hospitalized with Laboratory-Confirmed COVID-19 — COVID-NET, 14 States, March 1–July 25, 2020. MMWR Morb Mortal Wkly Rep 2020;69:1081–1088. DOI: http://dx.doi.org/10.15585/mmwr.mm6932e3
+2. Chao JY, Derespina K, Herold BC, et al. Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with Coronavirus Disease 2019 at a Tertiary Care Medical Center in New York City. J Pediatr 2020 Aug;223:14-19.e2.  doi: 10.1016/j.jpeds.2020.05.006.  Epub 2020 May 11.
+3. Feldstein L, Rose RB, Horwitz SM, et al. Multisystem Inflammatory Syndrome in U.S. Children and Adolescents N Eng J Med 2020 Jul 23;383(4):334-346. doi: 10.1056/NEJMoa2021680.  Epub 2020 Jun 29.

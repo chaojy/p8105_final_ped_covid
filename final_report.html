@@ -311,10 +311,7 @@ $(document).ready(function () {
 </div>
 
 
-<div class="figure">
-<img src="images/fever.jpg" alt="fever" />
-<p class="caption">fever</p>
-</div>
+<p><img src="images/fever.jpg" style="width:75%"></p>
 <div id="table-of-contents" class="section level1">
 <h1>Table of Contents</h1>
 <ul>
@@ -349,10 +346,11 @@ Introduction
 <div id="the-dataset" class="section level2">
 <h2>The Dataset</h2>
 <p>The dataset contains de-identified patient health information consisting of age (from 0 to up to 23 years), demographic data (including biological sex, zip code of residence, and a socioeconomic status variable), whether there was a preceding visit to the Emergency Department, any past medical history of asthma, obesity, and/or diabetes, and whether there was an admission to the intensive care unit.</p>
-<p>The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of hospitalization, our focus was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.</p>
+<p>The goal of this project was to perform an exploratory analysis of this dataset in order to begin to assess the risk factors associated with pediatric hospitalization for COVID-19 infection. Prior studies have shown that clinical features including low oxygen saturation and abnormal chest imaging are predictive of the need for hospitalization. Our focus in this present study was more on demographic characteristics and pre-existing comorbidities. We hypothesize that increasing age, a past medical history of asthma, obesity, and diabetes are positively associated with hospitalization.</p>
 <h1 id="lit">
 Prior Studies
 </h1>
+<p>Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course <em><a href="https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#">1</a>, </em><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/">2</a>. In particular, some children have required admission to the intensive care unit and some have developed a multi-system inflammatory syndrome *<a href="https://pubmed.ncbi.nlm.nih.gov/32598831/">3</a>. Fortunately, most children in the community seem to fare well with few developing critical illness.</p>
 <h1 id="tidying">
 Tidying The Data
 </h1>
@@ -555,7 +553,91 @@ glm(
     CI_upper = exp(estimate + 1.96 * std.error)
   ) %&gt;% 
   select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
-  knitr::kable(digits = 3)</code></pre>
+  knitr::kable(digits = 3)
+model</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">5.101</td>
+<td align="right">1.134</td>
+<td align="right">22.939</td>
+<td align="right">0.034</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.938</td>
+<td align="right">0.897</td>
+<td align="right">0.981</td>
+<td align="right">0.005</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.728</td>
+<td align="right">0.409</td>
+<td align="right">1.295</td>
+<td align="right">0.280</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.336</td>
+<td align="right">0.086</td>
+<td align="right">1.318</td>
+<td align="right">0.118</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.344</td>
+<td align="right">0.092</td>
+<td align="right">1.286</td>
+<td align="right">0.113</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.323</td>
+<td align="right">0.044</td>
+<td align="right">2.371</td>
+<td align="right">0.266</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
+<td align="right">0.000</td>
+<td align="right">0.000</td>
+<td align="right">Inf</td>
+<td align="right">0.986</td>
+</tr>
+<tr class="even">
+<td align="left">asthma1</td>
+<td align="right">0.931</td>
+<td align="right">0.468</td>
+<td align="right">1.856</td>
+<td align="right">0.840</td>
+</tr>
+<tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">3.764</td>
+<td align="right">1.100</td>
+<td align="right">12.880</td>
+<td align="right">0.035</td>
+</tr>
+<tr class="even">
+<td align="left">obesity1</td>
+<td align="right">2.166</td>
+<td align="right">1.070</td>
+<td align="right">4.384</td>
+<td align="right">0.032</td>
+</tr>
+</tbody>
+</table>
 <pre class="r"><code>  initial_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = &quot;logit&quot;), 
@@ -1284,8 +1366,8 @@ Fitting mtry = 2, splitrule = gini, min.node.size = 1 on full training set</code
 pred_rf = pred_rf$yes
 auc_rf = as.numeric(ROCR::performance(prediction(pred_rf,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_rf</code></pre>
-<pre><code>[1] 0.612025</code></pre>
-<p>Our AUC with the random forest model is 0.612025.</p>
+<pre><code>[1] 0.5609756</code></pre>
+<p>Our AUC with the random forest model is 0.5609756.</p>
 </div>
 <div id="xgboost-model" class="section level2">
 <h2>XGBoost Model</h2>
@@ -1320,8 +1402,8 @@ pred_xgb = predict(fit_xgb,test_data,type=&quot;prob&quot;)
 pred_xgb = pred_xgb$yes
 auc_xgb = as.numeric(ROCR::performance(ROCR::prediction(pred_xgb,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_xgb</code></pre>
-<pre><code>[1] 0.5960011</code></pre>
-<p>The AUC generated by the XGB model is 0.5960011.</p>
+<pre><code>[1] 0.6304594</code></pre>
+<p>The AUC generated by the XGB model is 0.6304594.</p>
 </div>
 <div id="glmnet-model" class="section level2">
 <h2>Glmnet Model</h2>
@@ -1387,13 +1469,13 @@ glmnetmodel = caret::train(
 - Fold10: alpha=1, lambda=1 
 Aggregating results
 Selecting tuning parameters
-Fitting alpha = 1, lambda = 1e-04 on full training set</code></pre>
+Fitting alpha = 1, lambda = 0.0527 on full training set</code></pre>
 <pre class="r"><code>pred_glmnet = predict(glmnetmodel,test_data,type=&quot;prob&quot;) 
 pred_glmnet = pred_glmnet$yes
 auc_glmnet = as.numeric(ROCR::performance(prediction(pred_glmnet,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_glmnet</code></pre>
-<pre><code>[1] 0.5711855</code></pre>
-<p>The AUC of the glmnet model is 0.5711855.</p>
+<pre><code>[1] 0.6202496</code></pre>
+<p>The AUC of the glmnet model is 0.6202496.</p>
 </div>
 <div id="spls-model" class="section level2">
 <h2>SPLS Model</h2>
@@ -1414,15 +1496,22 @@ pred_plsda = predict(plsFit,test_data,type=&quot;prob&quot;)
 pred_plsda = pred_plsda$yes
 auc_plsda = as.numeric(ROCR::performance(prediction(pred_plsda,test_data$admitted),&quot;auc&quot;)@y.values)
 auc_plsda</code></pre>
-<p>The AUC for the SPLS model is 0.6240783.</p>
+<p>The AUC for the SPLS model is 0.6101815.</p>
 <p>Overall, all the AUCs are much lower than what would be considered useful in clinical practice. However, given that the goal of our analyses is mainly exploratory at this point, we then built an interactive predictive tool allowing users to see the effects of changing certain predictors on risk of hospitalization. Results should clearly be interpreted with caution and the models will benefit from the addition of other predictors which can be added on as this dataset grows. We ultimately chose to use the random forest model, given similar AUCs between each of the models and the relatively quick speed at which the random forest model generates its predictions.</p>
 <p>Code for the shiny app can be found at <a href="https://github.com/lushaliang/shiny">Lusha’s github</a>.</p>
 <h1 id="discussion">
 Discussion
 </h1>
+<p>We performed an exploratory analysis of a dataset of 375 pediatric patients who tested positive for COVID-19 and assessed predictors for hospitalization. We found age, obesity, and diabetes were associated with the need for hospitalization in multivariate logistic regression modeling. Gender, ethnicity, and asthma were not found to be significantly associated with the need for hospitalization. There are a number of important limitations in this dataset that may affect the validity of the study results. First, the availability of testing was limited in the early phases of the COVID-19 pandemic. This decreased its diagnostic utility, with SARS-CoV-2 RT PCR testing done in a confirmatory manner sometimes after the decision to admit was already made. This differential testing may affect the validity of study results. The sample size of 375 from a single tertiary care medical center is also limited, reflecting the relative overall decreased severity of illness of COVID-19 in pediatric patients compared to adults. Asthma was coded in a simplistic manner that does not reflect the complexity of this comorbidity. For example, asthma can vary in severity from, for example, mild intermittent to status asthmaticus. Our coding of asthma does not capture the gradient of disease severity. Obesity was also coded as a simple binary variable with a BMI cut-point of 30. In reality, obesity in children is defined by the 95th percentile of BMI, which varies by age.</p>
+<p>Finally, the clinical decision to admit a pediatric patient with confirmed or suspected COVID-19 infection is a complex one. This dataset contained limited information about vital signs such as respiratory rate or oxygen saturation, which reflect acute respiratory distress. While past medical history is important, acute changes in a child’s pulmonary status are more clinically important in the decision to admit or not admit. These data were not available in this dataset. Notwithstanding these limitations, the exploratory data analyses in this project set the foundation for future research, which should take into account additional clinical data.</p>
 <h1 id="refs">
 References
 </h1>
+<ol style="list-style-type: decimal">
+<li>Kim L, Whitaker M, O’Halloran A, et al. Hospitalization Rates and Characteristics of Children Aged &lt;18 Years Hospitalized with Laboratory-Confirmed COVID-19 — COVID-NET, 14 States, March 1–July 25, 2020. MMWR Morb Mortal Wkly Rep 2020;69:1081–1088. DOI: <a href="http://dx.doi.org/10.15585/mmwr.mm6932e3" class="uri">http://dx.doi.org/10.15585/mmwr.mm6932e3</a></li>
+<li>Chao JY, Derespina K, Herold BC, et al. Clinical Characteristics and Outcomes of Hospitalized and Critically Ill Children and Adolescents with Coronavirus Disease 2019 at a Tertiary Care Medical Center in New York City. J Pediatr 2020 Aug;223:14-19.e2. doi: 10.1016/j.jpeds.2020.05.006. Epub 2020 May 11.</li>
+<li>Feldstein L, Rose RB, Horwitz SM, et al. Multisystem Inflammatory Syndrome in U.S. Children and Adolescents N Eng J Med 2020 Jul 23;383(4):334-346. doi: 10.1056/NEJMoa2021680. Epub 2020 Jun 29.</li>
+</ol>
 </div>
 </div>
 
