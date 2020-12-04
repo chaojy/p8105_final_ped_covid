@@ -10,6 +10,8 @@ editor_options:
   chunk_output_type: console
 ---
 
+#### Created by: Jerry Chao (JYC2171), Sal El-Sadek (SNE2114), Kyung Suk Lee (KL3069), and Lusha Liang (LL3344)
+
 <img src="images/intro.jpeg" style="width:75%">
 
 ## Introduction

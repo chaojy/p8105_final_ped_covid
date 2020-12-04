@@ -1,6 +1,6 @@
 ---
 title: "Predictors of Hospitalization in Pediatric Patients with COVID-19 "
-output: github_document
+output: html_document
 ---
 
 <img src="images/fever.jpg" style="width:75%">
@@ -43,7 +43,7 @@ The goal of this project was to perform an exploratory analysis of this dataset 
 
 <h1 id="lit">Prior Studies</h1>
 
-Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course ^[4](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#^, ^[5](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)^.
+Prior studies in children have focused on the clinical characteristics after hospitalization, as well as hospital course ^[4](https://www.cdc.gov/mmwr/volumes/69/wr/mm6932e3.htm#)^, ^[5](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7212947/)^.
 In particular, some children have required admission to the intensive care unit and some have developed a multi-system inflammatory syndrome ^[6](https://pubmed.ncbi.nlm.nih.gov/32598831/)^.  Fortunately, most children in the community seem to fare well with few developing critical illness.
 
 <h1 id="tidying">Tidying The Data</h1>
