@@ -8,8 +8,6 @@ navbar:
       href: statistical_analysis.html
     - text: "Dashboard"
       href: map_viz_kyung.html
-    - text: "Model Building"
-      href: model_building.html
     - text: "Interactive Prediction Tool"
       href: https://ll3344.shinyapps.io/shiny/
     - icon: fa-video fa-2x

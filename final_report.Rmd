@@ -1,9 +1,9 @@
 ---
-title: "Predictors of Hospitalization in Pediatric Patients with COVID-19 "
+title: "Predictors of Hospitalization in Pediatric Patients with COVID-19"
 output: github_document
 ---
 
-<img src="images/fever.jpg" style="width:75%">
+![fever](./images/fever.jpg)
 
 # Table of Contents
 
