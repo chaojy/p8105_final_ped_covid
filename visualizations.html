@@ -23,19 +23,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -292,22 +281,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="visualizations.html">Visualizations</a>
-</li>
-<li>
   <a href="statistical_analysis.html">Exploratory Analysis</a>
 </li>
 <li>
-  <a href="model_building.html">Model Building</a>
-</li>
-<li>
-  <a href="map_viz_kyung.html">Interactive Maps</a>
-</li>
-<li>
-  <a href="proposal.html">Project Report</a>
+  <a href="map_viz_kyung.html">Dashboard</a>
 </li>
 <li>
   <a href="https://ll3344.shinyapps.io/shiny/">Interactive Prediction Tool</a>
+</li>
+<li>
+  <a href="final_report.html">Final Report</a>
 </li>
 <li>
   <a href="screencast.html">
@@ -343,6 +326,7 @@ $(document).ready(function () {
 </div>
 
 
+<p>The initial dataset required some tidying before use. The code below loads in the data csv file and tidies the data. There were also a number of missing values in the dataset. We used the dataset (“ped_covid”) with missing values in our visualizations of the data. However, for use in model building, we created a separate dataset (datacomplete) using the mice package. This package uses sequential regression multiple imputation, which is advantageous over single imputations in that it accounts for the statistical uncertainty in the imputation process.</p>
 <pre class="r"><code>library(tidyverse)
 library(usa)
 library(mice)
@@ -361,9 +345,9 @@ options(
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
-knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
-<p>Read in and tidy the data.</p>
-<pre class="r"><code># Load and tidy data
+knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
+
+# Load and tidy data
 ped_covid =
   read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;) %&gt;%
   mutate(
@@ -390,8 +374,9 @@ ped_covid =
   mutate(obesity = case_when(
     bmi_value &gt;= 30 ~ &quot;1&quot;,
     bmi_value &lt; 30 ~&quot;0&quot;
-  ))</code></pre>
-<pre class="r"><code># Merge zipcode data with latitude and longitude.
+  ))
+
+# Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
 
@@ -406,50 +391,51 @@ ped_covid =
     gender = factor(gender, levels = c(&quot;F&quot;, &quot;M&quot;)),
     ethnicity_race = factor(ethnicity_race, levels = c(&quot;caucasian&quot;, &quot;black&quot;, &quot;latino&quot;, &quot;asian&quot;, &quot;american indian&quot;, &quot;multiple&quot;, &quot;NA&quot;))
   ) %&gt;%
-  rename(city = city.y) </code></pre>
-<pre class="r"><code># Impute missing data
+  rename(city = city.y) 
+
+# Impute missing data for use in model_building
 impute = mice(ped_covid, m=3, seed=111)</code></pre>
-<pre><code>
- iter imp variable
-  1   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  1   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  1   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  2   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  2   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  2   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  3   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  3   2  gender  ses  bmi_value  systolic_bp_value*  ethnicity_race  city  obesity  lat  long
-  3   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  4   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  4   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  4   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  5   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  5   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
-  5   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long</code></pre>
-<pre class="r"><code>datacomplete = complete(impute,2)</code></pre>
-<pre class="r"><code># Export csv
+<pre><code>## 
+##  iter imp variable
+##   1   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   1   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   1   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   2   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   2   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   2   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   3   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   3   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   3   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   4   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   4   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   4   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   5   1  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   5   2  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long
+##   5   3  gender  ses  bmi_value  systolic_bp_value  ethnicity_race  city  obesity  lat  long</code></pre>
+<pre class="r"><code>datacomplete = complete(impute,2)
+
+# Export csv
 write_csv(datacomplete, &quot;datacomplete.csv&quot;)</code></pre>
-<p>Some exploratory data visualizations</p>
 <pre class="r"><code>#bunch of ggplots
 ped_covid %&gt;% 
   ggplot(aes(x = admitted, y = age)) +
   geom_boxplot()</code></pre>
-<p><img src="visualizations_files/figure-html/unnamed-chunk-5-1.png" width="90%" /></p>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-2-1.png" width="90%" /></p>
 <pre class="r"><code>ped_covid %&gt;% 
   filter(
     gender != &quot;NA&quot;
   ) %&gt;% 
   ggplot(aes(x = gender, y = age)) +
   geom_boxplot()</code></pre>
-<p><img src="visualizations_files/figure-html/unnamed-chunk-5-2.png" width="90%" /></p>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-2-2.png" width="90%" /></p>
 <pre class="r"><code>ped_covid %&gt;% 
   ggplot(aes(x = admitted, y = ses)) +
   geom_boxplot()</code></pre>
-<p><img src="visualizations_files/figure-html/unnamed-chunk-5-3.png" width="90%" /></p>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-2-3.png" width="90%" /></p>
 <pre class="r"><code>ped_covid %&gt;% 
   ggplot(aes(x = admitted, y = bmi_value)) +
   geom_boxplot()</code></pre>
-<p><img src="visualizations_files/figure-html/unnamed-chunk-5-4.png" width="90%" /></p>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-2-4.png" width="90%" /></p>
 <pre class="r"><code>ped_covid %&gt;% 
   count(icu)</code></pre>
 <pre><code># A tibble: 2 x 2
@@ -471,7 +457,7 @@ ped_covid %&gt;%
 <pre class="r"><code>ped_covid %&gt;% 
   ggplot(aes(x = ethnicity_race)) + 
   geom_boxplot()</code></pre>
-<p><img src="visualizations_files/figure-html/unnamed-chunk-5-5.png" width="90%" /></p>
+<p><img src="visualizations_files/figure-html/unnamed-chunk-2-5.png" width="90%" /></p>
 <p>Univariate models</p>
 <pre class="r"><code>#bunch of univariate logisitic regression models
 glm(
@@ -680,7 +666,7 @@ Obesity (defined as a BMI &gt; 30) was associated with an almost 2.2 times incre
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

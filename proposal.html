@@ -11,7 +11,7 @@
 
 <meta name="author" content="Jerry Chao, Lusha Liang, Sal El-Sadek, Kyung Suk Lee" />
 
-<meta name="date" content="2020-12-01" />
+<meta name="date" content="2020-12-04" />
 
 <title>Final Project Report</title>
 
@@ -25,19 +25,8 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
-<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
-<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
-
-<style type="text/css">
-  code{white-space: pre-wrap;}
-  span.smallcaps{font-variant: small-caps;}
-  span.underline{text-decoration: underline;}
-  div.column{display: inline-block; vertical-align: top; width: 50%;}
-  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
-  ul.task-list{list-style: none;}
-    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -294,22 +283,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="visualizations.html">Visualizations</a>
-</li>
-<li>
   <a href="statistical_analysis.html">Exploratory Analysis</a>
 </li>
 <li>
-  <a href="model_building.html">Model Building</a>
-</li>
-<li>
-  <a href="map_viz_kyung.html">Interactive Maps</a>
-</li>
-<li>
-  <a href="proposal.html">Project Report</a>
+  <a href="map_viz_kyung.html">Dashboard</a>
 </li>
 <li>
   <a href="https://ll3344.shinyapps.io/shiny/">Interactive Prediction Tool</a>
+</li>
+<li>
+  <a href="final_report.html">Final Report</a>
 </li>
 <li>
   <a href="screencast.html">
@@ -342,7 +325,7 @@ $(document).ready(function () {
 
 <h1 class="title toc-ignore">Final Project Report</h1>
 <h4 class="author">Jerry Chao, Lusha Liang, Sal El-Sadek, Kyung Suk Lee</h4>
-<h4 class="date">2020-12-01</h4>
+<h4 class="date">2020-12-04</h4>
 
 </div>
 
@@ -392,13 +375,13 @@ ped_covid %&gt;%
 <pre><code># A tibble: 6 x 30
      id admitted   age date_of_birth ethnicity gender censusblock
   &lt;dbl&gt; &lt;chr&gt;    &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;     &lt;chr&gt;        &lt;dbl&gt;
-1     1 no          17 8/10/2003 0:~ E2 Not S~ M          3.60e14
-2     2 no          22 5/26/1998 0:~ E2 Not S~ M          3.60e14
-3     3 yes         22 8/12/1997 0:~ E1 Spani~ M          3.61e14
-4     4 no          19 5/17/2000 0:~ E1 Spani~ M          3.60e14
-5     5 no          20 1/17/2000 0:~ E1 Spani~ F          3.60e14
-6     6 yes         21 12/18/1998 0~ E1 Spani~ M         NA      
-# ... with 23 more variables: censusblockgroup &lt;dbl&gt;, censustract &lt;dbl&gt;,
+1     1 no          17 8/10/2003 0:… E2 Not S… M          3.60e14
+2     2 no          22 5/26/1998 0:… E2 Not S… M          3.60e14
+3     3 yes         22 8/12/1997 0:… E1 Spani… M          3.61e14
+4     4 no          19 5/17/2000 0:… E1 Spani… M          3.60e14
+5     5 no          20 1/17/2000 0:… E1 Spani… F          3.60e14
+6     6 yes         21 12/18/1998 0… E1 Spani… M         NA      
+# … with 23 more variables: censusblockgroup &lt;dbl&gt;, censustract &lt;dbl&gt;,
 #   city &lt;chr&gt;, race &lt;chr&gt;, ses &lt;dbl&gt;, state &lt;chr&gt;, zip_code_set &lt;dbl&gt;,
 #   eventdatetime &lt;chr&gt;,
 #   outcomeadmission_admission_1inpatient_admit_service &lt;chr&gt;,
@@ -497,7 +480,7 @@ ped_covid %&gt;%
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

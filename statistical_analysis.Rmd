@@ -35,129 +35,9 @@ scale_fill_discrete = scale_fill_viridis_d
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-## Data import and tidy
+Load data and tidy. 
 
 ```{r}
-data_stats = read_csv("./datacomplete.csv") %>% 
-  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender", "obesity", "icu"), as.factor) %>% 
-  select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
-
-summary(data_stats)
-```
-
-## Dataset exploration
-
-This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various ggplots.
-
-### Age
-
-There appears to be a bimodal distribution of hospital admission as a function of age.  Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted.  However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.
-
-Some pediatric patients require admission to the Intensive Care Unit (ICU).  Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age.  Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.
-```{r, density admit}
-admitt_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = admitted)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Admittance/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-icu_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = icu)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "ICU/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-admitt_p / icu_p
-```
-
-### Obesity, diabetes, and asthma
-
-The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
-
-```{r}
-obesity_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = obesity)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Obesity/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-diabetes_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = diabetes)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Diabetes/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-asthma_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = asthma)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Asthma/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-obesity_p / diabetes_p / asthma_p
-```
-
-### Box plots
-
-Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
-
-```{r, boxplots}
-bp_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = systolic_bp_value)) +
-  geom_boxplot() +
-  labs(
-    title = "Systolic Blood Pressure by Admission Status",
-    x = "Hospital Admission Status",
-    y = "Systolic Blood Pressure")
-
-bmi_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = bmi_value)) +
-  geom_boxplot() +
-  labs(
-    title = "BMI by Admission Status",
-    x = "Hospital Admission Status",
-    y = "BMI Value")
-
-ses_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = ses)) +
-  geom_boxplot() +
-  labs(
-    title = "Socioeconomic Status by Admission Status",
-    x = "Hospital Admission Status",
-    y = "SES Measure")
-
-bp_p / bmi_p / ses_p
-```
-
-Possible Models
-
-```{r}
-##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
-
-##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
-
 ped_covid =
   read_csv("./data/p8105_final_ped_covid.csv") %>%
   mutate(
@@ -185,7 +65,10 @@ ped_covid =
     bmi_value >= 30 ~ "1",
     bmi_value < 30 ~"0"
   ))
+```
 
+```{r zipcode}
+# Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
 
@@ -200,7 +83,109 @@ ped_covid =
     gender = factor(gender, levels = c("F", "M")),
     ethnicity_race = factor(ethnicity_race, levels = c("caucasian", "black", "latino", "asian", "american indian", "multiple", "NA"))
   ) %>%
-  rename(city = city.y)
+  rename(city = city.y) 
+```
+
+## Dataset exploration
+
+This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various ggplots.
+
+### Age
+
+There appears to be a bimodal distribution of hospital admission as a function of age.  Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted.  However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.
+
+Some pediatric patients require admission to the Intensive Care Unit (ICU).  Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age.  Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.
+
+```{r, density admit}
+ped_covid %>% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Admittance/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+ped_covid %>% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "ICU/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+```
+
+### Obesity, diabetes, and asthma
+
+The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
+
+```{r}
+ped_covid %>% 
+  ggplot(aes(x = age, fill = obesity)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Obesity/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+ped_covid %>% 
+  ggplot(aes(x = age, fill = diabetes)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Diabetes/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+ped_covid %>% 
+  ggplot(aes(x = age, fill = asthma)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Asthma/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+```
+
+### Box plots
+
+Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
+
+```{r, boxplots}
+ped_covid %>% 
+  ggplot(aes(x = icu, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = "Systolic Blood Pressure by Admission Status",
+    x = "Hospital Admission Status",
+    y = "Systolic Blood Pressure")
+
+ped_covid %>% 
+  ggplot(aes(x = icu, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = "BMI by Admission Status",
+    x = "Hospital Admission Status",
+    y = "BMI Value")
+
+ped_covid %>% 
+  ggplot(aes(x = icu, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = "Socioeconomic Status by Admission Status",
+    x = "Hospital Admission Status",
+    y = "SES Measure")
+```
+```
+
+Possible Models
+
+```{r}
+##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
+
+##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
 
 jerry_model =
 glm(
@@ -220,10 +205,10 @@ glm(
 
 
 ```{r, initial}
-  initial_fit = 
+initial_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 
@@ -239,7 +224,7 @@ initial_fit
 complex_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 
@@ -251,7 +236,7 @@ complex_fit
 play_fit = 
   glm(admitted ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 
@@ -265,7 +250,7 @@ Asthma and Diabetes seem to be important predictors
 icu1_fit = 
   glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 
@@ -275,7 +260,7 @@ icu1_fit
 icu2_fit = 
   glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 
@@ -285,7 +270,7 @@ icu2_fit
 icu3_fit = 
   glm(icu ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = "logit"), 
-      data = data_stats) %>% 
+      data = ped_covid) %>% 
   broom::tidy() %>% 
   mutate(OR = exp(estimate)) %>% 
   select(term, p.value, everything()) %>% 

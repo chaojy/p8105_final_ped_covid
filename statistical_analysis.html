@@ -281,22 +281,16 @@ $(document).ready(function () {
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="visualizations.html">Visualizations</a>
-</li>
-<li>
   <a href="statistical_analysis.html">Exploratory Analysis</a>
 </li>
 <li>
-  <a href="model_building.html">Model Building</a>
-</li>
-<li>
-  <a href="map_viz_kyung.html">Interactive Maps</a>
-</li>
-<li>
-  <a href="proposal.html">Project Report</a>
+  <a href="map_viz_kyung.html">Dashboard</a>
 </li>
 <li>
   <a href="https://ll3344.shinyapps.io/shiny/">Interactive Prediction Tool</a>
+</li>
+<li>
+  <a href="final_report.html">Final Report</a>
 </li>
 <li>
   <a href="screencast.html">
@@ -334,20 +328,12 @@ $(document).ready(function () {
 
 <div id="setup" class="section level2">
 <h2>Setup</h2>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ───────────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
-## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ──────────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
-<pre class="r"><code>library(aod)
+<pre class="r"><code>library(tidyverse)
+library(aod)
 library(patchwork)
-library(ResourceSelection)</code></pre>
-<pre><code>## ResourceSelection 0.3-5   2019-07-22</code></pre>
-<pre class="r"><code>knitr::opts_chunk$set(
+library(ResourceSelection)
+
+knitr::opts_chunk$set(
   fig.width = 6,
   fig.asp = 1.1,
   out.width = &quot;100%&quot;)
@@ -362,133 +348,8 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
-</div>
-<div id="data-import-and-tidy" class="section level2">
-<h2>Data import and tidy</h2>
-<pre class="r"><code>data_stats = read_csv(&quot;./datacomplete.csv&quot;) %&gt;% 
-  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;, &quot;gender&quot;, &quot;obesity&quot;, &quot;icu&quot;), as.factor) %&gt;% 
-  select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
-
-summary(data_stats)</code></pre>
-<pre><code> admitted  icu          age                ethnicity_race gender 
- no :250   0:355   Min.   : 0.00   american indian:  2    F:190  
- yes:125   1: 20   1st Qu.:10.00   asian          : 14    M:185  
-                   Median :18.00   black          : 92           
-                   Mean   :14.63   caucasian      : 21           
-                   3rd Qu.:21.00   latino         :228           
-                   Max.   :22.00   multiple       : 18           
-      ses          obesity   bmi_value     systolic_bp_value asthma  diabetes
- Min.   :-13.506   0:249   Min.   :12.03   Min.   : 61.0     0:314   0:358   
- 1st Qu.: -6.496   1:126   1st Qu.:19.04   1st Qu.:103.0     1: 61   1: 17   
- Median : -3.637           Median :24.03   Median :117.0                     
- Mean   : -3.892           Mean   :26.54   Mean   :115.3                     
- 3rd Qu.: -1.419           3rd Qu.:32.12   3rd Qu.:128.0                     
- Max.   :  2.931           Max.   :80.84   Max.   :182.0                     </code></pre>
-</div>
-<div id="dataset-exploration" class="section level2">
-<h2>Dataset exploration</h2>
-<p>This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection. First, we explore the data by generating various ggplots.</p>
-<div id="age" class="section level3">
-<h3>Age</h3>
-<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
-<p>Some pediatric patients require admission to the Intensive Care Unit (ICU). Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age. Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.</p>
-<pre class="r"><code>admitt_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = admitted)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Admittance/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-icu_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = icu)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;ICU/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-admitt_p / icu_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/density%20admit-1.png" width="100%" /></p>
-</div>
-<div id="obesity-diabetes-and-asthma" class="section level3">
-<h3>Obesity, diabetes, and asthma</h3>
-<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is general not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes and asthma as well.</p>
-<pre class="r"><code>obesity_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = obesity)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Obesity/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-diabetes_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = diabetes)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Diabetes/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-asthma_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = asthma)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Asthma/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-obesity_p / diabetes_p / asthma_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
-</div>
-<div id="box-plots" class="section level3">
-<h3>Box plots</h3>
-<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI appears to be similar, with some high BMI outliers in the non-hospitalized group. Median SES is lower among admitted patients.</p>
-<pre class="r"><code>bp_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = systolic_bp_value)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;Systolic Blood Pressure by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;Systolic Blood Pressure&quot;)
-
-bmi_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = bmi_value)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;BMI by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;BMI Value&quot;)
-
-ses_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = ses)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;Socioeconomic Status by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;SES Measure&quot;)
-
-bp_p / bmi_p / ses_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/boxplots-1.png" width="100%" /></p>
-<p>Possible Models</p>
-<pre class="r"><code>##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
-
-##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
-
-ped_covid =
+<p>Load data and tidy.</p>
+<pre class="r"><code>ped_covid =
   read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;) %&gt;%
   mutate(
     ethnicity_race = case_when(
@@ -514,8 +375,8 @@ ped_covid =
   mutate(obesity = case_when(
     bmi_value &gt;= 30 ~ &quot;1&quot;,
     bmi_value &lt; 30 ~&quot;0&quot;
-  ))
-
+  ))</code></pre>
+<pre class="r"><code># Merge zipcode data with latitude and longitude.
 zipcode_df = 
   usa::zipcodes
 
@@ -530,7 +391,96 @@ ped_covid =
     gender = factor(gender, levels = c(&quot;F&quot;, &quot;M&quot;)),
     ethnicity_race = factor(ethnicity_race, levels = c(&quot;caucasian&quot;, &quot;black&quot;, &quot;latino&quot;, &quot;asian&quot;, &quot;american indian&quot;, &quot;multiple&quot;, &quot;NA&quot;))
   ) %&gt;%
-  rename(city = city.y)
+  rename(city = city.y) </code></pre>
+</div>
+<div id="dataset-exploration" class="section level2">
+<h2>Dataset exploration</h2>
+<p>This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection. First, we explore the data by generating various ggplots.</p>
+<div id="age" class="section level3">
+<h3>Age</h3>
+<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
+<p>Some pediatric patients require admission to the Intensive Care Unit (ICU). Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age. Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.</p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Admittance/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/density%20admit-1.png" width="100%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = icu)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;ICU/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/density%20admit-2.png" width="100%" /></p>
+</div>
+<div id="obesity-diabetes-and-asthma" class="section level3">
+<h3>Obesity, diabetes, and asthma</h3>
+<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is general not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes and asthma as well.</p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = obesity)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Obesity/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = diabetes)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Diabetes/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-2.png" width="100%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = asthma)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Asthma/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-3.png" width="100%" /></p>
+</div>
+<div id="box-plots" class="section level3">
+<h3>Box plots</h3>
+<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI appears to be similar, with some high BMI outliers in the non-hospitalized group. Median SES is lower among admitted patients.</p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Systolic Blood Pressure by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;Systolic Blood Pressure&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/boxplots-1.png" width="100%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;BMI by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;BMI Value&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/boxplots-2.png" width="100%" /></p>
+<pre class="r"><code>ped_covid %&gt;% 
+  ggplot(aes(x = icu, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Socioeconomic Status by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;SES Measure&quot;)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/boxplots-3.png" width="100%" /> ```</p>
+<p>Possible Models</p>
+<pre class="r"><code>##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
+
+##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
 
 jerry_model =
 glm(
@@ -546,10 +496,10 @@ glm(
   ) %&gt;% 
   select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
   knitr::kable(digits = 3)</code></pre>
-<pre class="r"><code>  initial_fit = 
+<pre class="r"><code>initial_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -569,91 +519,83 @@ initial_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.981</td>
-<td align="right">-13.979</td>
-<td align="right">589.290</td>
-<td align="right">-0.024</td>
-<td align="right">0.000</td>
+<td align="right">0.034</td>
+<td align="right">1.629</td>
+<td align="right">0.767</td>
+<td align="right">2.124</td>
+<td align="right">5.101</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.001</td>
-<td align="right">-0.055</td>
-<td align="right">0.017</td>
-<td align="right">-3.266</td>
-<td align="right">0.946</td>
+<td align="right">0.005</td>
+<td align="right">-0.064</td>
+<td align="right">0.023</td>
+<td align="right">-2.793</td>
+<td align="right">0.938</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.879</td>
-<td align="right">-0.035</td>
-<td align="right">0.232</td>
-<td align="right">-0.152</td>
-<td align="right">0.965</td>
+<td align="right">0.280</td>
+<td align="right">-0.318</td>
+<td align="right">0.294</td>
+<td align="right">-1.081</td>
+<td align="right">0.728</td>
 </tr>
 <tr class="even">
-<td align="left">ethnicity_raceasian</td>
-<td align="right">0.981</td>
-<td align="right">14.317</td>
-<td align="right">589.291</td>
-<td align="right">0.024</td>
-<td align="right">1651035.500</td>
-</tr>
-<tr class="odd">
 <td align="left">ethnicity_raceblack</td>
-<td align="right">0.981</td>
-<td align="right">13.905</td>
-<td align="right">589.290</td>
-<td align="right">0.024</td>
-<td align="right">1093265.497</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racecaucasian</td>
-<td align="right">0.981</td>
-<td align="right">14.182</td>
-<td align="right">589.290</td>
-<td align="right">0.024</td>
-<td align="right">1442205.018</td>
+<td align="right">0.118</td>
+<td align="right">-1.089</td>
+<td align="right">0.697</td>
+<td align="right">-1.564</td>
+<td align="right">0.336</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
-<td align="right">0.981</td>
-<td align="right">13.892</td>
-<td align="right">589.290</td>
-<td align="right">0.024</td>
-<td align="right">1079344.536</td>
+<td align="right">0.113</td>
+<td align="right">-1.068</td>
+<td align="right">0.673</td>
+<td align="right">-1.586</td>
+<td align="right">0.344</td>
 </tr>
 <tr class="even">
-<td align="left">ethnicity_racemultiple</td>
-<td align="right">0.982</td>
-<td align="right">13.242</td>
-<td align="right">589.291</td>
-<td align="right">0.022</td>
-<td align="right">563779.889</td>
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.266</td>
+<td align="right">-1.131</td>
+<td align="right">1.018</td>
+<td align="right">-1.112</td>
+<td align="right">0.323</td>
 </tr>
 <tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
+<td align="right">0.986</td>
+<td align="right">-15.872</td>
+<td align="right">882.744</td>
+<td align="right">-0.018</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="even">
 <td align="left">asthma1</td>
-<td align="right">0.074</td>
-<td align="right">0.562</td>
-<td align="right">0.315</td>
-<td align="right">1.788</td>
-<td align="right">1.755</td>
-</tr>
-<tr class="even">
-<td align="left">diabetes1</td>
-<td align="right">0.001</td>
-<td align="right">2.035</td>
-<td align="right">0.598</td>
-<td align="right">3.403</td>
-<td align="right">7.651</td>
+<td align="right">0.840</td>
+<td align="right">-0.071</td>
+<td align="right">0.352</td>
+<td align="right">-0.202</td>
+<td align="right">0.931</td>
 </tr>
 <tr class="odd">
+<td align="left">diabetes1</td>
+<td align="right">0.035</td>
+<td align="right">1.325</td>
+<td align="right">0.628</td>
+<td align="right">2.111</td>
+<td align="right">3.764</td>
+</tr>
+<tr class="even">
 <td align="left">obesity1</td>
-<td align="right">0.982</td>
-<td align="right">-0.006</td>
-<td align="right">0.278</td>
-<td align="right">-0.023</td>
-<td align="right">0.994</td>
+<td align="right">0.032</td>
+<td align="right">0.773</td>
+<td align="right">0.360</td>
+<td align="right">2.148</td>
+<td align="right">2.166</td>
 </tr>
 </tbody>
 </table>
@@ -663,7 +605,7 @@ initial_fit</code></pre>
 <pre class="r"><code>complex_fit = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -683,114 +625,98 @@ complex_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.980</td>
-<td align="right">-14.922</td>
-<td align="right">594.624</td>
-<td align="right">-0.025</td>
-<td align="right">0.000</td>
+<td align="right">0.996</td>
+<td align="right">18.449</td>
+<td align="right">4081.440</td>
+<td align="right">0.005</td>
+<td align="right">1.029231e+08</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.000</td>
-<td align="right">-0.074</td>
-<td align="right">0.021</td>
-<td align="right">-3.562</td>
-<td align="right">0.928</td>
+<td align="right">0.202</td>
+<td align="right">-0.138</td>
+<td align="right">0.108</td>
+<td align="right">-1.276</td>
+<td align="right">8.710000e-01</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.515</td>
-<td align="right">-0.162</td>
-<td align="right">0.248</td>
-<td align="right">-0.652</td>
-<td align="right">0.851</td>
+<td align="right">0.178</td>
+<td align="right">-1.088</td>
+<td align="right">0.808</td>
+<td align="right">-1.347</td>
+<td align="right">3.370000e-01</td>
 </tr>
 <tr class="even">
-<td align="left">ethnicity_raceasian</td>
-<td align="right">0.981</td>
-<td align="right">14.152</td>
-<td align="right">594.623</td>
-<td align="right">0.024</td>
-<td align="right">1399857.334</td>
-</tr>
-<tr class="odd">
 <td align="left">ethnicity_raceblack</td>
-<td align="right">0.982</td>
-<td align="right">13.666</td>
-<td align="right">594.623</td>
-<td align="right">0.023</td>
-<td align="right">861156.133</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racecaucasian</td>
-<td align="right">0.981</td>
-<td align="right">13.993</td>
-<td align="right">594.623</td>
-<td align="right">0.024</td>
-<td align="right">1193750.504</td>
+<td align="right">0.997</td>
+<td align="right">-17.730</td>
+<td align="right">4081.438</td>
+<td align="right">-0.004</td>
+<td align="right">0.000000e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
-<td align="right">0.982</td>
-<td align="right">13.621</td>
-<td align="right">594.623</td>
-<td align="right">0.023</td>
-<td align="right">823267.319</td>
+<td align="right">0.997</td>
+<td align="right">-17.559</td>
+<td align="right">4081.438</td>
+<td align="right">-0.004</td>
+<td align="right">0.000000e+00</td>
 </tr>
 <tr class="even">
-<td align="left">ethnicity_racemultiple</td>
-<td align="right">0.982</td>
-<td align="right">13.093</td>
-<td align="right">594.624</td>
-<td align="right">0.022</td>
-<td align="right">485495.983</td>
+<td align="left">ethnicity_raceasian</td>
+<td align="right">1.000</td>
+<td align="right">-0.576</td>
+<td align="right">11502.475</td>
+<td align="right">0.000</td>
+<td align="right">5.620000e-01</td>
 </tr>
 <tr class="odd">
 <td align="left">asthma1</td>
-<td align="right">0.069</td>
-<td align="right">0.580</td>
-<td align="right">0.319</td>
-<td align="right">1.816</td>
-<td align="right">1.786</td>
+<td align="right">0.495</td>
+<td align="right">0.649</td>
+<td align="right">0.950</td>
+<td align="right">0.682</td>
+<td align="right">1.913000e+00</td>
 </tr>
 <tr class="even">
 <td align="left">diabetes1</td>
-<td align="right">0.001</td>
-<td align="right">1.921</td>
-<td align="right">0.605</td>
-<td align="right">3.177</td>
-<td align="right">6.826</td>
+<td align="right">0.995</td>
+<td align="right">17.668</td>
+<td align="right">3036.851</td>
+<td align="right">0.006</td>
+<td align="right">4.711645e+07</td>
 </tr>
 <tr class="odd">
 <td align="left">bmi_value</td>
-<td align="right">0.634</td>
-<td align="right">0.006</td>
-<td align="right">0.014</td>
-<td align="right">0.476</td>
-<td align="right">1.006</td>
+<td align="right">0.246</td>
+<td align="right">0.064</td>
+<td align="right">0.055</td>
+<td align="right">1.160</td>
+<td align="right">1.066000e+00</td>
 </tr>
 <tr class="even">
 <td align="left">systolic_bp_value</td>
-<td align="right">0.094</td>
+<td align="right">0.688</td>
 <td align="right">0.013</td>
-<td align="right">0.008</td>
-<td align="right">1.677</td>
-<td align="right">1.013</td>
+<td align="right">0.033</td>
+<td align="right">0.402</td>
+<td align="right">1.014000e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">ses</td>
-<td align="right">0.447</td>
-<td align="right">0.032</td>
-<td align="right">0.042</td>
-<td align="right">0.761</td>
-<td align="right">1.032</td>
+<td align="right">0.915</td>
+<td align="right">-0.015</td>
+<td align="right">0.142</td>
+<td align="right">-0.107</td>
+<td align="right">9.850000e-01</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>play_fit = 
   glm(admitted ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -810,67 +736,67 @@ play_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.093</td>
-<td align="right">-1.277</td>
-<td align="right">0.761</td>
-<td align="right">-1.678</td>
-<td align="right">0.279</td>
+<td align="right">0.665</td>
+<td align="right">1.460</td>
+<td align="right">3.369</td>
+<td align="right">0.433</td>
+<td align="right">4.307</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.000</td>
-<td align="right">-0.073</td>
-<td align="right">0.020</td>
-<td align="right">-3.612</td>
-<td align="right">0.930</td>
+<td align="right">0.132</td>
+<td align="right">-0.150</td>
+<td align="right">0.100</td>
+<td align="right">-1.508</td>
+<td align="right">0.860</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.572</td>
-<td align="right">-0.137</td>
-<td align="right">0.242</td>
-<td align="right">-0.565</td>
-<td align="right">0.872</td>
+<td align="right">0.250</td>
+<td align="right">-0.922</td>
+<td align="right">0.802</td>
+<td align="right">-1.150</td>
+<td align="right">0.398</td>
 </tr>
 <tr class="even">
 <td align="left">asthma1</td>
-<td align="right">0.044</td>
-<td align="right">0.621</td>
-<td align="right">0.308</td>
-<td align="right">2.016</td>
-<td align="right">1.861</td>
+<td align="right">0.460</td>
+<td align="right">0.670</td>
+<td align="right">0.908</td>
+<td align="right">0.738</td>
+<td align="right">1.954</td>
 </tr>
 <tr class="odd">
 <td align="left">diabetes1</td>
-<td align="right">0.001</td>
-<td align="right">1.935</td>
-<td align="right">0.602</td>
-<td align="right">3.213</td>
-<td align="right">6.927</td>
+<td align="right">0.992</td>
+<td align="right">16.932</td>
+<td align="right">1740.922</td>
+<td align="right">0.010</td>
+<td align="right">22563376.550</td>
 </tr>
 <tr class="even">
 <td align="left">bmi_value</td>
-<td align="right">0.675</td>
-<td align="right">0.005</td>
-<td align="right">0.013</td>
-<td align="right">0.419</td>
-<td align="right">1.005</td>
+<td align="right">0.183</td>
+<td align="right">0.068</td>
+<td align="right">0.051</td>
+<td align="right">1.331</td>
+<td align="right">1.070</td>
 </tr>
 <tr class="odd">
 <td align="left">systolic_bp_value</td>
-<td align="right">0.080</td>
-<td align="right">0.013</td>
-<td align="right">0.007</td>
-<td align="right">1.749</td>
-<td align="right">1.013</td>
+<td align="right">0.777</td>
+<td align="right">0.009</td>
+<td align="right">0.032</td>
+<td align="right">0.283</td>
+<td align="right">1.009</td>
 </tr>
 <tr class="even">
 <td align="left">ses</td>
-<td align="right">0.340</td>
-<td align="right">0.038</td>
-<td align="right">0.040</td>
-<td align="right">0.955</td>
-<td align="right">1.039</td>
+<td align="right">0.811</td>
+<td align="right">-0.032</td>
+<td align="right">0.136</td>
+<td align="right">-0.239</td>
+<td align="right">0.968</td>
 </tr>
 </tbody>
 </table>
@@ -878,7 +804,7 @@ play_fit</code></pre>
 <pre class="r"><code>icu1_fit = 
   glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + obesity, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -898,98 +824,90 @@ icu1_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
+<td align="right">0.026</td>
+<td align="right">-3.103</td>
+<td align="right">1.396</td>
+<td align="right">-2.222</td>
+<td align="right">0.045</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.802</td>
+<td align="right">-0.011</td>
+<td align="right">0.044</td>
+<td align="right">-0.250</td>
+<td align="right">0.989</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.567</td>
+<td align="right">0.319</td>
+<td align="right">0.557</td>
+<td align="right">0.572</td>
+<td align="right">1.376</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.594</td>
+<td align="right">0.669</td>
+<td align="right">1.254</td>
+<td align="right">0.533</td>
+<td align="right">1.952</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.766</td>
+<td align="right">0.362</td>
+<td align="right">1.213</td>
+<td align="right">0.298</td>
+<td align="right">1.436</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.992</td>
+<td align="right">-14.378</td>
+<td align="right">1489.071</td>
+<td align="right">-0.010</td>
+<td align="right">0.000</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_raceamerican indian</td>
 <td align="right">0.997</td>
-<td align="right">-18.950</td>
-<td align="right">4609.321</td>
+<td align="right">-14.781</td>
+<td align="right">3956.181</td>
 <td align="right">-0.004</td>
 <td align="right">0.000</td>
 </tr>
 <tr class="even">
-<td align="left">age</td>
-<td align="right">0.837</td>
-<td align="right">-0.008</td>
-<td align="right">0.039</td>
-<td align="right">-0.205</td>
-<td align="right">0.992</td>
-</tr>
-<tr class="odd">
-<td align="left">genderM</td>
-<td align="right">0.374</td>
-<td align="right">0.470</td>
-<td align="right">0.528</td>
-<td align="right">0.890</td>
-<td align="right">1.600</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_raceasian</td>
-<td align="right">1.000</td>
-<td align="right">0.407</td>
-<td align="right">4922.188</td>
-<td align="right">0.000</td>
-<td align="right">1.502</td>
-</tr>
-<tr class="odd">
-<td align="left">ethnicity_raceblack</td>
-<td align="right">0.997</td>
-<td align="right">16.148</td>
-<td align="right">4609.321</td>
-<td align="right">0.004</td>
-<td align="right">10300405.637</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racecaucasian</td>
-<td align="right">0.997</td>
-<td align="right">15.068</td>
-<td align="right">4609.321</td>
-<td align="right">0.003</td>
-<td align="right">3498863.449</td>
-</tr>
-<tr class="odd">
-<td align="left">ethnicity_racelatino</td>
-<td align="right">0.997</td>
-<td align="right">15.566</td>
-<td align="right">4609.321</td>
-<td align="right">0.003</td>
-<td align="right">5756650.974</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racemultiple</td>
-<td align="right">1.000</td>
-<td align="right">0.638</td>
-<td align="right">4853.942</td>
-<td align="right">0.000</td>
-<td align="right">1.894</td>
-</tr>
-<tr class="odd">
 <td align="left">asthma1</td>
-<td align="right">0.522</td>
-<td align="right">-0.451</td>
-<td align="right">0.705</td>
-<td align="right">-0.640</td>
-<td align="right">0.637</td>
+<td align="right">0.503</td>
+<td align="right">-0.463</td>
+<td align="right">0.691</td>
+<td align="right">-0.670</td>
+<td align="right">0.630</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">diabetes1</td>
 <td align="right">0.000</td>
-<td align="right">3.436</td>
-<td align="right">0.645</td>
-<td align="right">5.323</td>
-<td align="right">31.050</td>
+<td align="right">2.650</td>
+<td align="right">0.677</td>
+<td align="right">3.912</td>
+<td align="right">14.147</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">obesity1</td>
-<td align="right">0.460</td>
-<td align="right">-0.504</td>
-<td align="right">0.682</td>
-<td align="right">-0.739</td>
-<td align="right">0.604</td>
+<td align="right">0.709</td>
+<td align="right">-0.271</td>
+<td align="right">0.727</td>
+<td align="right">-0.373</td>
+<td align="right">0.763</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>icu2_fit = 
   glm(icu ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -1009,114 +927,98 @@ icu2_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.997</td>
-<td align="right">-19.055</td>
-<td align="right">4591.657</td>
-<td align="right">-0.004</td>
-<td align="right">0.000</td>
+<td align="right">0.994</td>
+<td align="right">-16.299</td>
+<td align="right">2351.533</td>
+<td align="right">-0.007</td>
+<td align="right">0.000000e+00</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.899</td>
-<td align="right">-0.006</td>
-<td align="right">0.048</td>
-<td align="right">-0.127</td>
-<td align="right">0.994</td>
+<td align="right">0.432</td>
+<td align="right">-0.113</td>
+<td align="right">0.143</td>
+<td align="right">-0.785</td>
+<td align="right">8.940000e-01</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.392</td>
-<td align="right">0.483</td>
-<td align="right">0.564</td>
-<td align="right">0.857</td>
-<td align="right">1.621</td>
+<td align="right">0.985</td>
+<td align="right">0.022</td>
+<td align="right">1.184</td>
+<td align="right">0.019</td>
+<td align="right">1.023000e+00</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.994</td>
+<td align="right">16.711</td>
+<td align="right">2351.529</td>
+<td align="right">0.007</td>
+<td align="right">1.809267e+07</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.994</td>
+<td align="right">18.863</td>
+<td align="right">2351.529</td>
+<td align="right">0.008</td>
+<td align="right">1.557080e+08</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_raceasian</td>
 <td align="right">1.000</td>
-<td align="right">0.502</td>
-<td align="right">4904.944</td>
-<td align="right">0.000</td>
-<td align="right">1.653</td>
-</tr>
-<tr class="odd">
-<td align="left">ethnicity_raceblack</td>
-<td align="right">0.997</td>
-<td align="right">16.185</td>
-<td align="right">4591.657</td>
-<td align="right">0.004</td>
-<td align="right">10696327.902</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racecaucasian</td>
-<td align="right">0.997</td>
-<td align="right">15.169</td>
-<td align="right">4591.657</td>
-<td align="right">0.003</td>
-<td align="right">3869025.901</td>
-</tr>
-<tr class="odd">
-<td align="left">ethnicity_racelatino</td>
-<td align="right">0.997</td>
-<td align="right">15.642</td>
-<td align="right">4591.657</td>
-<td align="right">0.003</td>
-<td align="right">6215033.974</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_racemultiple</td>
 <td align="right">1.000</td>
-<td align="right">0.850</td>
-<td align="right">4833.925</td>
+<td align="right">6933.578</td>
 <td align="right">0.000</td>
-<td align="right">2.340</td>
+<td align="right">2.718000e+00</td>
 </tr>
 <tr class="odd">
 <td align="left">asthma1</td>
-<td align="right">0.690</td>
-<td align="right">-0.288</td>
-<td align="right">0.722</td>
-<td align="right">-0.398</td>
-<td align="right">0.750</td>
+<td align="right">0.928</td>
+<td align="right">0.140</td>
+<td align="right">1.544</td>
+<td align="right">0.091</td>
+<td align="right">1.150000e+00</td>
 </tr>
 <tr class="even">
 <td align="left">diabetes1</td>
-<td align="right">0.000</td>
-<td align="right">3.520</td>
-<td align="right">0.694</td>
-<td align="right">5.074</td>
-<td align="right">33.777</td>
+<td align="right">0.002</td>
+<td align="right">5.024</td>
+<td align="right">1.645</td>
+<td align="right">3.053</td>
+<td align="right">1.520480e+02</td>
 </tr>
 <tr class="odd">
 <td align="left">bmi_value</td>
-<td align="right">0.257</td>
-<td align="right">-0.033</td>
-<td align="right">0.029</td>
-<td align="right">-1.133</td>
-<td align="right">0.967</td>
+<td align="right">0.260</td>
+<td align="right">-0.064</td>
+<td align="right">0.057</td>
+<td align="right">-1.125</td>
+<td align="right">9.380000e-01</td>
 </tr>
 <tr class="even">
 <td align="left">systolic_bp_value</td>
-<td align="right">0.805</td>
-<td align="right">0.005</td>
-<td align="right">0.019</td>
-<td align="right">0.247</td>
-<td align="right">1.005</td>
+<td align="right">0.728</td>
+<td align="right">-0.016</td>
+<td align="right">0.046</td>
+<td align="right">-0.348</td>
+<td align="right">9.840000e-01</td>
 </tr>
 <tr class="odd">
 <td align="left">ses</td>
-<td align="right">0.713</td>
-<td align="right">-0.035</td>
-<td align="right">0.095</td>
-<td align="right">-0.368</td>
-<td align="right">0.966</td>
+<td align="right">0.942</td>
+<td align="right">0.015</td>
+<td align="right">0.204</td>
+<td align="right">0.073</td>
+<td align="right">1.015000e+00</td>
 </tr>
 </tbody>
 </table>
 <pre class="r"><code>icu3_fit = 
   glm(icu ~ age + gender + asthma + diabetes + bmi_value + systolic_bp_value + ses, 
       family = binomial(link = &quot;logit&quot;), 
-      data = data_stats) %&gt;% 
+      data = ped_covid) %&gt;% 
   broom::tidy() %&gt;% 
   mutate(OR = exp(estimate)) %&gt;% 
   select(term, p.value, everything()) %&gt;% 
@@ -1136,67 +1038,67 @@ icu3_fit</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">0.052</td>
-<td align="right">-3.668</td>
-<td align="right">1.885</td>
-<td align="right">-1.946</td>
-<td align="right">0.026</td>
+<td align="right">0.391</td>
+<td align="right">3.508</td>
+<td align="right">4.088</td>
+<td align="right">0.858</td>
+<td align="right">33.388</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.998</td>
-<td align="right">0.000</td>
-<td align="right">0.046</td>
-<td align="right">-0.002</td>
-<td align="right">1.000</td>
+<td align="right">0.577</td>
+<td align="right">-0.067</td>
+<td align="right">0.120</td>
+<td align="right">-0.557</td>
+<td align="right">0.935</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.496</td>
-<td align="right">0.372</td>
-<td align="right">0.546</td>
-<td align="right">0.682</td>
-<td align="right">1.451</td>
+<td align="right">0.738</td>
+<td align="right">-0.344</td>
+<td align="right">1.029</td>
+<td align="right">-0.334</td>
+<td align="right">0.709</td>
 </tr>
 <tr class="even">
 <td align="left">asthma1</td>
-<td align="right">0.747</td>
-<td align="right">-0.230</td>
-<td align="right">0.714</td>
-<td align="right">-0.323</td>
-<td align="right">0.794</td>
+<td align="right">0.259</td>
+<td align="right">-1.538</td>
+<td align="right">1.361</td>
+<td align="right">-1.130</td>
+<td align="right">0.215</td>
 </tr>
 <tr class="odd">
 <td align="left">diabetes1</td>
-<td align="right">0.000</td>
-<td align="right">3.548</td>
-<td align="right">0.679</td>
-<td align="right">5.225</td>
-<td align="right">34.729</td>
+<td align="right">0.001</td>
+<td align="right">4.728</td>
+<td align="right">1.376</td>
+<td align="right">3.436</td>
+<td align="right">113.066</td>
 </tr>
 <tr class="even">
 <td align="left">bmi_value</td>
-<td align="right">0.146</td>
-<td align="right">-0.042</td>
-<td align="right">0.029</td>
-<td align="right">-1.454</td>
-<td align="right">0.959</td>
+<td align="right">0.512</td>
+<td align="right">-0.029</td>
+<td align="right">0.044</td>
+<td align="right">-0.656</td>
+<td align="right">0.971</td>
 </tr>
 <tr class="odd">
 <td align="left">systolic_bp_value</td>
-<td align="right">0.627</td>
-<td align="right">0.009</td>
-<td align="right">0.018</td>
-<td align="right">0.487</td>
-<td align="right">1.009</td>
+<td align="right">0.294</td>
+<td align="right">-0.044</td>
+<td align="right">0.042</td>
+<td align="right">-1.049</td>
+<td align="right">0.957</td>
 </tr>
 <tr class="even">
 <td align="left">ses</td>
-<td align="right">0.611</td>
-<td align="right">-0.046</td>
-<td align="right">0.091</td>
-<td align="right">-0.509</td>
-<td align="right">0.955</td>
+<td align="right">0.576</td>
+<td align="right">-0.093</td>
+<td align="right">0.167</td>
+<td align="right">-0.559</td>
+<td align="right">0.911</td>
 </tr>
 </tbody>
 </table>
