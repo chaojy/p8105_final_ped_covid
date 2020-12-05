@@ -1,6 +1,13 @@
 ---
 title: "Predictors of Hospitalization in Pediatric Patients with COVID-19 "
-output: html_document
+output: 
+  html_document:
+    toc: false
+    toc_float: true
+    code_folding: hide
+    source: embed
+editor_options: 
+  chunk_output_type: console
 ---
 
 <img src="images/fever.jpg" style="width:75%">
