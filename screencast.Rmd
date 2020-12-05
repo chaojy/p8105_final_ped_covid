@@ -11,6 +11,6 @@ editor_options:
 ---
 
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/d9hx6UIwDvw&feature=youtu.be" frameborder="0" allowfullscreen></iframe>
+<iframe width="560" height="315" src="https://www.youtube.com/embed?v=d9hx6UIwDvw&feature=youtu.be" frameborder="0" allowfullscreen></iframe>
 
 [Screencast](https://www.youtube.com/watch?v=d9hx6UIwDvw&feature=youtu.be)
