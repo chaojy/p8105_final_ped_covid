@@ -62,16 +62,14 @@ library(tidyverse)
 library(usa)
 library(mice)
 
-knitr::opts_chunk$set(
-  fig.width = 6,
-  fig.asp = .6,
-  out.width = "90%")
+knitr::opts_chunk$set(out.width = "90%")
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
 options(
   ggplot2.continuous.colour = "viridis",
-  ggplot2.continuous.fill = "viridis")
+  ggplot2.continuous.fill = "viridis",
+  tigris_use_cache = TRUE)
 
 scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
@@ -271,8 +269,6 @@ admitt_p
 
 The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. This is generally true for diabetes and asthma as well.
 
-```
-
 ```{r}
 diabetes_p = 
   ped_covid %>% 
@@ -357,7 +353,6 @@ cor_data %>%
   corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 65, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
-
 ## Possible Models
 
 When developing some of the models, we started by considering only categorical variables for simplicity along with the continuous variable of age. The ethnicity/race variable was the only non-binary categorical variables which we tried removing as you can see in the two model tables below. However, at the 5% level of significance, age and diabetes were still the only significant variables related to hospitalization.
@@ -427,6 +422,7 @@ complex_mod
 ```
 
 We postulated that the reason age became insignificant because we did not consider its interactions with BMI and Asthma, which we saw were related to 
+
 ### Complex model but with age interactions
 
 ```{r}
@@ -486,6 +482,7 @@ int_mod =
 
 int_mod
 ```
+
 <h1 id="dash">Dashboard</h1>
 
 Next, we created an interactive dashboard to further explore and visualize the data. 
@@ -496,7 +493,7 @@ First we loaded additional necessary packages.
 tidycensus::census_api_key("535bbe702423f7405e593fbd1bb6ae314d416cf2")
 ```
 
-```{r packages}
+```{r}
 library(plotly)
 library(leaflet)
 library(tidycensus)
@@ -558,7 +555,7 @@ covid_df =
 
 Here, we have generated an interactive map that demonstrates average SES and average BMI across various parts of New York and New Jersey, reflecting the residences of pediatric patients with COVID-19 infection.  By selecting from the layered box on the top left corner, users can customize different base layers for the map, as well as average SES or average BMI.
 
-```{r, message=FALSE}
+```{r}
 # Map Viz using tidycensus and tmap
 county_ny = c("bronx", "kings", "westchester", "new york", "queens", "rockland", "orange", "richmond")
 county_nj = c("bergen", "union")
