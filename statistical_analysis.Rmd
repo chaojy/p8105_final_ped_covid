@@ -109,22 +109,10 @@ admitt_p =
 admitt_p
 ```
 
-### Obesity, diabetes, and asthma
+### Diabetes and Asthma
 
-The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below.  Obesity, as defined as a body mass index (BMI) of > 30, is generally not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
+The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. This is generally true for diabetes and asthma as well.
 
-```{r}
-bmi_p = 
-  ped_covid %>% 
-  ggplot(aes(x = age, fill = bmi_value)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Obesity/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-bmi_p
 ```
 
 ```{r}
