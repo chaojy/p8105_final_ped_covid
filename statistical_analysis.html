@@ -23,8 +23,19 @@
 <script src="site_libs/navigation-1.1/codefolding.js"></script>
 <link href="site_libs/highlightjs-9.12.0/default.css" rel="stylesheet" />
 <script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="site_libs/anchor-sections-1.0/anchor-sections.js"></script>
 <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
 <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css">
@@ -326,31 +337,18 @@ $(document).ready(function () {
 </div>
 
 
-<div id="setup" class="section level2">
-<h2>Setup</h2>
+<p>Our goal here is to develop a causation-type model instead of a prediction=targeted one. This is different than the interaction model tool, which was developed for predictive purposes. We will analyze correlations between admittance rate and multiple covariables and then develop a few select models to compare based on apriori knowledge and p-values. Another interesting variable that we would have liked to analyze was admittance to an ICU, but, as can be seen in the data summary, there were too few events of ICU admittance to draw any meaningful conclusions.</p>
 <pre class="r"><code>library(tidyverse)
 library(patchwork)
-library(corrplot)</code></pre>
-<pre><code>## corrplot 0.84 loaded</code></pre>
-<pre class="r"><code>library(mgcv)</code></pre>
-<pre><code>## Loading required package: nlme</code></pre>
-<pre><code>## 
-## Attaching package: &#39;nlme&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
-## 
-##     collapse</code></pre>
-<pre><code>## This is mgcv 1.8-33. For overview type &#39;help(&quot;mgcv-package&quot;)&#39;.</code></pre>
-<pre><code>## 
-## Attaching package: &#39;mgcv&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:aod&#39;:
-## 
-##     negbin</code></pre>
-<pre class="r"><code>library(modelr)
+library(corrplot)
+library(mgcv)
+library(modelr)
 
 knitr::opts_chunk$set(
   fig.width = 6,
-  fig.asp = 1.1,
-  out.width = &quot;100%&quot;)
+  fig.asp = 0.65,
+  out.width = &quot;100%&quot;,
+  out.height = &quot;75%&quot;)
 
 theme_set(theme_minimal() + theme(legend.position = &quot;bottom&quot;))
 
@@ -362,136 +360,9 @@ scale_colour_discrete = scale_color_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)</code></pre>
-</div>
-<div id="data-import-and-tidy" class="section level2">
-<h2>Data import and tidy</h2>
-<pre class="r"><code>data_stats = read_csv(&quot;./data/datacomplete.csv&quot;) %&gt;% 
-  mutate_at(c(&quot;admitted&quot;, &quot;ethnicity_race&quot;, &quot;asthma&quot;, &quot;diabetes&quot;, &quot;gender&quot;, &quot;obesity&quot;, &quot;icu&quot;), as.factor) %&gt;% 
-  select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
-
-summary(data_stats)</code></pre>
-<pre><code> admitted  icu          age                ethnicity_race gender 
- no :250   0:355   Min.   : 0.00   american indian:  2    F:190  
- yes:125   1: 20   1st Qu.:10.00   asian          : 14    M:185  
-                   Median :18.00   black          : 92           
-                   Mean   :14.63   caucasian      : 21           
-                   3rd Qu.:21.00   latino         :228           
-                   Max.   :22.00   multiple       : 18           
-      ses          obesity   bmi_value     systolic_bp_value asthma  diabetes
- Min.   :-13.506   0:249   Min.   :12.03   Min.   : 61.0     0:314   0:358   
- 1st Qu.: -6.496   1:126   1st Qu.:19.04   1st Qu.:103.0     1: 61   1: 17   
- Median : -3.637           Median :24.03   Median :117.0                     
- Mean   : -3.892           Mean   :26.54   Mean   :115.3                     
- 3rd Qu.: -1.419           3rd Qu.:32.12   3rd Qu.:128.0                     
- Max.   :  2.931           Max.   :80.84   Max.   :182.0                     </code></pre>
-</div>
-<div id="dataset-exploration" class="section level2">
-<h2>Dataset exploration</h2>
-<p>This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection. First, we explore the data by generating various ggplots.</p>
-<div id="age" class="section level3">
-<h3>Age</h3>
-<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
-<p>Some pediatric patients require admission to the Intensive Care Unit (ICU). Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age. Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.</p>
-<pre class="r"><code>admitt_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = admitted)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Admittance/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-icu_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = icu)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;ICU/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-admitt_p / icu_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/density%20admit-1.png" width="100%" /></p>
-</div>
-<div id="obesity-diabetes-and-asthma" class="section level3">
-<h3>Obesity, diabetes, and asthma</h3>
-<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is general not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes and asthma as well.</p>
-<pre class="r"><code>obesity_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = obesity)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Obesity/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-diabetes_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = diabetes)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Diabetes/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-asthma_p = 
-  data_stats %&gt;% 
-  ggplot(aes(x = age, fill = asthma)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = &quot;Asthma/Age Distribution&quot;,
-    x = &quot;Age (Years)&quot;,
-    y = &quot;Density&quot;) +
-  theme(legend.position = &quot;bottom&quot;)
-
-obesity_p / diabetes_p / asthma_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="100%" /></p>
-</div>
-<div id="box-plots" class="section level3">
-<h3>Box plots</h3>
-<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI appears to be similar, with some high BMI outliers in the non-hospitalized group. Median SES is lower among admitted patients.</p>
-<pre class="r"><code>bp_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = systolic_bp_value)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;Systolic Blood Pressure by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;Systolic Blood Pressure&quot;)
-
-bmi_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = bmi_value)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;BMI by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;BMI Value&quot;)
-
-ses_p =
-  data_stats %&gt;% 
-  ggplot(aes(x = icu, y = ses)) +
-  geom_boxplot() +
-  labs(
-    title = &quot;Socioeconomic Status by Admission Status&quot;,
-    x = &quot;Hospital Admission Status&quot;,
-    y = &quot;SES Measure&quot;)
-
-bp_p / bmi_p / ses_p</code></pre>
-<p><img src="statistical_analysis_files/figure-html/boxplots-1.png" width="100%" /></p>
-</div>
-</div>
-<div id="possible-models" class="section level2">
-<h2>Possible Models</h2>
-<pre class="r"><code>##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
-
-##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
-
-ped_covid =
+<div id="data" class="section level2">
+<h2>Data</h2>
+<pre class="r"><code>ped_covid =
   read_csv(&quot;./data/p8105_final_ped_covid.csv&quot;) %&gt;%
   mutate(
     ethnicity_race = case_when(
@@ -535,15 +406,158 @@ ped_covid =
   ) %&gt;%
   rename(city = city.y)
 
-train_data =
-  ped_covid %&gt;%
-  slice(1:250)
+summary(ped_covid)</code></pre>
+<pre><code> admitted       age         gender         ses              zip           
+ no :250   Min.   : 0.00   F   :189   Min.   :-13.506   Length:375        
+ yes:125   1st Qu.:10.00   M   :184   1st Qu.: -6.921   Class :character  
+           Median :18.00   NA&#39;s:  2   Median : -4.122   Mode  :character  
+           Mean   :14.63              Mean   : -4.308                     
+           3rd Qu.:21.00              3rd Qu.: -2.112                     
+           Max.   :22.00              Max.   :  2.931                     
+                                      NA&#39;s   :141                         
+ eventdatetime        bmi_value     icu     icu_date_time     
+ Length:375         Min.   :12.03   0:355   Length:375        
+ Class :character   1st Qu.:18.73   1: 20   Class :character  
+ Mode  :character   Median :23.20           Mode  :character  
+                    Mean   :25.53                             
+                    3rd Qu.:30.73                             
+                    Max.   :80.84                             
+                    NA&#39;s   :116                               
+ systolic_bp_value   ethnicity_race asthma  diabetes   service          ed     
+ Min.   : 61       caucasian: 18    0:314   0:358    Length:375         0:171  
+ 1st Qu.:103       black    : 75    1: 61   1: 17    Class :character   1:204  
+ Median :117       latino   :189                     Mode  :character          
+ Mean   :116       asian    :  8                                               
+ 3rd Qu.:128       NA&#39;s     : 85                                               
+ Max.   :182                                                                   
+ NA&#39;s   :240                                                                   
+ admission_dx                 city     obesity         lat       
+ Length:375         Bronx       :317   0   :187   Min.   :40.58  
+ Class :character   Yonkers     : 11   1   : 72   1st Qu.:40.83  
+ Mode  :character   Mount Vernon:  7   NA&#39;s:116   Median :40.85  
+                    Brooklyn    :  6              Mean   :40.86  
+                    New York    :  5              3rd Qu.:40.87  
+                    (Other)     : 24              Max.   :41.52  
+                    NA&#39;s        :  5              NA&#39;s   :5      
+      long       
+ Min.   :-74.20  
+ 1st Qu.:-73.90  
+ Median :-73.88  
+ Mean   :-73.88  
+ 3rd Qu.:-73.86  
+ Max.   :-73.67  
+ NA&#39;s   :5       </code></pre>
+</div>
+<div id="dataset-exploration" class="section level2">
+<h2>Dataset exploration</h2>
+<p>This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection. First, we explore the data by generating various plots.</p>
+<div id="age" class="section level3">
+<h3>Age</h3>
+<p>There appears to be a bimodal distribution of hospital admission as a function of age. Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. Note that this could be due to babies being admitted along with their mothers’ who had COVID-19. After 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.</p>
+<pre class="r"><code>admitt_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Admittance/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
 
-test_data =
-  ped_covid %&gt;%
-  slice(251:375)</code></pre>
-<div id="race-only-categorical-model" class="section level3">
-<h3>Race only categorical Model</h3>
+admitt_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-3-1.png" width="100%" height="75%" /></p>
+</div>
+<div id="obesity-diabetes-and-asthma" class="section level3">
+<h3>Obesity, diabetes, and asthma</h3>
+<p>The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. Obesity, as defined as a body mass index (BMI) of &gt; 30, is generally not present at ages less than 10 years. After 10 years, the prevalence of obesity increases. This is generally true for diabetes and asthma as well.</p>
+<pre class="r"><code>bmi_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = bmi_value)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Obesity/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+bmi_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-4-1.png" width="100%" height="75%" /></p>
+<pre class="r"><code>diabetes_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = diabetes)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Diabetes/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+diabetes_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-5-1.png" width="100%" height="75%" /></p>
+<pre class="r"><code>asthma_p = 
+  ped_covid %&gt;% 
+  ggplot(aes(x = age, fill = asthma)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = &quot;Asthma/Age Distribution&quot;,
+    x = &quot;Age (Years)&quot;,
+    y = &quot;Density&quot;) +
+  theme(legend.position = &quot;bottom&quot;)
+
+asthma_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-6-1.png" width="100%" height="75%" /></p>
+</div>
+<div id="box-plots" class="section level3">
+<h3>Box plots</h3>
+<p>Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status. The median first systolic pressure is higher among admitted patients compared to non-admitted patients. BMI across admission status appears to be similar, with some high BMI outliers in the non-hospitalized group. Median SES is higher among admitted patients. The SES variable was defined by the hospital using multiple economic and educational parameters, with negative values indicating below average SES and positive values indicating above average SES.</p>
+<pre class="r"><code>bp_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Systolic Blood Pressure by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;Systolic Blood Pressure&quot;)
+
+bp_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/boxplots-1.png" width="100%" height="75%" /></p>
+<pre class="r"><code>bmi_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;BMI by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;BMI Value&quot;)
+
+bmi_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-7-1.png" width="100%" height="75%" /></p>
+<pre class="r"><code>ses_p =
+  ped_covid %&gt;% 
+  ggplot(aes(x = admitted, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = &quot;Socioeconomic Status by Admission Status&quot;,
+    x = &quot;Hospital Admission Status&quot;,
+    y = &quot;SES Measure&quot;)
+
+ses_p</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-8-1.png" width="100%" height="75%" /></p>
+<p>Note that we had categories for American Indian and Multiple/Mixed Race but there were too few counts for correlation significance purposes and were omitted for simplicity.</p>
+<p>We can see from the correlation matrix that there is some positive correlation between age and BMI value (0.42), between BMI value and Asthma (0.24) ## Correlation Matrix with relevant covariates, and also between BMI value and diabetes (0.29)</p>
+<pre class="r"><code>cor_data = 
+  cor(model.matrix(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, ped_covid)[,-1])
+
+cor_data %&gt;% 
+  corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 65, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
+<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-9-1.png" width="100%" height="75%" /></p>
+</div>
+</div>
+<div id="possible-models" class="section level2">
+<h2>Possible Models</h2>
+<p>When developing some of the models, we started by considering only categorical variables for simplicity along with the continuous variable of age. The ethnicity/race variable was the only non-binary categorical variables which we tried removing as you can see in the two model tables below. However, at the 5% level of significance, age and diabetes were still the only significant variables related to hospitalization.</p>
+<div id="categorical-only-besides-age-model" class="section level3">
+<h3>Categorical-only (besides age) Model</h3>
 <pre class="r"><code>race_mod =
 glm(
   admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity,
@@ -637,8 +651,8 @@ race_mod</code></pre>
 </tbody>
 </table>
 </div>
-<div id="no-race-categorical-only-model" class="section level3">
-<h3>No Race Categorical only model</h3>
+<div id="categorical-only-model-besides-age-without-ethnicityrace" class="section level3">
+<h3>Categorical-only Model (besides age) (Without Ethnicity/Race)</h3>
 <pre class="r"><code>no_race_mod =
 glm(
   admitted ~ age + gender + asthma + diabetes + obesity,
@@ -710,9 +724,10 @@ no_race_mod</code></pre>
 </tr>
 </tbody>
 </table>
+<p>We tried to include the continuous variables of BMI value and SES. Diabetes and BMI value were significant at the 5% level of significance, but age was insignificant.</p>
 </div>
-<div id="complex-model-containing-relevant-variables-continuous-included" class="section level3">
-<h3>Complex model containing relevant variables (continuous included)</h3>
+<div id="complex-model-containing-all-relevant-variables" class="section level3">
+<h3>Complex model containing all relevant variables</h3>
 <pre class="r"><code>complex_mod = 
   glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, 
       data = ped_covid,
@@ -811,17 +826,9 @@ complex_mod</code></pre>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code>cor_data = 
-  cor(model.matrix(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, ped_covid)[,-1])
-
-cor_data %&gt;% 
-  corrplot(method = &quot;color&quot;, addCoef.col = &quot;black&quot;, tl.col = &quot;black&quot;, tl.srt = 45, insig = &quot;blank&quot; , number.cex = 0.7, diag = FALSE)</code></pre>
-<p><img src="statistical_analysis_files/figure-html/unnamed-chunk-7-1.png" width="100%" /></p>
-</div>
-<div id="complex-model-but-without-ses-variable" class="section level3">
-<h3>Complex model but without SES variable</h3>
-<pre class="r"><code>complex_no_ses_mod = 
-  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value, 
+<p>We postulated that the reason age became insignificant because we did not consider its interactions with BMI and Asthma, which we saw were related to ### Complex model but with age interactions</p>
+<pre class="r"><code>age_int_mod = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses + age*bmi_value + age*asthma, 
      data = ped_covid,
       family = binomial(link = &quot;logit&quot;)
       ) %&gt;%  
@@ -834,7 +841,7 @@ cor_data %&gt;%
   select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
   knitr::kable(digits = 3)
 
-complex_no_ses_mod</code></pre>
+age_int_mod</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -848,168 +855,203 @@ complex_no_ses_mod</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">2.273</td>
-<td align="right">0.473</td>
-<td align="right">10.912</td>
-<td align="right">0.305</td>
-</tr>
-<tr class="even">
-<td align="left">age</td>
-<td align="right">0.917</td>
-<td align="right">0.873</td>
-<td align="right">0.965</td>
-<td align="right">0.001</td>
-</tr>
-<tr class="odd">
-<td align="left">genderM</td>
-<td align="right">0.659</td>
-<td align="right">0.368</td>
-<td align="right">1.180</td>
-<td align="right">0.160</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_raceblack</td>
-<td align="right">0.332</td>
-<td align="right">0.083</td>
-<td align="right">1.322</td>
-<td align="right">0.118</td>
-</tr>
-<tr class="odd">
-<td align="left">ethnicity_racelatino</td>
-<td align="right">0.319</td>
-<td align="right">0.084</td>
-<td align="right">1.219</td>
-<td align="right">0.095</td>
-</tr>
-<tr class="even">
-<td align="left">ethnicity_raceasian</td>
-<td align="right">0.343</td>
-<td align="right">0.046</td>
-<td align="right">2.545</td>
-<td align="right">0.295</td>
-</tr>
-<tr class="odd">
-<td align="left">asthma1</td>
-<td align="right">0.798</td>
-<td align="right">0.390</td>
-<td align="right">1.635</td>
-<td align="right">0.537</td>
-</tr>
-<tr class="even">
-<td align="left">diabetes1</td>
-<td align="right">3.006</td>
-<td align="right">0.835</td>
-<td align="right">10.820</td>
-<td align="right">0.092</td>
-</tr>
-<tr class="odd">
-<td align="left">bmi_value</td>
-<td align="right">1.061</td>
-<td align="right">1.019</td>
-<td align="right">1.104</td>
-<td align="right">0.004</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="complex-model-without-bmi-values" class="section level3">
-<h3>Complex Model without BMI values</h3>
-<pre class="r"><code>complex_no_bmi_mod = 
-  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + ses, 
-     data = ped_covid,
-      family = binomial(link = &quot;logit&quot;)
-      ) %&gt;%  
-  broom::tidy() %&gt;% 
-  mutate(
-    OR = exp(estimate),
-    CI_lower = exp(estimate - 1.96 * std.error),
-    CI_upper = exp(estimate + 1.96 * std.error)
-  ) %&gt;%  
-  select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
-  knitr::kable(digits = 3)
-
-complex_no_bmi_mod</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">term</th>
-<th align="right">OR</th>
-<th align="right">CI_lower</th>
-<th align="right">CI_upper</th>
-<th align="right">p.value</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">(Intercept)</td>
-<td align="right">0.731</td>
-<td align="right">0.129</td>
-<td align="right">4.153</td>
-<td align="right">0.724</td>
-</tr>
-<tr class="even">
-<td align="left">age</td>
-<td align="right">0.976</td>
-<td align="right">0.918</td>
-<td align="right">1.037</td>
-<td align="right">0.432</td>
-</tr>
-<tr class="odd">
-<td align="left">genderM</td>
-<td align="right">0.624</td>
-<td align="right">0.322</td>
-<td align="right">1.209</td>
+<td align="right">15.954</td>
+<td align="right">0.329</td>
+<td align="right">774.203</td>
 <td align="right">0.162</td>
 </tr>
 <tr class="even">
+<td align="left">age</td>
+<td align="right">0.800</td>
+<td align="right">0.654</td>
+<td align="right">0.979</td>
+<td align="right">0.030</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.564</td>
+<td align="right">0.271</td>
+<td align="right">1.170</td>
+<td align="right">0.124</td>
+</tr>
+<tr class="even">
 <td align="left">ethnicity_raceblack</td>
-<td align="right">0.868</td>
-<td align="right">0.222</td>
-<td align="right">3.393</td>
-<td align="right">0.839</td>
+<td align="right">0.510</td>
+<td align="right">0.102</td>
+<td align="right">2.562</td>
+<td align="right">0.414</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_racelatino</td>
-<td align="right">0.774</td>
-<td align="right">0.205</td>
-<td align="right">2.917</td>
-<td align="right">0.705</td>
+<td align="right">0.425</td>
+<td align="right">0.087</td>
+<td align="right">2.065</td>
+<td align="right">0.289</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_raceasian</td>
-<td align="right">0.449</td>
-<td align="right">0.037</td>
-<td align="right">5.479</td>
-<td align="right">0.530</td>
+<td align="right">0.227</td>
+<td align="right">0.014</td>
+<td align="right">3.585</td>
+<td align="right">0.292</td>
 </tr>
 <tr class="odd">
 <td align="left">asthma1</td>
-<td align="right">1.828</td>
-<td align="right">0.896</td>
-<td align="right">3.729</td>
-<td align="right">0.097</td>
+<td align="right">0.604</td>
+<td align="right">0.046</td>
+<td align="right">7.900</td>
+<td align="right">0.701</td>
 </tr>
 <tr class="even">
 <td align="left">diabetes1</td>
-<td align="right">8.525</td>
-<td align="right">2.155</td>
-<td align="right">33.722</td>
-<td align="right">0.002</td>
+<td align="right">5.708</td>
+<td align="right">1.347</td>
+<td align="right">24.188</td>
+<td align="right">0.018</td>
 </tr>
 <tr class="odd">
+<td align="left">bmi_value</td>
+<td align="right">0.931</td>
+<td align="right">0.787</td>
+<td align="right">1.101</td>
+<td align="right">0.405</td>
+</tr>
+<tr class="even">
 <td align="left">ses</td>
-<td align="right">0.988</td>
+<td align="right">0.996</td>
 <td align="right">0.877</td>
-<td align="right">1.113</td>
-<td align="right">0.841</td>
+<td align="right">1.132</td>
+<td align="right">0.952</td>
+</tr>
+<tr class="odd">
+<td align="left">age:bmi_value</td>
+<td align="right">1.007</td>
+<td align="right">0.998</td>
+<td align="right">1.016</td>
+<td align="right">0.139</td>
+</tr>
+<tr class="even">
+<td align="left">age:asthma1</td>
+<td align="right">1.028</td>
+<td align="right">0.887</td>
+<td align="right">1.192</td>
+<td align="right">0.712</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="complex-model-with-interactions" class="section level3">
-<h3>Complex Model with interactions</h3>
+<div id="complex-model-with-other-interactions-but-age-interactions" class="section level3">
+<h3>Complex Model with other interactions but age interactions</h3>
+<pre class="r"><code>other_int_mod = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses + ses*bmi_value, 
+     data = ped_covid,
+      family = binomial(link = &quot;logit&quot;)
+      ) %&gt;%  
+  broom::tidy() %&gt;% 
+  mutate(
+    OR = exp(estimate),
+    CI_lower = exp(estimate - 1.96 * std.error),
+    CI_upper = exp(estimate + 1.96 * std.error)
+  ) %&gt;%  
+  select(term, OR, starts_with(&quot;CI&quot;), p.value) %&gt;% 
+  knitr::kable(digits = 3)
+
+other_int_mod</code></pre>
+<table>
+<thead>
+<tr class="header">
+<th align="left">term</th>
+<th align="right">OR</th>
+<th align="right">CI_lower</th>
+<th align="right">CI_upper</th>
+<th align="right">p.value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">(Intercept)</td>
+<td align="right">1.154</td>
+<td align="right">0.065</td>
+<td align="right">20.525</td>
+<td align="right">0.922</td>
+</tr>
+<tr class="even">
+<td align="left">age</td>
+<td align="right">0.930</td>
+<td align="right">0.862</td>
+<td align="right">1.004</td>
+<td align="right">0.064</td>
+</tr>
+<tr class="odd">
+<td align="left">genderM</td>
+<td align="right">0.535</td>
+<td align="right">0.261</td>
+<td align="right">1.095</td>
+<td align="right">0.087</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceblack</td>
+<td align="right">0.548</td>
+<td align="right">0.109</td>
+<td align="right">2.752</td>
+<td align="right">0.465</td>
+</tr>
+<tr class="odd">
+<td align="left">ethnicity_racelatino</td>
+<td align="right">0.440</td>
+<td align="right">0.092</td>
+<td align="right">2.116</td>
+<td align="right">0.306</td>
+</tr>
+<tr class="even">
+<td align="left">ethnicity_raceasian</td>
+<td align="right">0.245</td>
+<td align="right">0.016</td>
+<td align="right">3.785</td>
+<td align="right">0.314</td>
+</tr>
+<tr class="odd">
+<td align="left">asthma1</td>
+<td align="right">0.959</td>
+<td align="right">0.438</td>
+<td align="right">2.097</td>
+<td align="right">0.916</td>
+</tr>
+<tr class="even">
+<td align="left">diabetes1</td>
+<td align="right">5.292</td>
+<td align="right">1.244</td>
+<td align="right">22.503</td>
+<td align="right">0.024</td>
+</tr>
+<tr class="odd">
+<td align="left">bmi_value</td>
+<td align="right">1.053</td>
+<td align="right">0.966</td>
+<td align="right">1.149</td>
+<td align="right">0.242</td>
+</tr>
+<tr class="even">
+<td align="left">ses</td>
+<td align="right">0.992</td>
+<td align="right">0.662</td>
+<td align="right">1.488</td>
+<td align="right">0.970</td>
+</tr>
+<tr class="odd">
+<td align="left">bmi_value:ses</td>
+<td align="right">1.000</td>
+<td align="right">0.986</td>
+<td align="right">1.014</td>
+<td align="right">0.990</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="complex-model-with-all-interactions" class="section level3">
+<h3>Complex Model with all interactions</h3>
 <pre class="r"><code>int_mod = 
-  glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + diabetes*bmi_value, 
+  glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + age*asthma + age*bmi_value, 
       data = ped_covid,
       family = binomial(link = &quot;logit&quot;)
       ) %&gt;%  
@@ -1036,117 +1078,97 @@ int_mod</code></pre>
 <tbody>
 <tr class="odd">
 <td align="left">(Intercept)</td>
-<td align="right">1.122</td>
-<td align="right">0.062</td>
-<td align="right">20.302</td>
-<td align="right">0.938</td>
+<td align="right">15.456</td>
+<td align="right">0.195</td>
+<td align="right">1222.505</td>
+<td align="right">0.220</td>
 </tr>
 <tr class="even">
 <td align="left">age</td>
-<td align="right">0.916</td>
-<td align="right">0.846</td>
-<td align="right">0.992</td>
-<td align="right">0.031</td>
+<td align="right">0.800</td>
+<td align="right">0.654</td>
+<td align="right">0.979</td>
+<td align="right">0.030</td>
 </tr>
 <tr class="odd">
 <td align="left">genderM</td>
-<td align="right">0.537</td>
-<td align="right">0.259</td>
-<td align="right">1.116</td>
-<td align="right">0.096</td>
+<td align="right">0.563</td>
+<td align="right">0.271</td>
+<td align="right">1.170</td>
+<td align="right">0.124</td>
 </tr>
 <tr class="even">
 <td align="left">asthma1</td>
-<td align="right">0.932</td>
-<td align="right">0.419</td>
-<td align="right">2.074</td>
-<td align="right">0.863</td>
+<td align="right">0.604</td>
+<td align="right">0.046</td>
+<td align="right">7.901</td>
+<td align="right">0.701</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_raceblack</td>
-<td align="right">0.555</td>
-<td align="right">0.106</td>
-<td align="right">2.898</td>
-<td align="right">0.485</td>
+<td align="right">0.511</td>
+<td align="right">0.101</td>
+<td align="right">2.593</td>
+<td align="right">0.418</td>
 </tr>
 <tr class="even">
 <td align="left">ethnicity_racelatino</td>
-<td align="right">0.457</td>
-<td align="right">0.092</td>
-<td align="right">2.284</td>
-<td align="right">0.340</td>
+<td align="right">0.425</td>
+<td align="right">0.087</td>
+<td align="right">2.072</td>
+<td align="right">0.290</td>
 </tr>
 <tr class="odd">
 <td align="left">ethnicity_raceasian</td>
-<td align="right">0.243</td>
-<td align="right">0.015</td>
-<td align="right">3.885</td>
-<td align="right">0.317</td>
+<td align="right">0.229</td>
+<td align="right">0.014</td>
+<td align="right">3.790</td>
+<td align="right">0.303</td>
 </tr>
 <tr class="even">
 <td align="left">diabetes1</td>
-<td align="right">69.447</td>
-<td align="right">2.550</td>
-<td align="right">1891.485</td>
-<td align="right">0.012</td>
+<td align="right">5.692</td>
+<td align="right">1.329</td>
+<td align="right">24.373</td>
+<td align="right">0.019</td>
 </tr>
 <tr class="odd">
 <td align="left">bmi_value</td>
-<td align="right">1.065</td>
-<td align="right">0.975</td>
-<td align="right">1.163</td>
-<td align="right">0.162</td>
+<td align="right">0.932</td>
+<td align="right">0.776</td>
+<td align="right">1.120</td>
+<td align="right">0.453</td>
 </tr>
 <tr class="even">
 <td align="left">ses</td>
-<td align="right">1.044</td>
-<td align="right">0.688</td>
-<td align="right">1.584</td>
-<td align="right">0.840</td>
+<td align="right">0.990</td>
+<td align="right">0.656</td>
+<td align="right">1.495</td>
+<td align="right">0.962</td>
 </tr>
 <tr class="odd">
 <td align="left">bmi_value:ses</td>
-<td align="right">0.998</td>
-<td align="right">0.984</td>
-<td align="right">1.013</td>
-<td align="right">0.823</td>
+<td align="right">1.000</td>
+<td align="right">0.986</td>
+<td align="right">1.014</td>
+<td align="right">0.975</td>
 </tr>
 <tr class="even">
-<td align="left">diabetes1:bmi_value</td>
-<td align="right">0.927</td>
-<td align="right">0.855</td>
-<td align="right">1.005</td>
-<td align="right">0.067</td>
+<td align="left">age:asthma1</td>
+<td align="right">1.028</td>
+<td align="right">0.887</td>
+<td align="right">1.192</td>
+<td align="right">0.712</td>
+</tr>
+<tr class="odd">
+<td align="left">age:bmi_value</td>
+<td align="right">1.007</td>
+<td align="right">0.998</td>
+<td align="right">1.016</td>
+<td align="right">0.139</td>
 </tr>
 </tbody>
 </table>
-<pre class="r"><code># cv_df = 
-#   crossv_mc(ped_covid, 100, test = 0.4) 
-# cv_df %&gt;% pull(train) %&gt;% .[[1]] %&gt;% as_tibble
-# cv_df %&gt;% pull(test) %&gt;% .[[1]] %&gt;% as_tibble
-# 
-# cv_df =
-#   cv_df %&gt;% 
-#   mutate(
-#     train = map(train, as_tibble),
-#     test = map(test, as_tibble))
-# 
-# cv_df =
-#   cv_df %&gt;% 
-#   mutate(
-#     race_model             = map(train,  ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, data = .x)),
-#     no_race_model          = map(train, ~glm(admitted ~ age + gender + asthma + diabetes + obesity, data = .x)),
-#     complex_model          = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, data = .x)),
-#     complex_no_ses_model   = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value, data = .x)),
-#     complex_no_bmi_model   = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + ses, data = .x)),
-#     interaction_model      = map(train, ~glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + diabetes*bmi_value, data = .x))) %&gt;% 
-#   mutate(
-#     rmse_race              = map2_dbl(race_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_no_race           = map2_dbl(no_race_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex           = map2_dbl(complex_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex_no_ses    = map2_dbl(complex_no_ses_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex_no_bmi    = map2_dbl(complex_no_bmi_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_interaction       = map2_dbl(interaction_model, test, ~rmse(model = .x, data = .y)))</code></pre>
 </div>
 </div>
 
@@ -1159,7 +1181,7 @@ int_mod</code></pre>
 
 // add bootstrap table styles to pandoc tables
 function bootstrapStylePandocTables() {
-  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
 }
 $(document).ready(function () {
   bootstrapStylePandocTables();

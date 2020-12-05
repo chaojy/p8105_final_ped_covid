@@ -10,9 +10,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-## Setup
+Our goal here is to develop a causation-type model instead of a prediction=targeted one. This is different than the interaction model tool, which was developed for predictive purposes. We will analyze correlations between admittance rate and multiple covariables and then develop a few select models to compare based on apriori knowledge and p-values. Another interesting variable that we would have liked to analyze was admittance to an ICU, but, as can be seen in the data summary, there were too few events of ICU admittance to draw any meaningful conclusions.
 
-```{r}
+```{r, message=FALSE}
 library(tidyverse)
 library(patchwork)
 library(corrplot)
@@ -21,8 +21,9 @@ library(modelr)
 
 knitr::opts_chunk$set(
   fig.width = 6,
-  fig.asp = 1.1,
-  out.width = "100%")
+  fig.asp = 0.65,
+  out.width = "100%",
+  out.height = "75%")
 
 theme_set(theme_minimal() + theme(legend.position = "bottom"))
 
@@ -36,129 +37,9 @@ scale_fill_discrete = scale_fill_viridis_d
 knitr::opts_chunk$set(comment = NA, message = FALSE, warning = FALSE, echo = TRUE)
 ```
 
-## Data import and tidy
+## Data
 
 ```{r}
-data_stats = read_csv("./data/datacomplete.csv") %>% 
-  mutate_at(c("admitted", "ethnicity_race", "asthma", "diabetes", "gender", "obesity", "icu"), as.factor) %>% 
-  select(admitted, icu, age, ethnicity_race, gender, ses, obesity, bmi_value, systolic_bp_value, asthma, diabetes)
-
-summary(data_stats)
-```
-
-## Dataset exploration
-
-This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various ggplots.
-
-### Age
-
-There appears to be a bimodal distribution of hospital admission as a function of age.  Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted.  However, after 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.
-
-Some pediatric patients require admission to the Intensive Care Unit (ICU).  Fewer infants and toddlers with COVID-19 infection require admission to the ICU until about 3 years of age.  Beginning at 10 years of age, there seems to be a steeper rise in the density of ICU admissions for children with COVID-19 infection compared to non-ICU admissions.
-```{r, density admit}
-admitt_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = admitted)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Admittance/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-icu_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = icu)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "ICU/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-admitt_p / icu_p
-```
-
-### Obesity, diabetes, and asthma
-
-The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are show below.  Obesity, as defined as a body mass index (BMI) of > 30, is general not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
-
-```{r}
-obesity_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = obesity)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Obesity/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-diabetes_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = diabetes)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Diabetes/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-asthma_p = 
-  data_stats %>% 
-  ggplot(aes(x = age, fill = asthma)) +
-  geom_density(alpha = .6) +
-  labs(
-    title = "Asthma/Age Distribution",
-    x = "Age (Years)",
-    y = "Density") +
-  theme(legend.position = "bottom")
-
-obesity_p / diabetes_p / asthma_p
-```
-
-### Box plots
-
-Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is lower among admitted patients. 
-
-```{r, boxplots}
-bp_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = systolic_bp_value)) +
-  geom_boxplot() +
-  labs(
-    title = "Systolic Blood Pressure by Admission Status",
-    x = "Hospital Admission Status",
-    y = "Systolic Blood Pressure")
-
-bmi_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = bmi_value)) +
-  geom_boxplot() +
-  labs(
-    title = "BMI by Admission Status",
-    x = "Hospital Admission Status",
-    y = "BMI Value")
-
-ses_p =
-  data_stats %>% 
-  ggplot(aes(x = icu, y = ses)) +
-  geom_boxplot() +
-  labs(
-    title = "Socioeconomic Status by Admission Status",
-    x = "Hospital Admission Status",
-    y = "SES Measure")
-
-bp_p / bmi_p / ses_p
-```
-
-## Possible Models
-
-```{r}
-##consider recoding to have caucasian race as reference - I believe this may generates more interpretible odds ratios.  I have included the code that I wrote at the end of the visualizations.rmd.
-
-##Also, for ease of readability, consider OR as first column, then p values, then 95% CIs?
-
 ped_covid =
   read_csv("./data/p8105_final_ped_covid.csv") %>%
   mutate(
@@ -203,16 +84,139 @@ ped_covid =
   ) %>%
   rename(city = city.y)
 
-train_data =
-  ped_covid %>%
-  slice(1:250)
-
-test_data =
-  ped_covid %>%
-  slice(251:375)
+summary(ped_covid)
 ```
 
-### Race only categorical Model
+## Dataset exploration
+
+This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various plots.
+
+### Age
+
+There appears to be a bimodal distribution of hospital admission as a function of age.  Among infants and toddlers less than 5 years of age who test positive for COVID-19, more are admitted than not admitted. Note that this could be due to babies being admitted along with their mothers' who had COVID-19. After 16 years of age, hospitalizations for COVID-19 infection appear to be less than non-hospitalizations.
+
+```{r}
+admitt_p = 
+  ped_covid %>% 
+  ggplot(aes(x = age, fill = admitted)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Admittance/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+admitt_p
+```
+
+### Obesity, diabetes, and asthma
+
+The distribution of obesity, diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below.  Obesity, as defined as a body mass index (BMI) of > 30, is generally not present at ages less than 10 years.  After 10 years, the prevalence of obesity increases.  This is generally true for diabetes and asthma as well.
+
+```{r}
+bmi_p = 
+  ped_covid %>% 
+  ggplot(aes(x = age, fill = bmi_value)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Obesity/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+bmi_p
+```
+
+```{r}
+diabetes_p = 
+  ped_covid %>% 
+  ggplot(aes(x = age, fill = diabetes)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Diabetes/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+diabetes_p
+```
+
+```{r}
+asthma_p = 
+  ped_covid %>% 
+  ggplot(aes(x = age, fill = asthma)) +
+  geom_density(alpha = .6) +
+  labs(
+    title = "Asthma/Age Distribution",
+    x = "Age (Years)",
+    y = "Density") +
+  theme(legend.position = "bottom")
+
+asthma_p
+```
+
+### Box plots
+
+Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI across admission status appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is higher among admitted patients. The SES variable was defined by the hospital using multiple economic and educational parameters, with negative values indicating below average SES and positive values indicating above average SES.
+
+```{r, boxplots}
+bp_p =
+  ped_covid %>% 
+  ggplot(aes(x = admitted, y = systolic_bp_value)) +
+  geom_boxplot() +
+  labs(
+    title = "Systolic Blood Pressure by Admission Status",
+    x = "Hospital Admission Status",
+    y = "Systolic Blood Pressure")
+
+bp_p
+```
+
+```{r}
+bmi_p =
+  ped_covid %>% 
+  ggplot(aes(x = admitted, y = bmi_value)) +
+  geom_boxplot() +
+  labs(
+    title = "BMI by Admission Status",
+    x = "Hospital Admission Status",
+    y = "BMI Value")
+
+bmi_p
+```
+
+```{r}
+ses_p =
+  ped_covid %>% 
+  ggplot(aes(x = admitted, y = ses)) +
+  geom_boxplot() +
+  labs(
+    title = "Socioeconomic Status by Admission Status",
+    x = "Hospital Admission Status",
+    y = "SES Measure")
+
+ses_p
+```
+
+Note that we had categories for American Indian and Multiple/Mixed Race but there were too few counts for correlation significance purposes and were omitted for simplicity.
+
+We can see from the correlation matrix that there is some positive correlation between age and BMI value (0.42), between BMI value and Asthma (0.24)
+## Correlation Matrix with relevant covariates, and also between BMI value and diabetes (0.29)
+
+```{r}
+cor_data = 
+  cor(model.matrix(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, ped_covid)[,-1])
+
+cor_data %>% 
+  corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 65, insig = "blank" , number.cex = 0.7, diag = FALSE)
+```
+
+
+## Possible Models
+
+When developing some of the models, we started by considering only categorical variables for simplicity along with the continuous variable of age. The ethnicity/race variable was the only non-binary categorical variables which we tried removing as you can see in the two model tables below. However, at the 5% level of significance, age and diabetes were still the only significant variables related to hospitalization.
+
+### Categorical-only (besides age) Model
 
 ```{r}
 race_mod =
@@ -233,7 +237,8 @@ glm(
 race_mod
 ```
 
-### No Race Categorical only model
+### Categorical-only Model (besides age) (Without Ethnicity/Race)
+
 ```{r}
 no_race_mod =
 glm(
@@ -253,7 +258,9 @@ glm(
 no_race_mod
 ```
 
-### Complex model containing relevant variables (continuous included)
+We tried to include the continuous variables of BMI value and SES. Diabetes and BMI value were significant at the 5% level of significance, but age was insignificant.
+
+### Complex model containing all relevant variables
 
 ```{r}
 complex_mod = 
@@ -271,19 +278,14 @@ complex_mod =
    knitr::kable(digits = 3)
 
 complex_mod
-
-cor_data = 
-  cor(model.matrix(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, ped_covid)[,-1])
-
-cor_data %>% 
-  corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 45, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
-### Complex model but without SES variable
+We postulated that the reason age became insignificant because we did not consider its interactions with BMI and Asthma, which we saw were related to 
+### Complex model but with age interactions
 
 ```{r}
-complex_no_ses_mod = 
-  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value, 
+age_int_mod = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses + age*bmi_value + age*asthma, 
      data = ped_covid,
       family = binomial(link = "logit")
       ) %>%  
@@ -296,14 +298,14 @@ complex_no_ses_mod =
   select(term, OR, starts_with("CI"), p.value) %>% 
   knitr::kable(digits = 3)
 
-complex_no_ses_mod
+age_int_mod
 ```
 
-### Complex Model without BMI values
+### Complex Model with other interactions but age interactions
 
 ```{r}
-complex_no_bmi_mod = 
-  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + ses, 
+other_int_mod = 
+  glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses + ses*bmi_value, 
      data = ped_covid,
       family = binomial(link = "logit")
       ) %>%  
@@ -316,14 +318,14 @@ complex_no_bmi_mod =
   select(term, OR, starts_with("CI"), p.value) %>% 
   knitr::kable(digits = 3)
 
-complex_no_bmi_mod
+other_int_mod
 ```
 
-### Complex Model with interactions
+### Complex Model with all interactions
 
 ```{r}
 int_mod = 
-  glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + diabetes*bmi_value, 
+  glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + age*asthma + age*bmi_value, 
       data = ped_covid,
       family = binomial(link = "logit")
       ) %>%  
@@ -337,34 +339,4 @@ int_mod =
    knitr::kable(digits = 3)
 
 int_mod
-```
-
-```{r}
-# cv_df = 
-#   crossv_mc(ped_covid, 100, test = 0.4) 
-# cv_df %>% pull(train) %>% .[[1]] %>% as_tibble
-# cv_df %>% pull(test) %>% .[[1]] %>% as_tibble
-# 
-# cv_df =
-#   cv_df %>% 
-#   mutate(
-#     train = map(train, as_tibble),
-#     test = map(test, as_tibble))
-# 
-# cv_df =
-#   cv_df %>% 
-#   mutate(
-#     race_model             = map(train,  ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + obesity, data = .x)),
-#     no_race_model          = map(train, ~glm(admitted ~ age + gender + asthma + diabetes + obesity, data = .x)),
-#     complex_model          = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value + ses, data = .x)),
-#     complex_no_ses_model   = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + bmi_value, data = .x)),
-#     complex_no_bmi_model   = map(train, ~glm(admitted ~ age + gender + ethnicity_race + asthma + diabetes + ses, data = .x)),
-#     interaction_model      = map(train, ~glm(admitted ~ age + gender + asthma + ethnicity_race + diabetes + bmi_value + ses + ses*bmi_value + diabetes*bmi_value, data = .x))) %>% 
-#   mutate(
-#     rmse_race              = map2_dbl(race_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_no_race           = map2_dbl(no_race_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex           = map2_dbl(complex_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex_no_ses    = map2_dbl(complex_no_ses_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_complex_no_bmi    = map2_dbl(complex_no_bmi_model, test, ~rmse(model = .x, data = .y)),
-#     rmse_interaction       = map2_dbl(interaction_model, test, ~rmse(model = .x, data = .y)))
 ```
