@@ -166,7 +166,7 @@ library(mgcv)
 library(modelr)
 ```
 
-Our goal here is to develop a causation-type model instead of a prediction=targeted one. This is different than the interaction model tool, which was developed for predictive purposes. We will analyze correlations between admittance rate and multiple covariables and then develop a few select models to compare based on apriori knowledge and p-values. Another interesting variable that we would have liked to analyze was admittance to an ICU, but, as can be seen in the data summary, there were too few events of ICU admittance to draw any meaningful conclusions.
+Our goal here is to develop a causation-type model instead of a prediction-targeted one. This is different than the interaction model tool, which was developed for predictive purposes. We will analyze correlations between admittance rate and multiple covariables and then develop a few select models to compare based on apriori knowledge and p-values. Another interesting variable that we would have liked to analyze was admittance to an ICU, but, as can be seen in the data summary, there were too few events of ICU admittance to draw any meaningful conclusions.
 
 ```{r, message=FALSE}
 library(tidyverse)
@@ -245,7 +245,7 @@ summary(ped_covid)
 
 ## Dataset exploration
 
-This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various plots.
+This is a dataset of 375 pediatric patients 0 to 23 years of age with COVID-19 infection.  First, we explore the data by generating various plots to inform our model building.
 
 ### Age
 
@@ -267,7 +267,7 @@ admitt_p
 
 ### Diabetes and Asthma
 
-The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. This is generally true for diabetes and asthma as well.
+The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. We can see that asthma and diabetes are more common above 10 years of age.
 
 ```{r}
 diabetes_p = 
@@ -300,6 +300,8 @@ asthma_p
 ### Box plots
 
 Below, we explore first systolic blood pressure, BMI, and socioeconomic status (SES) by admission status.  The median first systolic pressure is higher among admitted patients compared to non-admitted patients.  BMI across admission status appears to be similar, with some high BMI outliers in the non-hospitalized group.  Median SES is higher among admitted patients. The SES variable was defined by the hospital using multiple economic and educational parameters, with negative values indicating below average SES and positive values indicating above average SES.
+
+Systolic blood pressure had 240 missing values out of 375 so we decided to not include it in the models.
 
 ```{r, boxplots}
 bp_p =
@@ -340,10 +342,11 @@ ses_p =
 ses_p
 ```
 
+We can see from the correlation matrix that there is some positive correlation between age and BMI value (0.42), between BMI value and Asthma (0.24) and also between BMI value and diabetes (0.29).
+
 Note that we had categories for American Indian and Multiple/Mixed Race but there were too few counts for correlation significance purposes and were omitted for simplicity.
 
-We can see from the correlation matrix that there is some positive correlation between age and BMI value (0.42), between BMI value and Asthma (0.24)
-## Correlation Matrix with relevant covariates, and also between BMI value and diabetes (0.29)
+## Correlation Matrix with Relevant Covariables
 
 ```{r}
 cor_data = 
@@ -353,9 +356,12 @@ cor_data %>%
   corrplot(method = "color", addCoef.col = "black", tl.col = "black", tl.srt = 65, insig = "blank" , number.cex = 0.7, diag = FALSE)
 ```
 
+
 ## Possible Models
 
 When developing some of the models, we started by considering only categorical variables for simplicity along with the continuous variable of age. The ethnicity/race variable was the only non-binary categorical variables which we tried removing as you can see in the two model tables below. However, at the 5% level of significance, age and diabetes were still the only significant variables related to hospitalization.
+
+
 
 ### Categorical-only (besides age) Model
 
@@ -421,7 +427,7 @@ complex_mod =
 complex_mod
 ```
 
-We postulated that the reason age became insignificant because we did not consider its interactions with BMI and Asthma, which we saw were related to 
+We postulated that the reason age became insignificant was that we did not consider its interactions with other variables. Adding interaction terms between age and BMI as well as age and asthma we found age and diabetes to be the only significant predictors at a 5% level of significance.
 
 ### Complex model but with age interactions
 
@@ -443,6 +449,8 @@ age_int_mod =
 age_int_mod
 ```
 
+This model was fitted to further illustrate the importance of age interaction terms to making age a significant predictor of hospitalizations due to COVID-19 in those under 23 years of age.
+
 ### Complex Model with other interactions but age interactions
 
 ```{r}
@@ -463,6 +471,9 @@ other_int_mod =
 other_int_mod
 ```
 
+We eventually settled on a complex model with all theoretically and statistically plausible interactions, including that between SES and BMI, age and asthma, as well as age and BMI. 
+We can see that age is a significant predictor of hospitalization as well as having diabetes. It is important to note how the 95% confidence intervals for diabetes were very wide, and that is probably due to the fact that only 17 out 375 people in our dataset had diabetes. We kept diabetes in the models regardless because of apriori assumptions that diabetes exacerbates effects of the COVID-19 infection.
+
 ### Complex Model with all interactions
 
 ```{r}
@@ -482,7 +493,6 @@ int_mod =
 
 int_mod
 ```
-
 <h1 id="dash">Dashboard</h1>
 
 Next, we created an interactive dashboard to further explore and visualize the data. 
