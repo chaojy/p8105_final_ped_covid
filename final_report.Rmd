@@ -355,11 +355,7 @@ Next, we created an interactive dashboard to further explore and visualize the d
 First we loaded additional necessary packages. 
 
 ```{r packages, message = FALSE, warning = FALSE, echo = FALSE, results = 'hide'}
-library(plotly)
-library(leaflet)
-library(tidycensus)
-library(tmap)
-census_api_key("535bbe702423f7405e593fbd1bb6ae314d416cf2")
+tidycensus::census_api_key("535bbe702423f7405e593fbd1bb6ae314d416cf2")
 ```
 
 ```{r packages}
