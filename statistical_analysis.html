@@ -470,10 +470,7 @@ admitt_p</code></pre>
 <div id="diabetes-and-asthma" class="section level3">
 <h3>Diabetes and Asthma</h3>
 <p>The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. This is generally true for diabetes and asthma as well.</p>
-<pre><code>
-
-```r
-diabetes_p = 
+<pre class="r"><code>diabetes_p = 
   ped_covid %&gt;% 
   ggplot(aes(x = age, fill = diabetes)) +
   geom_density(alpha = .6) +

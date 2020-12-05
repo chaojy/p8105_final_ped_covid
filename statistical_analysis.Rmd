@@ -113,7 +113,6 @@ admitt_p
 
 The distribution of diabetes, and asthma diagnoses in pediatric patients with COVID-19 infection by age are shown below. This is generally true for diabetes and asthma as well.
 
-```
 
 ```{r}
 diabetes_p = 
