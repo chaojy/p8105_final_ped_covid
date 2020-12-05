@@ -13,7 +13,7 @@ navbar:
     - text: "Final Report"
       href: final_report.html
     - icon: fa-video fa-2x
-      href: screencast.html
+      href: https://www.youtube.com/watch?v=d9hx6UIwDvw&feature=youtu.be
     - icon: fa-github fa-2x
       href: https://github.com/chaojy/p8105_final_ped_covid
 output:
