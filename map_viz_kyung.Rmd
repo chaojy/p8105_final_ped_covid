@@ -87,7 +87,7 @@ covid_df =
 
 ## Average Socio-Economic Status (SES) and Average Body Mass Index (BMI)
 
-Here, we have illustrated average SES and average BMI across the part of New Jersey and New York State Area. Users can select different base layers for the map and the average value of SES or BMI for different counties from the top-left corner layered box.
+Here, we have generated an interactive map that demonstrates average SES and average BMI across various parts of New York and New Jersey, reflecting the residences of pediatric patients with COVID-19 infection.  By selecting from the layered box on the top left corner, users can customize different base layers for the map, as well as average SES or average BMI.
 
 ```{r}
 # Map Viz using tidycensus and tmap
@@ -210,7 +210,7 @@ ggplotly(plot_1, tooltip = "text")
 
 ## Ethnicity and race information of admitted and non-admitted pediatric patients
 
-The ethnic and racial background of pediatric patients with COVID-19 infection reflect the diverse population served in the Bronx.  Latinos represent the majority of patients in whom positive SARS-CoV-2 RT-PCR test results were returned, followed by blacks, caucasians, and asians.  Overall, latino and black children with COVID-19 infection seem to have a lower hospitalization rates compared to caucasian and asian children.
+The ethnic and racial background of pediatric patients with COVID-19 infection reflect the diverse population served in the Bronx.  Latinos represent the majority of patients in whom positive SARS-CoV-2 RT-PCR test results were returned, followed by blacks, caucasians, and asians.  Overall, latino and black children with COVID-19 infection seem to have lower hospitalization rates compared to caucasian and asian children.
 
 ```{r}
 plot_2 = 
@@ -263,7 +263,7 @@ ggplotly(plot_3, tooltip = "text")
 
 ## Body mass index (BMI), age, and admission status
 
-The scatterplot shows BMI values versus age by admission status with a smooth curve.  In general, BMI values increase as age increase for both admitted and non-admitted patients.  The smooth curves generally overlap but diverge beginning at around age 14, with a trend for more admissions for extremely obese patients with high outlier BMI values.
+The scatterplot shows BMI values versus age by admission status with a smooth curve.  In general, BMI values increase as age increases for both admitted and non-admitted patients.  The smooth curves generally overlap but diverge beginning at around age 14, with a trend for more admissions for extremely obese patients with high outlier BMI values.
 
 ```{r}
 plot_4 =
@@ -304,7 +304,7 @@ ggplotly(plot_5, tooltip = "text")
 
 ## Body mass index (BMI) by Gender
 
-***Need Description***
+The below interactive box plot explores the relationship between BMI and gender.  The median BMI is higher in female children with COVID-19 infection compared to male children.  There are some high BMI outliers, particularly among male children, with one BMI of 80.84.
 
 ```{r}
 plot_6 =
@@ -326,7 +326,7 @@ ggplotly(plot_6)
 
 ## Body mass index (BMI) and Socio-Economic Status (SES) by Gender
 
-***Need Description***
+This interactive scatterplot explores the relationship between SES and BMI in this dataset.  In general, SES and BMI values are clustered at lower values of BMI with a spread of SES that seems similar for males and females between 0 and -10.  Briefly, the SES variable is a score generated from census-block groups with increasing score signifying an increasing neighborhood socioeconomic advantage.  BMI values appears to be unevenly distributed with clustering of values below 30 and clustering of values greater than 30.   Again, we observe the high outlier values of BMI for males and these appear to be distributed in the lower half of SES values.
 
 ```{r}
 plot_7 =
@@ -346,7 +346,7 @@ ggplotly(plot_7, tooltip = "text")
 
 ## Age, Body mass index (BMI) and Socio-Economic Status (SES) by Gender
 
-***Need Description***
+The below scatterplot further explores BMI and age in a faceted plot by gender.  Hovering over each observation will reveal the specific age, BMI, gender, as well as SES.  Futhermore, the area of each circle corresponds to the SES of that particular patient.
 
 ```{r}
 plot_8 =
@@ -374,7 +374,7 @@ ggplotly(plot_8, tooltip = "text")
 
 ## Average age by geographic location
 
-The below interactive bar graph explores the relationship between average age of COVID-19 infected children and geographic location.  The average age of pediatric patients was 14.5 years in the Bronx, which returned the greatest positivity count.  Staten Island had the oldest average age (22 years) and Berkeley Heights had the youngest average age (5 years), but there was only one patient each from these respective locations.
+The below interactive bar graph explores the relationship between average age of COVID-19 infected children and geographic location.  The average age of pediatric patients was 14.5 years in the Bronx, which returned the greatest positivity count.  Staten Island had the oldest average age (22 years) and Berkeley Heights had the youngest average age (5 years), but there was only one patient from each of these respective locations.
 
 ```{r age_barplot}
 plot_9 =
@@ -401,7 +401,7 @@ ggplotly(plot_9, tooltip = "text")
 
 ## Body mass index (BMI) and Socio-Economic Status (SES)
 
-***Need Description***
+This heat map explores the density of BMI and SES, suggesting two regions of greatest density for these variables.  One "hot" patch seems to be defined by SES values ranging from -6.5 to -7.5 and BMI values from 20.5 to 24.  The second hot patch consists of higher SES values, with a range of -1.3 to -2.9 and BMI values ranging from 22 to 25.
 
 ```{r}
 plot_10 = 

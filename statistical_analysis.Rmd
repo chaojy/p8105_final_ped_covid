@@ -212,7 +212,7 @@ test_data =
   slice(251:375)
 ```
 
-### Race only categoruical Model
+### Race only categorical Model
 
 ```{r}
 race_mod =
