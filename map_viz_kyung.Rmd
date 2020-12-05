@@ -85,12 +85,12 @@ covid_df =
     ))
 ```
 
-## Average Socioeconomic status (SES) and Average Body Mass Index (BMI)
-Here, we show average SES and average BMI
-Kyung: This is awesome!  When both SES and BMI are selected, when I hover on the map, I see can see only average SES - I am assuming you also intend to add average BMI information as well?  Individually, SES and BMI show up fine.  Also, there is a lot of "NaN" for average SES, but I assume it is due to missing data.  
+## Average Socio-Economic Status (SES) and Average Body Mass Index (BMI)
+
+Here, we have illustrated average SES and average BMI across the part of New Jersey and New York State Area. Users can select different base layers for the map and the average value of SES or BMI for different counties from the top-left corner layered box.
 
 ```{r}
-# Map Viz using tidycensus and tmap (use ses)
+# Map Viz using tidycensus and tmap
 county_ny = c("bronx", "kings", "westchester", "new york", "queens", "rockland", "orange", "richmond")
 county_nj = c("bergen", "union")
 
@@ -124,14 +124,6 @@ shape_nj =
 shape_full =
 rbind(shape_ny, shape_nj)
 
-# admitted = 
-#   covid_df %>% 
-#   group_by(county, admitted) %>% 
-#   summarize(count = n())
-
-# ny_map = 
-#  left_join(shape_ny, bmi_mean, by = "county")
-
 bmi_mean =
   covid_df %>%
   group_by(county) %>%
@@ -150,33 +142,35 @@ full_map_ses =
 
 tmap_mode("view")
 tm_full = 
-tm_shape(full_map_bmi) +
-  tm_fill(
-    group = "Average BMI",
-    midpoint = NA,
-    col = "bmi_mean",
-    palette = "viridis",
-    style = "quantile",
-    contrast = c(0.3, 1),
-    title = "Average BMI",
-    textNA = "Not Available",
-    id = "state",
-    popup.vars=c("County: " = "county",
-                 "Average BMI: " = "bmi_mean")) +
-    tm_borders(col = "white") +
-tm_shape(full_map_ses) +
-  tm_fill(
-    group = "Average SES",
-    midpoint = NA,
-    col = "ses_mean",
-    palette = "RdYlBu",
-    style = "quantile",
-    contrast = c(0.3, 1),
-    title = "Average SES",
-    textNA = "Not Available",
-    id = "state",
-    popup.vars=c("County: " = "county",
-                 "Average SES: " = "ses_mean")) +
+  tm_shape(full_map_bmi) +
+    tm_fill(
+      n = 4,
+      group = "Average BMI",
+      midpoint = NA,
+      col = "bmi_mean",
+      palette = "viridis",
+      style = "quantile",
+      contrast = c(0.3, 1),
+      title = "Average BMI",
+      textNA = "Not Available",
+      id = "state",
+      popup.vars=c("County: " = "county",
+                   "Average BMI: " = "bmi_mean")) +
+      tm_borders(col = "white") +
+  tm_shape(full_map_ses) +
+    tm_fill(
+      n = 4,
+      group = "Average SES",
+      midpoint = NA,
+      col = "ses_mean",
+      palette = "RdYlBu",
+      style = "quantile",
+      contrast = c(0.3, 1),
+      title = "Average SES",
+      textNA = "Not Available",
+      id = "state",
+      popup.vars=c("County: " = "county",
+                   "Average SES: " = "ses_mean")) +
   tm_borders(col = "white") +
   tm_view(
     alpha = 0.85,
@@ -195,22 +189,21 @@ tm_full %>%
 The number of pediatric patients testing positive for COVID-19 is shown as a function of time, by admission status (yes/no).  The number of patients who returned positive SARS-CoV-2 RT-PCR tests peaked in late February and decreased until April.  From April to June, levels of positive tests generally plateaued for both admitted and non-admitted patients until June, at which point levels dropped off to close to zero for both groups.
 
 ```{r}
-# Difference between admitted over the year
 plot_1 = 
-covid_df %>% 
-  group_by(eventdatetime, admitted) %>% 
-  summarize(count = n()) %>% 
-  ggplot(aes(x = eventdatetime, 
-             y = count, 
-             color = admitted)) +
-  geom_point(aes(text = paste("Date: ", eventdatetime, 
-                              "\nNumber of Counts: ", count, 
-                              "\nAdmitted: ", admitted))) +
-  geom_line() +
-  labs(title = "",
-         x = "Event Date",
-         y = "Number of Events",
-         color = "Admitted")
+  covid_df %>% 
+    group_by(eventdatetime, admitted) %>% 
+    summarize(count = n()) %>% 
+    ggplot(aes(x = eventdatetime, 
+               y = count, 
+               color = admitted)) +
+    geom_point(aes(text = paste("Date: ", eventdatetime, 
+                                "\nNumber of Counts: ", count, 
+                                "\nAdmitted: ", admitted))) +
+    geom_line() +
+    labs(title = "",
+           x = "Event Date",
+           y = "Number of Events",
+           color = "Admitted")
 
 ggplotly(plot_1, tooltip = "text")
 ```
@@ -220,48 +213,26 @@ ggplotly(plot_1, tooltip = "text")
 The ethnic and racial background of pediatric patients with COVID-19 infection reflect the diverse population served in the Bronx.  Latinos represent the majority of patients in whom positive SARS-CoV-2 RT-PCR test results were returned, followed by blacks, caucasians, and asians.  Overall, latino and black children with COVID-19 infection seem to have a lower hospitalization rates compared to caucasian and asian children.
 
 ```{r}
-# Race and admitted
 plot_2 = 
-covid_df %>% 
-  group_by(ethnicity_race, admitted) %>% 
-  summarize(count = n()) %>%
-  filter(ethnicity_race != "american indian") %>% 
-  filter(ethnicity_race != "multiple") %>% 
-  ggplot(aes(x = fct_reorder(ethnicity_race, count), 
-             y = count, 
-             fill = admitted,
-             text = paste("Ethnicity: ", ethnicity_race, 
-                          "\nNumber of Counts: ", count, 
-                          "\nAdmitted: ", admitted))) +
-  geom_bar(stat="identity", position=position_dodge()) +
-  coord_flip() +
-  labs(title = "",
-         x = "Number of Counts",
-         y = "Ethnicity",
-         fill = "Admitted")
+  covid_df %>% 
+    group_by(ethnicity_race, admitted) %>% 
+    summarize(count = n()) %>%
+    filter(ethnicity_race != "american indian") %>% 
+    filter(ethnicity_race != "multiple") %>% 
+    ggplot(aes(x = fct_reorder(ethnicity_race, count), 
+               y = count, 
+               fill = admitted,
+               text = paste("Ethnicity: ", ethnicity_race, 
+                            "\nCounts: ", count, 
+                            "\nAdmitted: ", admitted))) +
+    geom_bar(stat="identity", position=position_dodge()) +
+    coord_flip() +
+    labs(title = "",
+           x = "Counts",
+           y = "Ethnicity",
+           fill = "Admitted")
 
 ggplotly(plot_2, tooltip = "text")
-```
-
-## Body mass index (BMI), age, and ethnicity/race
-
-The below interactive plot shows plots of BMI as a function of age, stratified by race.  In general, BMI values seem to increase as age increases.  There are outliers with some extreme BMI values, including some with a BMI of greater than 60.
-
-```{r}
-plot_3 =
-covid_df %>% 
-  filter(ethnicity_race != "multiple") %>% 
-  ggplot(aes(x = age, y = bmi_value, color = ethnicity_race)) +
-  geom_point(aes(text = paste("Age: ", age, 
-                          "\nBMI: ", bmi_value, 
-                          "\nEthnicity: ", ethnicity_race))) +
-  geom_smooth(se = FALSE) +
-  labs(title = "",
-         x = "Age",
-         y = "BMI Value",
-         color = "Ethnicity")
-
-ggplotly(plot_3, tooltip = "text")
 ```
 
 ## Admissions for COVID-19 and age
@@ -269,25 +240,25 @@ ggplotly(plot_3, tooltip = "text")
 The below interactive bar graph is another representation of our earlier exploratory ggplot showing the density or count of COVID-19 positivity as function of age.  This information is further stratified by admission status (yes/no).
 
 ```{r}
-plot_4 = 
-covid_df %>% 
-  mutate(age = round(age),
-         age = as.factor(age)) %>% 
-  group_by(age, admitted) %>% 
-  summarize(count = n()) %>%
-  ggplot(aes(x = age, 
-             y = count, 
-             fill = admitted,
-             text = paste("Age: ", age, 
-                          "\nNumber of Counts: ", count, 
-                          "\nAdmitted: ", admitted))) +
-  geom_bar(stat="identity", position=position_dodge()) +
-  labs(title = "",
-         x = "Age",
-         y = "Number of Counts",
-         fill = "Admitted")
+plot_3 = 
+  covid_df %>% 
+    mutate(age = round(age),
+           age = as.factor(age)) %>% 
+    group_by(age, admitted) %>% 
+    summarize(count = n()) %>%
+    ggplot(aes(x = age, 
+               y = count, 
+               fill = admitted,
+               text = paste("Age: ", age, 
+                            "\nCounts: ", count, 
+                            "\nAdmitted: ", admitted))) +
+    geom_bar(stat="identity", position=position_dodge()) +
+    labs(title = "",
+           x = "Age",
+           y = "Counts",
+           fill = "Admitted")
 
-ggplotly(plot_4, tooltip = "text")
+ggplotly(plot_3, tooltip = "text")
 ```
 
 ## Body mass index (BMI), age, and admission status
@@ -295,19 +266,110 @@ ggplotly(plot_4, tooltip = "text")
 The scatterplot shows BMI values versus age by admission status with a smooth curve.  In general, BMI values increase as age increase for both admitted and non-admitted patients.  The smooth curves generally overlap but diverge beginning at around age 14, with a trend for more admissions for extremely obese patients with high outlier BMI values.
 
 ```{r}
+plot_4 =
+  covid_df %>% 
+    ggplot(aes(x = age, y = bmi_value, color = admitted)) +
+    geom_point(aes(text = paste("Age: ", age, 
+                            "\nBMI: ", bmi_value, 
+                            "\nAdmitted: ", admitted))) +
+    geom_smooth(se = FALSE) +
+    labs(title = "",
+           x = "Age",
+           y = "BMI",
+           color = "Admitted")
+
+ggplotly(plot_4, tooltip = "text")
+```
+
+## Body mass index (BMI), age, and ethnicity/race
+
+The below interactive plot shows plots of BMI as a function of age, stratified by race.  In general, BMI values seem to increase as age increases.  There are outliers with some extreme BMI values, including some with a BMI of greater than 60.
+
+```{r}
 plot_5 =
-covid_df %>% 
-  ggplot(aes(x = age, y = bmi_value, color = admitted)) +
-  geom_point(aes(text = paste("Age: ", age, 
-                          "\nBMI Value: ", bmi_value, 
-                          "\nAdmitted: ", admitted))) +
-  geom_smooth(se = FALSE) +
-  labs(title = "",
-         x = "Age",
-         y = "BMI Value",
-         color = "Admitted")
+  covid_df %>% 
+    filter(ethnicity_race != "multiple") %>% 
+    ggplot(aes(x = age, y = bmi_value, color = ethnicity_race)) +
+    geom_point(aes(text = paste("Age: ", age, 
+                            "\nBMI: ", bmi_value, 
+                            "\nEthnicity: ", ethnicity_race))) +
+    geom_smooth(se = FALSE) +
+    labs(title = "",
+           x = "Age",
+           y = "BMI",
+           color = "Ethnicity")
 
 ggplotly(plot_5, tooltip = "text")
+```
+
+## Body mass index (BMI) by Gender
+
+***Need Description***
+
+```{r}
+plot_6 =
+  covid_df %>% 
+  filter(gender != "U") %>% 
+  ggplot(aes(x = gender, y = bmi_value, fill = gender)) +
+   geom_boxplot(draw_quantiles = c(0.25, 0.5, 0.75)) +
+   stat_summary(fun = "mean", color = "blue") +
+   labs(
+     title = "",
+     x = "Gender",
+     y = "BMI",
+     caption = ""
+     ) +
+   theme(legend.position="none")
+
+ggplotly(plot_6)
+```
+
+## Body mass index (BMI) and Socio-Economic Status (SES) by Gender
+
+***Need Description***
+
+```{r}
+plot_7 =
+  covid_df %>% 
+    filter(gender != "U") %>%
+    ggplot(aes(x = bmi_value, y = ses, color = gender)) +
+    geom_point(aes(text = paste("SES: ", ses, 
+                            "\nBMI: ", bmi_value, 
+                            "\nGender: ", gender))) +
+    labs(title = "",
+           x = "BMI",
+           y = "SES",
+           color = "Gender")
+
+ggplotly(plot_7, tooltip = "text")
+```
+
+## Age, Body mass index (BMI) and Socio-Economic Status (SES) by Gender
+
+***Need Description***
+
+```{r}
+plot_8 =
+  covid_df %>% 
+    filter(gender != "U") %>%
+    ggplot(aes(x = age, 
+               y = bmi_value, 
+               size = ses, 
+               color = gender,
+               text = paste("Age: ", age,
+                            "\nSES: ", ses, 
+                            "\nBMI: ", bmi_value, 
+                            "\nGender: ", gender))) +
+      geom_point(alpha=0.4) +
+      scale_size(range = c(1, 8)) +
+      theme(legend.position="none") +
+      facet_grid(.~gender) +
+      labs(title = "",
+           x = "Age",
+           y = "BMI",
+           color = "Gender")
+
+ggplotly(plot_8, tooltip = "text")
 ```
 
 ## Average age by geographic location
@@ -315,18 +377,13 @@ ggplotly(plot_5, tooltip = "text")
 The below interactive bar graph explores the relationship between average age of COVID-19 infected children and geographic location.  The average age of pediatric patients was 14.5 years in the Bronx, which returned the greatest positivity count.  Staten Island had the oldest average age (22 years) and Berkeley Heights had the youngest average age (5 years), but there was only one patient each from these respective locations.
 
 ```{r age_barplot}
-# Barplot using age / count reorder 
-
-plot_6 =
+plot_9 =
   covid_df %>% 
   group_by(city, county) %>% 
   summarize(mean_age = mean(age, na.rm = TRUE),
             count = n()) %>%
   drop_na(city) %>% 
-  ggplot(aes(
-             x = fct_reorder(city, mean_age),
-#             x = fct_reorder(city, count),
-#tried to recorder by count, but looks funny - I like your plot better
+  ggplot(aes(x = fct_reorder(city, mean_age),
              y = mean_age,
              fill = count,
              text = paste("City: ", city, 
@@ -339,15 +396,25 @@ plot_6 =
          y = "Average Age",
          fill = "Count")
   
-ggplotly(plot_6, tooltip = "text")
-
-# plot_ly(x = ~fct_reorder(city, mean_age), y = ~mean_age,
-#           type = "bar",
-#           color = ~county,
-#           colors = "viridis",
-#           alpha = .5) %>% 
-#   layout(title = "",
-#          xaxis = list(title = ""),
-#          yaxis = list(title = ""),
-#          barmode = "stack")
+ggplotly(plot_9, tooltip = "text")
 ```
+
+## Body mass index (BMI) and Socio-Economic Status (SES)
+
+***Need Description***
+
+```{r}
+plot_10 = 
+  covid_df %>% 
+  ggplot(aes(x = ses, y = bmi_value)) +
+  stat_density_2d(aes(fill = ..density..), geom = "raster", contour = FALSE) +
+  ylim(10, 35) +
+  theme(legend.position = "right") +
+  labs(title = "",
+       x = "SES",
+       y = "BMI",
+       fill = "Density")
+
+ggplotly(plot_10)
+```
+
